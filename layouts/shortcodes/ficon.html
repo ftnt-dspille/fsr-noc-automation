@@ -1,0 +1,10 @@
+{{ $_hugo_config := `{ "version": 1 }` }} {{ $icon := (.Get "icon" | default
+(.Get 0)) }} {{$size := "1.6rem"}} {{if (.Get "size")}} {{ $size = (.Get "size")
+}} {{ end }} {{$class := "inline"}} {{ if (.Get "class")}} {{ $class = (.Get
+"class")}} {{end}}
+<img
+  class="{{$class}}"
+  src="/images/icons/{{ $icon }}.svg"
+  style="height: {{$size}}"
+  alt=""
+/>

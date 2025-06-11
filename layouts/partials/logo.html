@@ -1,0 +1,20 @@
+<a id="logo" href="{{- "index.html" | relURL -}}" title="{{ .Site.Title }}">
+  <img style="vertical-align: middle" height="70px" />
+  <logoBanner id="title">
+    {{ with .Site.Params.logoBannerText }}
+      {{ . }}
+    {{ else }}
+      {{- with $.Site.Params.themeVariant -}}
+        {{- if reflect.IsSlice . -}}
+          {{- index . 0 -}}
+        {{- else -}}
+          {{- . -}}
+        {{- end -}}
+      {{- end -}}
+    {{ end }}
+  </logoBanner>
+
+  <logoBannerFreeForm id="subtitle">
+    {{ $.Site.Params.logoBannerSubText }}
+  </logoBannerFreeForm>
+</a>

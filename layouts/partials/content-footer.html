@@ -1,0 +1,7 @@
+{{/* Add copyright and build info to home page */}}
+{{ if eq .Kind "home" }}
+  {{ partial "copyright.html" . }}
+{{ end }}
+{{ if templates.Exists "partials/google_analytics.html" }}
+  {{ partial "google_analytics.html" . }}
+{{ end }}

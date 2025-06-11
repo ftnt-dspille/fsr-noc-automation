@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Security_Networking" data-name="Security Networking" xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 192 192">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: #da291c;
+        stroke-width: 0px;
+      }
+    </style>
+  </defs>
+  <polygon class="cls-1" points="20 84.1 61.1 107.8 61.1 163.6 75.6 172 75.6 99.4 20 67.3 20 84.1"/>
+  <polygon class="cls-1" points="48 115.4 20 99.2 20 139.9 48 156 48 115.4"/>
+  <polygon class="cls-1" points="96 8.2 47.7 36.2 116.4 75.8 116.4 172 172 139.9 172 52.1 96 8.2"/>
+  <polygon class="cls-1" points="103.3 83.4 34.5 43.7 20 52.1 88.7 91.8 88.7 179.6 96 183.8 103.3 179.6 103.3 83.4"/>
+</svg>

@@ -1,0 +1,11 @@
+<h1>{{.Title}}</h1>
+{{ $modifiedContent :=replace .Content " loading=\"lazy\"" "" }}
+{{ $modifiedContent |safeHTML }}
+<div class="pagebreak"></div>
+{{ range .Pages }}
+{{ if eq .Kind "page" }}
+{{ partial "ap-print-page.hugo" .}}
+{{ else }}
+{{ partial "ap-print-section.hugo" .}}
+{{end}}
+{{ end }}

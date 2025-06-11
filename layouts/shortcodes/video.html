@@ -1,0 +1,5 @@
+{{ $_hugo_config := `{ "version": 1 }` }}
+{{ $src := (.Get "src") }}
+{{ $width := "100%" }}
+{{ if (.Get "width") }}{{ $width = (.Get "width") }}{{ end }}
+<video controls src="{{ $src }}" width="{{ $width }}"></video>

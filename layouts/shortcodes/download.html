@@ -1,0 +1,5 @@
+<a href="{{.Get 0}}" download="{{with .Get 0}}{{path.Base .}}{{end}}">
+    <i class="fas fa-download"></i>
+    {{ if strings.ContainsNonSpace .Inner}} {{.Inner}} {{ else }} {{.Get 0}} {{
+    end }}
+</a>

@@ -1,0 +1,3607 @@
+[
+  {
+    "file": "Fortinet-logo-rgb-black.svg",
+    "alt": "Fortinet Logo RGB Black",
+    "url": "https://icons.fortinet.com/icons/Logos/Fortinet-logo-rgb-black.svg"
+  },
+  {
+    "file": "Fortinet-logo-rgb-black-red.svg",
+    "alt": "Fortinet Logo RGB Black Red",
+    "url": "https://icons.fortinet.com/icons/Logos/Fortinet-logo-rgb-black-red.svg"
+  },
+  {
+    "file": "Fortinet-logomark-rgb-black.svg",
+    "alt": "Fortinet Logomark RGB Black",
+    "url": "https://icons.fortinet.com/icons/Logos/Fortinet-logomark-rgb-black.svg"
+  },
+  {
+    "file": "Fortinet-logomark-rgb-red.svg",
+    "alt": "Fortinet Logomark RGB Red",
+    "url": "https://icons.fortinet.com/icons/Logos/Fortinet-logomark-rgb-red.svg"
+  },
+  {
+    "file": "FortiGuard.svg",
+    "alt": "FortiGuard",
+    "url": "https://icons.fortinet.com/icons/Pillar/FortiGuard.svg"
+  },
+  {
+    "file": "platform-AI Driven Technologies.svg",
+    "alt": "platform-AI Driven Technologies",
+    "url": "https://icons.fortinet.com/icons/Pillar/platform-AI Driven Technologies.svg"
+  },
+  {
+    "file": "platform-Ecosystem.svg",
+    "alt": "platform-Ecosystem",
+    "url": "https://icons.fortinet.com/icons/Pillar/platform-Ecosystem.svg"
+  },
+  {
+    "file": "platform-FortiCloud.svg",
+    "alt": "platform-FortiCloud",
+    "url": "https://icons.fortinet.com/icons/Pillar/platform-FortiCloud.svg"
+  },
+  {
+    "file": "platform-FortiPoints.svg",
+    "alt": "platform-FortiPoints",
+    "url": "https://icons.fortinet.com/icons/Pillar/platform-FortiPoints.svg"
+  },
+  {
+    "file": "platform-OT Security.svg",
+    "alt": "platform-OT Security",
+    "url": "https://icons.fortinet.com/icons/Pillar/platform-OT Security.svg"
+  },
+  {
+    "file": "Secure Networking.svg",
+    "alt": "Secure Networking",
+    "url": "https://icons.fortinet.com/icons/Pillar/Secure Networking.svg"
+  },
+  {
+    "file": "Security Fabric.svg",
+    "alt": "Security Fabric",
+    "url": "https://icons.fortinet.com/icons/Pillar/Security Fabric.svg"
+  },
+  {
+    "file": "Security Operations.svg",
+    "alt": "Security Operations",
+    "url": "https://icons.fortinet.com/icons/Pillar/Security Operations.svg"
+  },
+  {
+    "file": "Unified-SASE.svg",
+    "alt": "Unified SASE",
+    "url": "https://icons.fortinet.com/icons/Pillar/Unified-SASE.svg"
+  },
+  {
+    "file": "5G.svg",
+    "alt": "5G",
+    "url": "https://icons.fortinet.com/icons/New - Updated icons for 2024/January 2k24/5G.svg"
+  },
+  {
+    "file": "ASIC.svg",
+    "alt": "ASIC",
+    "url": "https://icons.fortinet.com/icons/Secure Networking/Core-Elements/ASIC.svg"
+  },
+  {
+    "file": "Carrier.svg",
+    "alt": "Carrier Class",
+    "url": "https://icons.fortinet.com/icons/New - Updated icons for 2024/January 2k24/Carrier.svg"
+  },
+  {
+    "file": "cFOS.svg",
+    "alt": "cFOS",
+    "url": "https://icons.fortinet.com/icons/New - Updated icons for 2024/May 2k24/cFOS.svg"
+  },
+  {
+    "file": "Cloud.svg",
+    "alt": "Cloud",
+    "url": "https://icons.fortinet.com/icons/Secure Networking/Technology/Cloud.svg"
+  },
+  {
+    "file": "CPU.svg",
+    "alt": "CPU",
+    "url": "https://icons.fortinet.com/icons/Secure Networking/Core-Elements/CPU.svg"
+  },
+  {
+    "file": "CPU-Chip.svg",
+    "alt": "CPU Chip, Generic",
+    "url": "https://icons.fortinet.com/icons/Secure Networking/Technology/CPU-Chip.svg"
+  },
+  {
+    "file": "Data-Center.svg",
+    "alt": "Data Center, generic",
+    "url": "https://icons.fortinet.com/icons/Secure Networking/Technology/Data-Center.svg"
+  },
+  {
+    "file": "Indoor-FAP.svg",
+    "alt": "FortiAP, Indoor",
+    "url": "https://icons.fortinet.com/icons/Secure Networking/Form-Factors/Indoor-FAP.svg"
+  },
+  {
+    "file": "Indoor-FAP-Antenna.svg",
+    "alt": "FortiAP, Indoor Antenna",
+    "url": "https://icons.fortinet.com/icons/Secure Networking/Form-Factors/Indoor-FAP-Antenna.svg"
+  },
+  {
+    "file": "Outdoor-FAP.svg",
+    "alt": "FortiAP, Outdoor",
+    "url": "https://icons.fortinet.com/icons/Secure Networking/Form-Factors/Outdoor-FAP.svg"
+  },
+  {
+    "file": "Remote-FAP.svg",
+    "alt": "FortiAP, Remote",
+    "url": "https://icons.fortinet.com/icons/Secure Networking/Form-Factors/Remote-FAP.svg"
+  },
+  {
+    "file": "Rugged-Outdoor-FAP.svg",
+    "alt": "FortiAP, Rugged Outdoor",
+    "url": "https://icons.fortinet.com/icons/Secure Networking/Form-Factors/Rugged-Outdoor-FAP.svg"
+  },
+  {
+    "file": "FortiExtender-Appliance.svg",
+    "alt": "FortiExtender-Appliance",
+    "url": "https://icons.fortinet.com/icons/November-2023/FortiExtender-Appliance.svg"
+  },
+  {
+    "file": "FortiExtender Vehicle.svg",
+    "alt": "FortiExtender-Vehicle",
+    "url": "https://icons.fortinet.com/icons/New - Updated icons for 2024/April 2k24/FortiExtender Vehicle.svg"
+  },
+  {
+    "file": "1u.svg",
+    "alt": "FortiGate Family, 1u",
+    "url": "https://icons.fortinet.com/icons/Secure Networking/Form-Factors/1u.svg"
+  },
+  {
+    "file": "2u.svg",
+    "alt": "FortiGate Family, 2u",
+    "url": "https://icons.fortinet.com/icons/Secure Networking/Form-Factors/2u.svg"
+  },
+  {
+    "file": "3u.svg",
+    "alt": "FortiGate Family, 3u",
+    "url": "https://icons.fortinet.com/icons/Secure Networking/Form-Factors/3u.svg"
+  },
+  {
+    "file": "5u.svg",
+    "alt": "FortiGate Family, 5u",
+    "url": "https://icons.fortinet.com/icons/Secure Networking/Form-Factors/5u.svg"
+  },
+  {
+    "file": "6u.svg",
+    "alt": "FortiGate Family, 6u",
+    "url": "https://icons.fortinet.com/icons/Secure Networking/Form-Factors/6u.svg"
+  },
+  {
+    "file": "8u.svg",
+    "alt": "FortiGate Family, 8u",
+    "url": "https://icons.fortinet.com/icons/Secure Networking/Form-Factors/8u.svg"
+  },
+  {
+    "file": "FortiGate-Desktop.svg",
+    "alt": "FortiGate Family, Desktop",
+    "url": "https://icons.fortinet.com/icons/Secure Networking/Form-Factors/FortiGate-Desktop.svg"
+  },
+  {
+    "file": "FOS-5.4.svg",
+    "alt": "FortiOS 5.4",
+    "url": "https://icons.fortinet.com/icons/Secure Networking/Core-Elements/FOS-5.4.svg"
+  },
+  {
+    "file": "FOS-5.6.svg",
+    "alt": "FortiOS 5.6",
+    "url": "https://icons.fortinet.com/icons/Secure Networking/Core-Elements/FOS-5.6.svg"
+  },
+  {
+    "file": "FOS-6.0.svg",
+    "alt": "FortiOS 6.0",
+    "url": "https://icons.fortinet.com/icons/Secure Networking/Core-Elements/FOS-6.0.svg"
+  },
+  {
+    "file": "FOS-6.2.svg",
+    "alt": "FortiOS 6.2",
+    "url": "https://icons.fortinet.com/icons/Secure Networking/Core-Elements/FOS-6.2.svg"
+  },
+  {
+    "file": "FOS-6.4.svg",
+    "alt": "FortiOS 6.4",
+    "url": "https://icons.fortinet.com/icons/Secure Networking/Core-Elements/FOS-6.4.svg"
+  },
+  {
+    "file": "FOS-7.0.svg",
+    "alt": "FortiOS 7.0",
+    "url": "https://icons.fortinet.com/icons/Secure Networking/Core-Elements/FOS-7.0.svg"
+  },
+  {
+    "file": "FOS-7.2.svg",
+    "alt": "FortiOS 7.2",
+    "url": "https://icons.fortinet.com/icons/Secure Networking/Core-Elements/FOS-7.2.svg"
+  },
+  {
+    "file": "FOS-7.4.svg",
+    "alt": "FortiOS 7.4",
+    "url": "https://icons.fortinet.com/icons/Secure Networking/Core-Elements/FOS-7.4.svg"
+  },
+  {
+    "file": "FortiOS 7.6.svg",
+    "alt": "FortiOS 7.6",
+    "url": "https://icons.fortinet.com/icons/New - Updated icons for 2024/May 2k24/FortiOS 7.6.svg"
+  },
+  {
+    "file": "FortiOS.svg",
+    "alt": "FortiOS, Generic",
+    "url": "https://icons.fortinet.com/icons/Secure Networking/Core-Elements/FortiOS.svg"
+  },
+  {
+    "file": "FortiRugged Extender.svg",
+    "alt": "FortiRugged Extender",
+    "url": "https://icons.fortinet.com/icons/New - Updated icons for 2024/April 2k24/FortiRugged Extender.svg"
+  },
+  {
+    "file": "Ruggedized NGFW.svg",
+    "alt": "NGFW, Ruggedized",
+    "url": "https://icons.fortinet.com/icons/New - Updated icons for 2024/November 2k24/Ruggedized NGFW.svg"
+  },
+  {
+    "file": "Appliance.svg",
+    "alt": "Product, Appliance",
+    "url": "https://icons.fortinet.com/icons/Secure Networking/Form-Factors/Appliance.svg"
+  },
+  {
+    "file": "Cloud-P.svg",
+    "alt": "Product, Cloud",
+    "url": "https://icons.fortinet.com/icons/Secure Networking/Form-Factors/Cloud-P.svg"
+  },
+  {
+    "file": "Container.svg",
+    "alt": "Product, Container",
+    "url": "https://icons.fortinet.com/icons/Secure Networking/Form-Factors/Container.svg"
+  },
+  {
+    "file": "Hosted.svg",
+    "alt": "Product, Hosted",
+    "url": "https://icons.fortinet.com/icons/Secure Networking/Form-Factors/Hosted.svg"
+  },
+  {
+    "file": "Software.svg",
+    "alt": "Product, Software",
+    "url": "https://icons.fortinet.com/icons/Secure Networking/Form-Factors/Software.svg"
+  },
+  {
+    "file": "VM.svg",
+    "alt": "Product, VM",
+    "url": "https://icons.fortinet.com/icons/Secure Networking/Form-Factors/VM.svg"
+  },
+  {
+    "file": "SP2.svg",
+    "alt": "SP2",
+    "url": "https://icons.fortinet.com/icons/Secure Networking/Core-Elements/SP2.svg"
+  },
+  {
+    "file": "SP3.svg",
+    "alt": "SP3",
+    "url": "https://icons.fortinet.com/icons/Secure Networking/Core-Elements/SP3.svg"
+  },
+  {
+    "file": "SP4.svg",
+    "alt": "SP4",
+    "url": "https://icons.fortinet.com/icons/Secure Networking/Core-Elements/SP4.svg"
+  },
+  {
+    "file": "SP5.svg",
+    "alt": "SP5",
+    "url": "https://icons.fortinet.com/icons/Secure Networking/Core-Elements/SP5.svg"
+  },
+  {
+    "file": "CP10.svg",
+    "alt": "SPU, CP10",
+    "url": "https://icons.fortinet.com/icons/Secure Networking/Core-Elements/CP10.svg"
+  },
+  {
+    "file": "CP8.svg",
+    "alt": "SPU, CP8",
+    "url": "https://icons.fortinet.com/icons/Secure Networking/Core-Elements/CP8.svg"
+  },
+  {
+    "file": "CP9.svg",
+    "alt": "SPU, CP9",
+    "url": "https://icons.fortinet.com/icons/Secure Networking/Core-Elements/CP9.svg"
+  },
+  {
+    "file": "DP.svg",
+    "alt": "SPU, DP",
+    "url": "https://icons.fortinet.com/icons/Secure Networking/Core-Elements/DP.svg"
+  },
+  {
+    "file": "DP2.svg",
+    "alt": "SPU, DP2",
+    "url": "https://icons.fortinet.com/icons/Secure Networking/Core-Elements/DP2.svg"
+  },
+  {
+    "file": "DP3.svg",
+    "alt": "SPU, DP3",
+    "url": "https://icons.fortinet.com/icons/Secure Networking/Core-Elements/DP3.svg"
+  },
+  {
+    "file": "DPx.svg",
+    "alt": "SPU, DPx",
+    "url": "https://icons.fortinet.com/icons/Secure Networking/Core-Elements/DPx.svg"
+  },
+  {
+    "file": "NP6.svg",
+    "alt": "SPU, NP6",
+    "url": "https://icons.fortinet.com/icons/Secure Networking/Core-Elements/NP6.svg"
+  },
+  {
+    "file": "NP7.svg",
+    "alt": "SPU, NP7",
+    "url": "https://icons.fortinet.com/icons/Secure Networking/Core-Elements/NP7.svg"
+  },
+  {
+    "file": "TP2.svg",
+    "alt": "SPU, TP2",
+    "url": "https://icons.fortinet.com/icons/Secure Networking/Core-Elements/TP2.svg"
+  },
+  {
+    "file": "Ruggedized Switch.svg",
+    "alt": "Switch, Ruggedized",
+    "url": "https://icons.fortinet.com/icons/New - Updated icons for 2024/November 2k24/Ruggedized Switch.svg"
+  },
+  {
+    "file": "vSPU.svg",
+    "alt": "vSPU",
+    "url": "https://icons.fortinet.com/icons/Secure Networking/Core-Elements/vSPU.svg"
+  },
+  {
+    "file": "XP1.svg",
+    "alt": "XP1",
+    "url": "https://icons.fortinet.com/icons/Secure Networking/Core-Elements/XP1.svg"
+  },
+  {
+    "file": "Accelerated Implementation.svg",
+    "alt": "Accelerated Implementation",
+    "url": "https://icons.fortinet.com/icons/Services/FortiCare/Accelerated Implementation.svg"
+  },
+  {
+    "file": "Account.svg",
+    "alt": "Account",
+    "url": "https://icons.fortinet.com/icons/Services/FortiCare/Account.svg"
+  },
+  {
+    "file": "Agreement.svg",
+    "alt": "Agreement",
+    "url": "https://icons.fortinet.com/icons/Services/FortiCare/Agreement.svg"
+  },
+  {
+    "file": "ATP-Firewall.svg",
+    "alt": "ATP Firewall",
+    "url": "https://icons.fortinet.com/icons/Secure Networking/Solutions & Deployments/ATP-Firewall.svg"
+  },
+  {
+    "file": "Better-Application-Experience.svg",
+    "alt": "Better Application Experience",
+    "url": "https://icons.fortinet.com/icons/Secure Networking/Technology/Better-Application-Experience.svg"
+  },
+  {
+    "file": "Bottlenecking.svg",
+    "alt": "Bottleneck",
+    "url": "https://icons.fortinet.com/icons/Secure Networking/Technology/Bottlenecking.svg"
+  },
+  {
+    "file": "Business-Continuity.svg",
+    "alt": "Business Continuity",
+    "url": "https://icons.fortinet.com/icons/Secure Networking/Technology/Business-Continuity.svg"
+  },
+  {
+    "file": "Carrier-Class-Firewall.svg",
+    "alt": "Carrier Class Firewall",
+    "url": "https://icons.fortinet.com/icons/Secure Networking/Solutions & Deployments/Carrier-Class-Firewall.svg"
+  },
+  {
+    "file": "Cloud-Firewall.svg",
+    "alt": "Cloud Firewall",
+    "url": "https://icons.fortinet.com/icons/Secure Networking/Solutions & Deployments/Cloud-Firewall.svg"
+  },
+  {
+    "file": "Connections-Per-Sec.svg",
+    "alt": "Connections/sec",
+    "url": "https://icons.fortinet.com/icons/Secure Networking/Technology/Connections-Per-Sec.svg"
+  },
+  {
+    "file": "Consolidation.svg",
+    "alt": "Consolidation",
+    "url": "https://icons.fortinet.com/icons/Secure Networking/Technology/Consolidation.svg"
+  },
+  {
+    "file": "Convergence.svg",
+    "alt": "Convergence",
+    "url": "https://icons.fortinet.com/icons/Secure Networking/Technology/Convergence.svg"
+  },
+  {
+    "file": "Customized.svg",
+    "alt": "Customized",
+    "url": "https://icons.fortinet.com/icons/Services/FortiCare/Customized.svg"
+  },
+  {
+    "file": "Customized Care.svg",
+    "alt": "Customized Care",
+    "url": "https://icons.fortinet.com/icons/Services/FortiCare/Customized Care.svg"
+  },
+  {
+    "file": "Data-Center-Firewall.svg",
+    "alt": "Data Center Firewall",
+    "url": "https://icons.fortinet.com/icons/Secure Networking/Solutions & Deployments/Data-Center-Firewall.svg"
+  },
+  {
+    "file": "Database Protection.svg",
+    "alt": "Database Protection",
+    "url": "https://icons.fortinet.com/icons/Services/Network Elements/Database Protection.svg"
+  },
+  {
+    "file": "Device.svg",
+    "alt": "Device",
+    "url": "https://icons.fortinet.com/icons/Services/FortiCare/Device.svg"
+  },
+  {
+    "file": "Distributed Firewall.svg",
+    "alt": "Distributed Firewall",
+    "url": "https://icons.fortinet.com/icons/November-2023/Distributed Firewall.svg"
+  },
+  {
+    "file": "Elephant-Flow.svg",
+    "alt": "Elephant Flow",
+    "url": "https://icons.fortinet.com/icons/Secure Networking/Technology/Elephant-Flow.svg"
+  },
+  {
+    "file": "ENT-Firewall.svg",
+    "alt": "ENT Firewall",
+    "url": "https://icons.fortinet.com/icons/Secure Networking/Solutions & Deployments/ENT-Firewall.svg"
+  },
+  {
+    "file": "Enterprise.svg",
+    "alt": "Enterprise",
+    "url": "https://icons.fortinet.com/icons/Services/FortiCare/Enterprise.svg"
+  },
+  {
+    "file": "Evolve.svg",
+    "alt": "Evolve",
+    "url": "https://icons.fortinet.com/icons/Services/FortiCare/Evolve.svg"
+  },
+  {
+    "file": "Firewall.svg",
+    "alt": "Firewall, Generic",
+    "url": "https://icons.fortinet.com/icons/Secure Networking/Technology/Firewall.svg"
+  },
+  {
+    "file": "Flame.svg",
+    "alt": "Flame",
+    "url": "https://icons.fortinet.com/icons/Secure Networking/Technology/Flame.svg"
+  },
+  {
+    "file": "FortiAIOps.svg",
+    "alt": "FortiAIOps",
+    "url": "https://icons.fortinet.com/icons/NOC/Products/FortiAIOps.svg"
+  },
+  {
+    "file": "FortiAP.svg",
+    "alt": "FortiAP",
+    "url": "https://icons.fortinet.com/icons/Secure Networking/Products/FortiAP.svg"
+  },
+  {
+    "file": "FortiCamera.svg",
+    "alt": "FortiCamera",
+    "url": "https://icons.fortinet.com/icons/Secure Networking/Products/FortiCamera.svg"
+  },
+  {
+    "file": "FortiCamera Cloud.svg",
+    "alt": "FortiCamera Cloud",
+    "url": "https://icons.fortinet.com/icons/Services/Cloud Service Products/FortiCamera Cloud.svg"
+  },
+  {
+    "file": "FortiCarrier.svg",
+    "alt": "FortiCarrier",
+    "url": "https://icons.fortinet.com/icons/Secure Networking/Products/FortiCarrier.svg"
+  },
+  {
+    "file": "FortiConverter.svg",
+    "alt": "FortiConverter",
+    "url": "https://icons.fortinet.com/icons/Secure Networking/Products/FortiConverter.svg"
+  },
+  {
+    "file": "FortiConverter Cloud.svg",
+    "alt": "FortiConverter Cloud",
+    "url": "https://icons.fortinet.com/icons/Services/Cloud Service Products/FortiConverter Cloud.svg"
+  },
+  {
+    "file": "FortiEdge Cloud.svg",
+    "alt": "FortiEdge-Cloud",
+    "url": "https://icons.fortinet.com/icons/New - Updated icons for 2024/April 2k24/FortiEdge Cloud.svg"
+  },
+  {
+    "file": "FortiExtender.svg",
+    "alt": "FortiExtender",
+    "url": "https://icons.fortinet.com/icons/New - Updated icons for 2024/March 2k24/updated icons/FortiExtender.svg"
+  },
+  {
+    "file": "FortiExtender-LAN.svg",
+    "alt": "FortiExtender LAN",
+    "url": "https://icons.fortinet.com/icons/Secure Networking/Products/FortiExtender-LAN.svg"
+  },
+  {
+    "file": "FortiFone.svg",
+    "alt": "FortiFone",
+    "url": "https://icons.fortinet.com/icons/Secure Networking/Products/FortiFone.svg"
+  },
+  {
+    "file": "FortiGate.svg",
+    "alt": "FortiGate",
+    "url": "https://icons.fortinet.com/icons/Secure Networking/Products/FortiGate.svg"
+  },
+  {
+    "file": "FortiGate Cloud.svg",
+    "alt": "FortiGate Cloud",
+    "url": "https://icons.fortinet.com/icons/NOC/Products/FortiGate Cloud.svg"
+  },
+  {
+    "file": "FGaaS Cloud.svg",
+    "alt": "FortiGate-as-a-Service Cloud",
+    "url": "https://icons.fortinet.com/icons/New - Updated icons for 2024/July 2k24/FGaaS Cloud/FGaaS Cloud.svg"
+  },
+  {
+    "file": "FortiIsolator.svg",
+    "alt": "FortiIsolator",
+    "url": "https://icons.fortinet.com/icons/Secure Networking/Products/FortiIsolator.svg"
+  },
+  {
+    "file": "FortiLink.svg",
+    "alt": "FortiLink",
+    "url": "https://icons.fortinet.com/icons/Secure Networking/Products/FortiLink.svg"
+  },
+  {
+    "file": "FortiLink-NAC.svg",
+    "alt": "FortiLink NAC",
+    "url": "https://icons.fortinet.com/icons/Secure Networking/Products/FortiLink-NAC.svg"
+  },
+  {
+    "file": "FortiManager.svg",
+    "alt": "FortiManager",
+    "url": "https://icons.fortinet.com/icons/New - Updated icons for 2024/June 2k24/ICON UPDATE/FortiManager.svg"
+  },
+  {
+    "file": "FMGaaS.svg",
+    "alt": "FortiManager-as-a-Service",
+    "url": "https://icons.fortinet.com/icons/New - Updated icons for 2024/July 2k24/FMGaaS/FMGaaS.svg"
+  },
+  {
+    "file": "FortiNAC.svg",
+    "alt": "FortiNAC",
+    "url": "https://icons.fortinet.com/icons/Secure Networking/Products/FortiNAC.svg"
+  },
+  {
+    "file": "FortiPresence.svg",
+    "alt": "FortiPresence",
+    "url": "https://icons.fortinet.com/icons/Secure Networking/Products/FortiPresence.svg"
+  },
+  {
+    "file": "FortiProxy.svg",
+    "alt": "FortiProxy",
+    "url": "https://icons.fortinet.com/icons/Secure Networking/Products/FortiProxy.svg"
+  },
+  {
+    "file": "FortiRecorder.svg",
+    "alt": "FortiRecorder",
+    "url": "https://icons.fortinet.com/icons/Secure Networking/Products/FortiRecorder.svg"
+  },
+  {
+    "file": "FortiSRA.svg",
+    "alt": "FortiSRA",
+    "url": "https://icons.fortinet.com/icons/New - Updated icons for 2024/September/FortiSRA.svg"
+  },
+  {
+    "file": "FortiSwitch.svg",
+    "alt": "FortiSwitch",
+    "url": "https://icons.fortinet.com/icons/Secure Networking/Products/FortiSwitch.svg"
+  },
+  {
+    "file": "FortiSwitch-Manager.svg",
+    "alt": "FortiSwitch Manager",
+    "url": "https://icons.fortinet.com/icons/New - Updated icons for 2024/December 2k24/FortiSwitch-Manager.svg"
+  },
+  {
+    "file": "FortiView.svg",
+    "alt": "FortiView",
+    "url": "https://icons.fortinet.com/icons/Secure Networking/Products/FortiView.svg"
+  },
+  {
+    "file": "FortiVoice.svg",
+    "alt": "FortiVoice",
+    "url": "https://icons.fortinet.com/icons/Secure Networking/Products/FortiVoice.svg"
+  },
+  {
+    "file": "FortiVoice Cloud.svg",
+    "alt": "FortiVoice Cloud",
+    "url": "https://icons.fortinet.com/icons/Services/Cloud Service Products/FortiVoice Cloud.svg"
+  },
+  {
+    "file": "FortiWiFi.svg",
+    "alt": "FortiWiFi",
+    "url": "https://icons.fortinet.com/icons/New - Updated icons for 2024/January 2k24/FortiWiFi.svg"
+  },
+  {
+    "file": "Four Hour.svg",
+    "alt": "Four Hour",
+    "url": "https://icons.fortinet.com/icons/Services/FortiCare/Four Hour.svg"
+  },
+  {
+    "file": "Guide.svg",
+    "alt": "Guide",
+    "url": "https://icons.fortinet.com/icons/Services/FortiCare/Guide.svg"
+  },
+  {
+    "file": "High-Availability.svg",
+    "alt": "High Availability",
+    "url": "https://icons.fortinet.com/icons/Secure Networking/Technology/High-Availability.svg"
+  },
+  {
+    "file": "Hyperscale-Applications.svg",
+    "alt": "Hyperscale Applications",
+    "url": "https://icons.fortinet.com/icons/Secure Networking/Technology/Hyperscale-Applications.svg"
+  },
+  {
+    "file": "Hyperscale-Data-Center.svg",
+    "alt": "Hyperscale Data Center",
+    "url": "https://icons.fortinet.com/icons/Secure Networking/Technology/Hyperscale-Data-Center.svg"
+  },
+  {
+    "file": "Hyperscale-Firewall.svg",
+    "alt": "Hyperscale Firewall",
+    "url": "https://icons.fortinet.com/icons/Secure Networking/Solutions & Deployments/Hyperscale-Firewall.svg"
+  },
+  {
+    "file": "Increasing-TCO.svg",
+    "alt": "Increasing Costs",
+    "url": "https://icons.fortinet.com/icons/Secure Networking/Technology/Increasing-TCO.svg"
+  },
+  {
+    "file": "Internal CSP.svg",
+    "alt": "Internal CSP",
+    "url": "https://icons.fortinet.com/icons/Services/Network Elements/Internal CSP.svg"
+  },
+  {
+    "file": "Internal-Segmentation-Firewall.svg",
+    "alt": "Internal Segmentation Firewall",
+    "url": "https://icons.fortinet.com/icons/Secure Networking/Solutions & Deployments/Internal-Segmentation-Firewall.svg"
+  },
+  {
+    "file": "IP Address Management.svg",
+    "alt": "IP Address Management",
+    "url": "https://icons.fortinet.com/icons/Services/Operational Services/IP Address Management.svg"
+  },
+  {
+    "file": "LAN-Edge-Firewall.svg",
+    "alt": "LAN Edge Firewall",
+    "url": "https://icons.fortinet.com/icons/Secure Networking/Solutions & Deployments/LAN-Edge-Firewall.svg"
+  },
+  {
+    "file": "Low-Latency.svg",
+    "alt": "Low Latency",
+    "url": "https://icons.fortinet.com/icons/Secure Networking/Technology/Low-Latency.svg"
+  },
+  {
+    "file": "Low Latency Firewall.svg",
+    "alt": "Low Latency Firewall",
+    "url": "https://icons.fortinet.com/icons/November-2023/Low Latency Firewall.svg"
+  },
+  {
+    "file": "Lower-TCO.svg",
+    "alt": "Lower TCO",
+    "url": "https://icons.fortinet.com/icons/Secure Networking/Technology/Lower-TCO.svg"
+  },
+  {
+    "file": "5G-LTE.svg",
+    "alt": "LTE 5g",
+    "url": "https://icons.fortinet.com/icons/New - Updated icons for 2024/January 2k24/5G-LTE.svg"
+  },
+  {
+    "file": "5G-LTE-Firewall.svg",
+    "alt": "LTE/5G Wireless WAN",
+    "url": "https://icons.fortinet.com/icons/New - Updated icons for 2024/January 2k24/5G-LTE-Firewall.svg"
+  },
+  {
+    "file": "Managed-FortiGate-Service.svg",
+    "alt": "Managed FortiGate Service",
+    "url": "https://icons.fortinet.com/icons/New - Updated icons for 2024/April 2k24/Managed-FortiGate-Service.svg"
+  },
+  {
+    "file": "Many-Point-Products.svg",
+    "alt": "Many Point Products",
+    "url": "https://icons.fortinet.com/icons/Secure Networking/Technology/Many-Point-Products.svg"
+  },
+  {
+    "file": "Migrate.svg",
+    "alt": "Migrate",
+    "url": "https://icons.fortinet.com/icons/Services/FortiCare/Migrate.svg"
+  },
+  {
+    "file": "Mobile CSP.svg",
+    "alt": "Mobile CSPs",
+    "url": "https://icons.fortinet.com/icons/Services/Network Elements/Mobile CSP.svg"
+  },
+  {
+    "file": "MSSPs.svg",
+    "alt": "MSSPs",
+    "url": "https://icons.fortinet.com/icons/Services/Network Elements/MSSPs.svg"
+  },
+  {
+    "file": "Needs Update.svg",
+    "alt": "Needs Update",
+    "url": "https://icons.fortinet.com/icons/Services/FortiCare/Needs Update.svg"
+  },
+  {
+    "file": "Network CSPs.svg",
+    "alt": "Network CSPs",
+    "url": "https://icons.fortinet.com/icons/Services/Network Elements/Network CSPs.svg"
+  },
+  {
+    "file": "Network-Security.svg",
+    "alt": "Network Security, Generic",
+    "url": "https://icons.fortinet.com/icons/Secure Networking/Technology/Network-Security.svg"
+  },
+  {
+    "file": "Next-Generation.svg",
+    "alt": "Next Generation Firewall, Generic",
+    "url": "https://icons.fortinet.com/icons/Secure Networking/Technology/Next-Generation.svg"
+  },
+  {
+    "file": "Next-Generation-Firewall.svg",
+    "alt": "Next-Generation Firewall",
+    "url": "https://icons.fortinet.com/icons/Secure Networking/Solutions & Deployments/Next-Generation-Firewall.svg"
+  },
+  {
+    "file": "NGFW-with-Services.svg",
+    "alt": "NGFW with Services",
+    "url": "https://icons.fortinet.com/icons/Secure Networking/Solutions & Deployments/NGFW-with-Services.svg"
+  },
+  {
+    "file": "OCVPN-Portal Cloud.svg",
+    "alt": "OCVPN-Portal Cloud",
+    "url": "https://icons.fortinet.com/icons/Services/Cloud Service Products/OCVPN-Portal Cloud.svg"
+  },
+  {
+    "file": "Open-Ports.svg",
+    "alt": "Open Ports",
+    "url": "https://icons.fortinet.com/icons/Secure Networking/Technology/Open-Ports.svg"
+  },
+  {
+    "file": "Operational-Efficiency.svg",
+    "alt": "Operational Efficiency",
+    "url": "https://icons.fortinet.com/icons/Secure Networking/Technology/Operational-Efficiency.svg"
+  },
+  {
+    "file": "optimization.svg",
+    "alt": "optimization",
+    "url": "https://icons.fortinet.com/icons/New - Updated icons for 2024/April 2k24/optimization.svg"
+  },
+  {
+    "file": "Optimization.svg",
+    "alt": "Optimization",
+    "url": "https://icons.fortinet.com/icons/Services/FortiCare/Optimization.svg"
+  },
+  {
+    "file": "OS-Fingerprinting.svg",
+    "alt": "OS Fingerprinting",
+    "url": "https://icons.fortinet.com/icons/Secure Networking/Technology/OS-Fingerprinting.svg"
+  },
+  {
+    "file": "OT Engineer.svg",
+    "alt": "OT Engineer",
+    "url": "https://icons.fortinet.com/icons/Services/FortiCare/OT Engineer.svg"
+  },
+  {
+    "file": "Overlay Controller VPN.svg",
+    "alt": "Overlay Controller VPN",
+    "url": "https://icons.fortinet.com/icons/Services/Operational Services/Overlay Controller VPN.svg"
+  },
+  {
+    "file": "Overlay Controller VPN Cloud.svg",
+    "alt": "Overlay Controller VPN Cloud",
+    "url": "https://icons.fortinet.com/icons/Services/Operational Services/Overlay Controller VPN Cloud.svg"
+  },
+  {
+    "file": "Partner CSP.svg",
+    "alt": "Partner CSP",
+    "url": "https://icons.fortinet.com/icons/Services/Network Elements/Partner CSP.svg"
+  },
+  {
+    "file": "Penetration Testing.svg",
+    "alt": "Penetration Testing",
+    "url": "https://icons.fortinet.com/icons/Services/FortiCare/Penetration Testing.svg"
+  },
+  {
+    "file": "PIN-Entry.svg",
+    "alt": "PIN Entry",
+    "url": "https://icons.fortinet.com/icons/Secure Networking/Technology/PIN-Entry.svg"
+  },
+  {
+    "file": "Professional Service.svg",
+    "alt": "Professional Service",
+    "url": "https://icons.fortinet.com/icons/Services/FortiCare/Professional Service.svg"
+  },
+  {
+    "file": "Providers.svg",
+    "alt": "Providers",
+    "url": "https://icons.fortinet.com/icons/Services/FortiCare/Providers.svg"
+  },
+  {
+    "file": "Risk-Management.svg",
+    "alt": "Risk Management",
+    "url": "https://icons.fortinet.com/icons/Secure Networking/Technology/Risk-Management.svg"
+  },
+  {
+    "file": "RMA 2.svg",
+    "alt": "RMA 2",
+    "url": "https://icons.fortinet.com/icons/Services/FortiCare/RMA 2.svg"
+  },
+  {
+    "file": "Router-Firewall.svg",
+    "alt": "Router Firewall",
+    "url": "https://icons.fortinet.com/icons/Secure Networking/Solutions & Deployments/Router-Firewall.svg"
+  },
+  {
+    "file": "Router.svg",
+    "alt": "Router, generic",
+    "url": "https://icons.fortinet.com/icons/Secure Networking/Technology/Router.svg"
+  },
+  {
+    "file": "Rugged-Firewall.svg",
+    "alt": "Rugged Firewall",
+    "url": "https://icons.fortinet.com/icons/Secure Networking/Solutions & Deployments/Rugged-Firewall.svg"
+  },
+  {
+    "file": "Rugged.svg",
+    "alt": "Rugged, generic",
+    "url": "https://icons.fortinet.com/icons/Secure Networking/Technology/Rugged.svg"
+  },
+  {
+    "file": "SD-Branch.svg",
+    "alt": "SD Branch, Generic",
+    "url": "https://icons.fortinet.com/icons/Secure Networking/Technology/SD-Branch.svg"
+  },
+  {
+    "file": "SD-Branch-Firewall.svg",
+    "alt": "SD-Branch Firewall",
+    "url": "https://icons.fortinet.com/icons/Secure Networking/Solutions & Deployments/SD-Branch-Firewall.svg"
+  },
+  {
+    "file": "Secure Equipment.svg",
+    "alt": "Secure Equipment",
+    "url": "https://icons.fortinet.com/icons/Services/FortiCare/Secure Equipment.svg"
+  },
+  {
+    "file": "Secure RMA.svg",
+    "alt": "Secure RMA",
+    "url": "https://icons.fortinet.com/icons/Services/FortiCare/Secure RMA.svg"
+  },
+  {
+    "file": "Secure-VPN-Tunnel.svg",
+    "alt": "Secure VPN Tunnel",
+    "url": "https://icons.fortinet.com/icons/Secure Networking/Technology/Secure-VPN-Tunnel.svg"
+  },
+  {
+    "file": "Secure-Web-Gateway-2.svg",
+    "alt": "Secure Web Gateway, Generic",
+    "url": "https://icons.fortinet.com/icons/Secure Networking/Technology/Secure-Web-Gateway-2.svg"
+  },
+  {
+    "file": "security awareness and training.svg",
+    "alt": "Security Awareness Training",
+    "url": "https://icons.fortinet.com/icons/New - Updated icons for 2024/June 2k24/security awareness and training.svg"
+  },
+  {
+    "file": "Security-Profiles.svg",
+    "alt": "Security Profiles",
+    "url": "https://icons.fortinet.com/icons/Secure Networking/Technology/Security-Profiles.svg"
+  },
+  {
+    "file": "Segmentation.svg",
+    "alt": "Segmentation",
+    "url": "https://icons.fortinet.com/icons/Secure Networking/Technology/Segmentation.svg"
+  },
+  {
+    "file": "Server-Load-Balancing.svg",
+    "alt": "Server Load Balancing",
+    "url": "https://icons.fortinet.com/icons/Secure Networking/Technology/Server-Load-Balancing.svg"
+  },
+  {
+    "file": "Service Provider SP.svg",
+    "alt": "Service Provider",
+    "url": "https://icons.fortinet.com/icons/Services/Network Elements/Service Provider SP.svg"
+  },
+  {
+    "file": "SMB-Firewall.svg",
+    "alt": "SMB Firewall",
+    "url": "https://icons.fortinet.com/icons/Secure Networking/Solutions & Deployments/SMB-Firewall.svg"
+  },
+  {
+    "file": "SSL-Inspection.svg",
+    "alt": "SSL Inspection",
+    "url": "https://icons.fortinet.com/icons/Secure Networking/Technology/SSL-Inspection.svg"
+  },
+  {
+    "file": "SSL-Inspection-Firewall.svg",
+    "alt": "SSL Inspection Firewall",
+    "url": "https://icons.fortinet.com/icons/Secure Networking/Solutions & Deployments/SSL-Inspection-Firewall.svg"
+  },
+  {
+    "file": "SSL-VPN-Firewall.svg",
+    "alt": "SSL VPN Firewall",
+    "url": "https://icons.fortinet.com/icons/Secure Networking/Solutions & Deployments/SSL-VPN-Firewall.svg"
+  },
+  {
+    "file": "Support.svg",
+    "alt": "Support",
+    "url": "https://icons.fortinet.com/icons/Services/FortiCare/Support.svg"
+  },
+  {
+    "file": "Switching.svg",
+    "alt": "Switching",
+    "url": "https://icons.fortinet.com/icons/Secure Networking/Technology/Switching.svg"
+  },
+  {
+    "file": "Traffic-Shaping.svg",
+    "alt": "Traffic Shaping",
+    "url": "https://icons.fortinet.com/icons/Secure Networking/Technology/Traffic-Shaping.svg"
+  },
+  {
+    "file": "Troubleshooting.svg",
+    "alt": "Troubleshooting",
+    "url": "https://icons.fortinet.com/icons/Services/FortiCare/Troubleshooting.svg"
+  },
+  {
+    "file": "Unsecure Equipment.svg",
+    "alt": "Unsecure Equipment",
+    "url": "https://icons.fortinet.com/icons/Services/FortiCare/Unsecure Equipment.svg"
+  },
+  {
+    "file": "Updated.svg",
+    "alt": "Updated",
+    "url": "https://icons.fortinet.com/icons/Services/FortiCare/Updated.svg"
+  },
+  {
+    "file": "UTP-Firewall.svg",
+    "alt": "UTP Firewall",
+    "url": "https://icons.fortinet.com/icons/Secure Networking/Solutions & Deployments/UTP-Firewall.svg"
+  },
+  {
+    "file": "VDOM.svg",
+    "alt": "VDOM",
+    "url": "https://icons.fortinet.com/icons/Secure Networking/Technology/VDOM.svg"
+  },
+  {
+    "file": "Virtual-Firewall.svg",
+    "alt": "Virtual Firewall",
+    "url": "https://icons.fortinet.com/icons/Secure Networking/Solutions & Deployments/Virtual-Firewall.svg"
+  },
+  {
+    "file": "Virtual.svg",
+    "alt": "Virtual Machine",
+    "url": "https://icons.fortinet.com/icons/Secure Networking/Technology/Virtual.svg"
+  },
+  {
+    "file": "Virtual Patching.svg",
+    "alt": "Virtual Patching",
+    "url": "https://icons.fortinet.com/icons/New - Updated icons for 2024/April 2k24/Virtual Patching.svg"
+  },
+  {
+    "file": "VLAN.svg",
+    "alt": "VLAN",
+    "url": "https://icons.fortinet.com/icons/Secure Networking/Technology/VLAN.svg"
+  },
+  {
+    "file": "VPN-Firewall.svg",
+    "alt": "VPN Firewall",
+    "url": "https://icons.fortinet.com/icons/Secure Networking/Solutions & Deployments/VPN-Firewall.svg"
+  },
+  {
+    "file": "VXLAN-Firewall.svg",
+    "alt": "VXLAN Firewall",
+    "url": "https://icons.fortinet.com/icons/Secure Networking/Solutions & Deployments/VXLAN-Firewall.svg"
+  },
+  {
+    "file": "WAN.svg",
+    "alt": "WAN",
+    "url": "https://icons.fortinet.com/icons/Secure Networking/Technology/WAN.svg"
+  },
+  {
+    "file": "Web-Gateway-Generic.svg",
+    "alt": "Web Gateway, Generic",
+    "url": "https://icons.fortinet.com/icons/Secure Networking/Technology/Web-Gateway-Generic.svg"
+  },
+  {
+    "file": "Wireless.svg",
+    "alt": "Wireless",
+    "url": "https://icons.fortinet.com/icons/Secure Networking/Technology/Wireless.svg"
+  },
+  {
+    "file": "WOC.svg",
+    "alt": "WOC",
+    "url": "https://icons.fortinet.com/icons/Secure Networking/Technology/WOC.svg"
+  },
+  {
+    "file": "ZTNA Firewall.svg",
+    "alt": "ZTNA Firewall",
+    "url": "https://icons.fortinet.com/icons/November-2023/ZTNA Firewall.svg"
+  },
+  {
+    "file": "2FA.svg",
+    "alt": "2FA",
+    "url": "https://icons.fortinet.com/icons/New - Updated icons for 2024/July 2k24/2FA.svg"
+  },
+  {
+    "file": "API.svg",
+    "alt": "API",
+    "url": "https://icons.fortinet.com/icons/New - Updated icons for 2024/April 2k24/API.svg"
+  },
+  {
+    "file": "API Security.svg",
+    "alt": "API Security",
+    "url": "https://icons.fortinet.com/icons/New - Updated icons for 2024/April 2k24/API Security.svg"
+  },
+  {
+    "file": "Application Enhancement.svg",
+    "alt": "Application Enhancement",
+    "url": "https://icons.fortinet.com/icons/December 2023/Application Enhancement.svg"
+  },
+  {
+    "file": "Application Security.svg",
+    "alt": "Application Security, Generic",
+    "url": "https://icons.fortinet.com/icons/Application Security/Technology/Application Security.svg"
+  },
+  {
+    "file": "Application.svg",
+    "alt": "Application, Generic",
+    "url": "https://icons.fortinet.com/icons/Application Security/Solutions & Deployments/Application.svg"
+  },
+  {
+    "file": "Azure vWAN.svg",
+    "alt": "Azure vWAN",
+    "url": "https://icons.fortinet.com/icons/Application Security/Products/Azure vWAN.svg"
+  },
+  {
+    "file": "CA-Server.svg",
+    "alt": "CA Server",
+    "url": "https://icons.fortinet.com/icons/New - Updated icons for 2024/July 2k24/CA-Server.svg"
+  },
+  {
+    "file": "CASB Firewall.svg",
+    "alt": "CASB Firewall",
+    "url": "https://icons.fortinet.com/icons/Application Security/Solutions & Deployments/CASB Firewall.svg"
+  },
+  {
+    "file": "Cloud Application Security.svg",
+    "alt": "Cloud Application Security, Generic",
+    "url": "https://icons.fortinet.com/icons/Application Security/Technology/Cloud Application Security.svg"
+  },
+  {
+    "file": "Cloud Based Operational Service.svg",
+    "alt": "Cloud Based Operational Service, Generic",
+    "url": "https://icons.fortinet.com/icons/Application Security/Technology/Cloud Based Operational Service.svg"
+  },
+  {
+    "file": "cloud consulting.svg",
+    "alt": "Cloud Consulting",
+    "url": "https://icons.fortinet.com/icons/New - Updated icons for 2024/March 2k24/cloud consulting.svg"
+  },
+  {
+    "file": "Cloud CSPs.svg",
+    "alt": "Cloud CSPs",
+    "url": "https://icons.fortinet.com/icons/Services/Network Elements/Cloud CSPs.svg"
+  },
+  {
+    "file": "Cloud Fabric Ecosystem.svg",
+    "alt": "Cloud Fabric Ecosystem",
+    "url": "https://icons.fortinet.com/icons/New - Updated icons for 2024/January 2k24/Cloud Fabric Ecosystem.svg"
+  },
+  {
+    "file": "Cloud Network Security.svg",
+    "alt": "Cloud Network Security, Generic",
+    "url": "https://icons.fortinet.com/icons/Application Security/Technology/Cloud Network Security.svg"
+  },
+  {
+    "file": "Cloud on-ramp.svg",
+    "alt": "Cloud on-ramp",
+    "url": "https://icons.fortinet.com/icons/December 2023/Cloud on-ramp.svg"
+  },
+  {
+    "file": "Cloud Platform Security.svg",
+    "alt": "Cloud Platform Security, Generic",
+    "url": "https://icons.fortinet.com/icons/Application Security/Technology/Cloud Platform Security.svg"
+  },
+  {
+    "file": "Cloud Security.svg",
+    "alt": "Cloud Security, Generic",
+    "url": "https://icons.fortinet.com/icons/Application Security/Technology/Cloud Security.svg"
+  },
+  {
+    "file": "Cloud Workload.svg",
+    "alt": "Cloud Workload",
+    "url": "https://icons.fortinet.com/icons/Application Security/Technology/Cloud Workload.svg"
+  },
+  {
+    "file": "cloud-health-check.svg",
+    "alt": "cloud-health-check",
+    "url": "https://icons.fortinet.com/icons/New - Updated icons for 2024/April 2k24/cloud-health-check.svg"
+  },
+  {
+    "file": "cloud-security-posture-assessment.svg",
+    "alt": "cloud-security-posture-assessment",
+    "url": "https://icons.fortinet.com/icons/New - Updated icons for 2024/April 2k24/cloud-security-posture-assessment.svg"
+  },
+  {
+    "file": "Cloud 1.svg",
+    "alt": "Cloud, Generic",
+    "url": "https://icons.fortinet.com/icons/Application Security/Technology/Cloud.svg"
+  },
+  {
+    "file": "Communication Security.svg",
+    "alt": "Communication Security",
+    "url": "https://icons.fortinet.com/icons/Application Security/Technology/Communication Security.svg"
+  },
+  {
+    "file": "Compliance.svg",
+    "alt": "Compliance",
+    "url": "https://icons.fortinet.com/icons/Application Security/Technology/Compliance.svg"
+  },
+  {
+    "file": "Content Inspection.svg",
+    "alt": "Content Inspection",
+    "url": "https://icons.fortinet.com/icons/Application Security/Technology/Content Inspection.svg"
+  },
+  {
+    "file": "Critical Asset.svg",
+    "alt": "Critical Asset",
+    "url": "https://icons.fortinet.com/icons/Application Security/Technology/Critical Asset.svg"
+  },
+  {
+    "file": "CTAP.svg",
+    "alt": "CTAP",
+    "url": "https://icons.fortinet.com/icons/Application Security/Technology/CTAP.svg"
+  },
+  {
+    "file": "Data Leak Prevention.svg",
+    "alt": "Data Leak Prevention",
+    "url": "https://icons.fortinet.com/icons/Application Security/Technology/Data Leak Prevention.svg"
+  },
+  {
+    "file": "Dynamic Application Security Testing.svg",
+    "alt": "Dynamic Application Security Testing",
+    "url": "https://icons.fortinet.com/icons/Application Security/Solutions & Deployments/Dynamic Application Security Testing.svg"
+  },
+  {
+    "file": "FEC.svg",
+    "alt": "FEC",
+    "url": "https://icons.fortinet.com/icons/December 2023/FEC.svg"
+  },
+  {
+    "file": "FortiADC.svg",
+    "alt": "FortiADC",
+    "url": "https://icons.fortinet.com/icons/Application Security/Products/FortiADC.svg"
+  },
+  {
+    "file": "FortiADC WAF.svg",
+    "alt": "FortiADC WAF",
+    "url": "https://icons.fortinet.com/icons/Application Security/Products/FortiADC WAF.svg"
+  },
+  {
+    "file": "FortiBranchSASE.svg",
+    "alt": "FortiBranchSASE",
+    "url": "https://icons.fortinet.com/icons/New - Updated icons for 2024/April 2k24/FortiBranchSASE.svg"
+  },
+  {
+    "file": "FortiBranchSASE Ethernet.svg",
+    "alt": "FortiBranchSASE Ethernet",
+    "url": "https://icons.fortinet.com/icons/New - Updated icons for 2024/April 2k24/FortiBranchSASE Ethernet.svg"
+  },
+  {
+    "file": "FortiBranchSASE Wi-Fi.svg",
+    "alt": "FortiBranchSASE Wi-Fi",
+    "url": "https://icons.fortinet.com/icons/New - Updated icons for 2024/April 2k24/FortiBranchSASE Wi-Fi.svg"
+  },
+  {
+    "file": "FortiCache.svg",
+    "alt": "FortiCache",
+    "url": "https://icons.fortinet.com/icons/Application Security/Products/FortiCache.svg"
+  },
+  {
+    "file": "FortiCASB.svg",
+    "alt": "FortiCASB",
+    "url": "https://icons.fortinet.com/icons/Application Security/Products/FortiCASB.svg"
+  },
+  {
+    "file": "FortiCASB Cloud.svg",
+    "alt": "FortiCASB Cloud",
+    "url": "https://icons.fortinet.com/icons/Services/Cloud Service Products/FortiCASB Cloud.svg"
+  },
+  {
+    "file": "FortiClient-Cloud.svg",
+    "alt": "FortiClient Cloud",
+    "url": "https://icons.fortinet.com/icons/New - Updated icons for 2024/April 2k24/FortiClient-Cloud.svg"
+  },
+  {
+    "file": "FortiClient-Antivirus.svg",
+    "alt": "FortiClient-Antivirus",
+    "url": "https://icons.fortinet.com/icons/New - Updated icons for 2024/September/forticlient unified agent/color/FortiClient-Antivirus.svg"
+  },
+  {
+    "file": "FortiClient-Application Firewall.svg",
+    "alt": "FortiClient-Application Firewall",
+    "url": "https://icons.fortinet.com/icons/New - Updated icons for 2024/September/forticlient unified agent/color/FortiClient-Application Firewall.svg"
+  },
+  {
+    "file": "FortiClient-CASB.svg",
+    "alt": "FortiClient-CASB",
+    "url": "https://icons.fortinet.com/icons/New - Updated icons for 2024/September/forticlient unified agent/color/FortiClient-CASB.svg"
+  },
+  {
+    "file": "FortiClient-DEM.svg",
+    "alt": "FortiClient-DEM",
+    "url": "https://icons.fortinet.com/icons/New - Updated icons for 2024/September/forticlient unified agent/color/FortiClient-DEM.svg"
+  },
+  {
+    "file": "FortiClient-DLP.svg",
+    "alt": "FortiClient-DLP",
+    "url": "https://icons.fortinet.com/icons/New - Updated icons for 2024/September/forticlient unified agent/color/FortiClient-DLP.svg"
+  },
+  {
+    "file": "FortiClient-EDR.svg",
+    "alt": "FortiClient-EDR",
+    "url": "https://icons.fortinet.com/icons/New - Updated icons for 2024/September/forticlient unified agent/color/FortiClient-EDR.svg"
+  },
+  {
+    "file": "FortiClient-EDR Connector.svg",
+    "alt": "FortiClient-EDR Connector",
+    "url": "https://icons.fortinet.com/icons/New - Updated icons for 2024/September/forticlient unified agent/color/FortiClient-EDR Connector.svg"
+  },
+  {
+    "file": "FortiClient-EPP.svg",
+    "alt": "FortiClient-EPP",
+    "url": "https://icons.fortinet.com/icons/New - Updated icons for 2024/September/forticlient unified agent/color/FortiClient-EPP.svg"
+  },
+  {
+    "file": "FortiClient-NAC.svg",
+    "alt": "FortiClient-NAC",
+    "url": "https://icons.fortinet.com/icons/New - Updated icons for 2024/September/forticlient unified agent/color/FortiClient-NAC.svg"
+  },
+  {
+    "file": "FortiClient-PAM.svg",
+    "alt": "FortiClient-PAM",
+    "url": "https://icons.fortinet.com/icons/New - Updated icons for 2024/September/forticlient unified agent/color/FortiClient-PAM.svg"
+  },
+  {
+    "file": "FortiClient-Sandbox.svg",
+    "alt": "FortiClient-Sandbox",
+    "url": "https://icons.fortinet.com/icons/New - Updated icons for 2024/September/forticlient unified agent/color/FortiClient-Sandbox.svg"
+  },
+  {
+    "file": "FortiClient-SASE.svg",
+    "alt": "FortiClient-SASE",
+    "url": "https://icons.fortinet.com/icons/New - Updated icons for 2024/September/forticlient unified agent/color/FortiClient-SASE.svg"
+  },
+  {
+    "file": "FortiClient-SSO Mobility.svg",
+    "alt": "FortiClient-SSO Mobility",
+    "url": "https://icons.fortinet.com/icons/New - Updated icons for 2024/September/forticlient unified agent/color/FortiClient-SSO Mobility.svg"
+  },
+  {
+    "file": "FortiClient-VPN.svg",
+    "alt": "FortiClient-VPN",
+    "url": "https://icons.fortinet.com/icons/New - Updated icons for 2024/September/forticlient unified agent/color/FortiClient-VPN.svg"
+  },
+  {
+    "file": "FortiClient-Vulnerability Scan.svg",
+    "alt": "FortiClient-Vulnerability Scan",
+    "url": "https://icons.fortinet.com/icons/New - Updated icons for 2024/September/forticlient unified agent/color/FortiClient-Vulnerability Scan.svg"
+  },
+  {
+    "file": "FortiClient-Web Filtering.svg",
+    "alt": "FortiClient-Web Filtering",
+    "url": "https://icons.fortinet.com/icons/New - Updated icons for 2024/September/forticlient unified agent/color/FortiClient-Web Filtering.svg"
+  },
+  {
+    "file": "FortiClient-XDR.svg",
+    "alt": "FortiClient-XDR",
+    "url": "https://icons.fortinet.com/icons/New - Updated icons for 2024/September/forticlient unified agent/color/FortiClient-XDR.svg"
+  },
+  {
+    "file": "FortiClient-ZTNA.svg",
+    "alt": "FortiClient-ZTNA",
+    "url": "https://icons.fortinet.com/icons/New - Updated icons for 2024/September/forticlient unified agent/color/FortiClient-ZTNA.svg"
+  },
+  {
+    "file": "FortiCloud Asset Management.svg",
+    "alt": "FortiCloud Asset Management",
+    "url": "https://icons.fortinet.com/icons/Application Security/Technology/FortiCloud Asset Management.svg"
+  },
+  {
+    "file": "FortiConnect.svg",
+    "alt": "FortiConnect",
+    "url": "https://icons.fortinet.com/icons/New - Updated icons for 2024/July 2k24/FortiConnect.svg"
+  },
+  {
+    "file": "FortiDDoS.svg",
+    "alt": "FortiDDoS",
+    "url": "https://icons.fortinet.com/icons/Application Security/Products/FortiDDoS.svg"
+  },
+  {
+    "file": "FortiDevSec.svg",
+    "alt": "FortiDevSec",
+    "url": "https://icons.fortinet.com/icons/Application Security/Products/FortiDevSec.svg"
+  },
+  {
+    "file": "FortiEndpoint.svg",
+    "alt": "FortiEndpoint",
+    "url": "https://icons.fortinet.com/icons/New - Updated icons for 2024/April 2k24/FortiEndpoint.svg"
+  },
+  {
+    "file": "Flex VM.svg",
+    "alt": "FortiFlex (formerly Flex VM)",
+    "url": "https://icons.fortinet.com/icons/Application Security/Products/Flex VM.svg"
+  },
+  {
+    "file": "FortiGate Cloud Native Firewall.svg",
+    "alt": "FortiGate Cloud-Native Firewall",
+    "url": "https://icons.fortinet.com/icons/Application Security/Solutions & Deployments/FortiGate Cloud Native Firewall.svg"
+  },
+  {
+    "file": "FortiGate Cloud Native Firewall Console.svg",
+    "alt": "FortiGate Cloud-Native Firewall, Console",
+    "url": "https://icons.fortinet.com/icons/Application Security/Solutions & Deployments/FortiGate Cloud Native Firewall Console.svg"
+  },
+  {
+    "file": "FortiGate Cloud Native Firewall Service.svg",
+    "alt": "FortiGate Cloud-Native Firewall, Service",
+    "url": "https://icons.fortinet.com/icons/Application Security/Solutions & Deployments/FortiGate Cloud Native Firewall Service.svg"
+  },
+  {
+    "file": "FortiGate VM.svg",
+    "alt": "FortiGate VM",
+    "url": "https://icons.fortinet.com/icons/Application Security/Products/FortiGate VM.svg"
+  },
+  {
+    "file": "FortiGate VMX Service Manager.svg",
+    "alt": "FortiGate VMX Service Manager",
+    "url": "https://icons.fortinet.com/icons/Application Security/Products/FortiGate VMX Service Manager.svg"
+  },
+  {
+    "file": "FortiGSLB.svg",
+    "alt": "FortiGSLB",
+    "url": "https://icons.fortinet.com/icons/Application Security/Products/FortiGSLB.svg"
+  },
+  {
+    "file": "FortiGSLB Cloud.svg",
+    "alt": "FortiGSLB Cloud",
+    "url": "https://icons.fortinet.com/icons/Services/Cloud Service Products/FortiGSLB Cloud.svg"
+  },
+  {
+    "file": "FortiMail.svg",
+    "alt": "FortiMail",
+    "url": "https://icons.fortinet.com/icons/Application Security/Products/FortiMail.svg"
+  },
+  {
+    "file": "FortiMail Cloud.svg",
+    "alt": "FortiMail Cloud",
+    "url": "https://icons.fortinet.com/icons/Services/Cloud Service Products/FortiMail Cloud.svg"
+  },
+  {
+    "file": "FortiMonitor.svg",
+    "alt": "FortiMonitor",
+    "url": "https://icons.fortinet.com/icons/NOC/Products/FortiMonitor.svg"
+  },
+  {
+    "file": "Fortinet Managed Rules.svg",
+    "alt": "Fortinet Managed Rules",
+    "url": "https://icons.fortinet.com/icons/Application Security/Solutions & Deployments/Fortinet Managed Rules.svg"
+  },
+  {
+    "file": "FortiPAM Cloud.svg",
+    "alt": "FortiPAM Cloud",
+    "url": "https://icons.fortinet.com/icons/Services/Cloud Service Products/FortiPAM Cloud.svg"
+  },
+  {
+    "file": "FortiPen Test.svg",
+    "alt": "FortiPen Test",
+    "url": "https://icons.fortinet.com/icons/Application Security/Products/FortiPen Test.svg"
+  },
+  {
+    "file": "FortiPenTest Cloud.svg",
+    "alt": "FortiPenTest Cloud",
+    "url": "https://icons.fortinet.com/icons/Services/Cloud Service Products/FortiPenTest Cloud.svg"
+  },
+  {
+    "file": "FortiPhish.svg",
+    "alt": "FortiPhish",
+    "url": "https://icons.fortinet.com/icons/Application Security/Products/FortiPhish.svg"
+  },
+  {
+    "file": "FortiSASE.svg",
+    "alt": "FortiSASE",
+    "url": "https://icons.fortinet.com/icons/ZTNA/Products/FortiSASE.svg"
+  },
+  {
+    "file": "FortiSASE Cloud.svg",
+    "alt": "FortiSASE Cloud",
+    "url": "https://icons.fortinet.com/icons/Secure Networking/Products/FortiSASE Cloud.svg"
+  },
+  {
+    "file": "FortiSASE-Network.svg",
+    "alt": "FortiSASE Network",
+    "url": "https://icons.fortinet.com/icons/New - Updated icons for 2024/June 2k24/ICON UPDATE/FortiSASE-Network.svg"
+  },
+  {
+    "file": "FortiSASE-Thin-Edge.svg",
+    "alt": "FortiSASE Thin Edge",
+    "url": "https://icons.fortinet.com/icons/New - Updated icons for 2024/June 2k24/ICON UPDATE/FortiSASE-Thin-Edge.svg"
+  },
+  {
+    "file": "FortiSASE-SIA Cloud.svg",
+    "alt": "FortiSASE-SIA Cloud",
+    "url": "https://icons.fortinet.com/icons/Services/Cloud Service Products/FortiSASE-SIA Cloud.svg"
+  },
+  {
+    "file": "FortiTrust.svg",
+    "alt": "FortiTrust",
+    "url": "https://icons.fortinet.com/icons/New - Updated icons for 2024/July 2k24/FortiTrust.svg"
+  },
+  {
+    "file": "FortiWeb.svg",
+    "alt": "FortiWeb",
+    "url": "https://icons.fortinet.com/icons/Application Security/Products/FortiWeb.svg"
+  },
+  {
+    "file": "FortiWeb Cloud.svg",
+    "alt": "FortiWeb Cloud",
+    "url": "https://icons.fortinet.com/icons/Services/Cloud Service Products/FortiWeb Cloud.svg"
+  },
+  {
+    "file": "GenerativeAI.svg",
+    "alt": "GenerativeAI",
+    "url": "https://icons.fortinet.com/icons/December 2023/GenerativeAI.svg"
+  },
+  {
+    "file": "Identity-Access.svg",
+    "alt": "Identity Access",
+    "url": "https://icons.fortinet.com/icons/New - Updated icons for 2024/July 2k24/Identity-Access.svg"
+  },
+  {
+    "file": "IPsec-VPN.svg",
+    "alt": "IPsec VPN",
+    "url": "https://icons.fortinet.com/icons/New - Updated icons for 2024/July 2k24/IPsec-VPN.svg"
+  },
+  {
+    "file": "Keycard.svg",
+    "alt": "Keycard",
+    "url": "https://icons.fortinet.com/icons/New - Updated icons for 2024/July 2k24/Keycard.svg"
+  },
+  {
+    "file": "LDAP-AD-Server.svg",
+    "alt": "LDAP AD Server",
+    "url": "https://icons.fortinet.com/icons/New - Updated icons for 2024/July 2k24/LDAP-AD-Server.svg"
+  },
+  {
+    "file": "Managed IPS.svg",
+    "alt": "Managed IPS",
+    "url": "https://icons.fortinet.com/icons/Application Security/Solutions & Deployments/Managed IPS.svg"
+  },
+  {
+    "file": "On-Prem.svg",
+    "alt": "On-Prem",
+    "url": "https://icons.fortinet.com/icons/New - Updated icons for 2024/May 2k24/On-Prem.svg"
+  },
+  {
+    "file": "Overlay as a service.svg",
+    "alt": "Overlay as a service",
+    "url": "https://icons.fortinet.com/icons/December 2023/Overlay as a service.svg"
+  },
+  {
+    "file": "packet duplication.svg",
+    "alt": "packet duplication",
+    "url": "https://icons.fortinet.com/icons/December 2023/packet duplication.svg"
+  },
+  {
+    "file": "SD-WAN.svg",
+    "alt": "SD-WAN",
+    "url": "https://icons.fortinet.com/icons/Secure Networking/Technology/SD-WAN.svg"
+  },
+  {
+    "file": "SD-WAN Monitoring.svg",
+    "alt": "SD-WAN Monitoring",
+    "url": "https://icons.fortinet.com/icons/Services/Operational Services/SD-WAN Monitoring.svg"
+  },
+  {
+    "file": "SD-WAN Orchestrator.svg",
+    "alt": "SD-WAN Orchestrator",
+    "url": "https://icons.fortinet.com/icons/Services/Operational Services/SD-WAN Orchestrator.svg"
+  },
+  {
+    "file": "Secure Email.svg",
+    "alt": "Secure Email",
+    "url": "https://icons.fortinet.com/icons/Application Security/Technology/Secure Email.svg"
+  },
+  {
+    "file": "Secure local internet breakout.svg",
+    "alt": "Secure local internet breakout",
+    "url": "https://icons.fortinet.com/icons/December 2023/Secure local internet breakout.svg"
+  },
+  {
+    "file": "Secure-SD-WAN.svg",
+    "alt": "Secure SD-WAN",
+    "url": "https://icons.fortinet.com/icons/New - Updated icons for 2024/June 2k24/ICON UPDATE/Secure-SD-WAN.svg"
+  },
+  {
+    "file": "Secure-Web-Gateway.svg",
+    "alt": "Secure Web Gateway",
+    "url": "https://icons.fortinet.com/icons/Secure Networking/Solutions & Deployments/Secure-Web-Gateway.svg"
+  },
+  {
+    "file": "Serverless.svg",
+    "alt": "Serverless",
+    "url": "https://icons.fortinet.com/icons/Application Security/Technology/Serverless.svg"
+  },
+  {
+    "file": "Software Composition Analysis.svg",
+    "alt": "Software Composition Analysis",
+    "url": "https://icons.fortinet.com/icons/Application Security/Solutions & Deployments/Software Composition Analysis.svg"
+  },
+  {
+    "file": "SPA.svg",
+    "alt": "SPA",
+    "url": "https://icons.fortinet.com/icons/December 2023/SPA.svg"
+  },
+  {
+    "file": "SSL-Certificate.svg",
+    "alt": "SSL Certificate",
+    "url": "https://icons.fortinet.com/icons/New - Updated icons for 2024/July 2k24/SSL-Certificate.svg"
+  },
+  {
+    "file": "SSL-VPN.svg",
+    "alt": "SSL VPN",
+    "url": "https://icons.fortinet.com/icons/New - Updated icons for 2024/July 2k24/SSL-VPN.svg"
+  },
+  {
+    "file": "SSLVPN-Tunnel.svg",
+    "alt": "SSLVPN Tunnel",
+    "url": "https://icons.fortinet.com/icons/New - Updated icons for 2024/July 2k24/SSLVPN-Tunnel.svg"
+  },
+  {
+    "file": "Static Application Security Testing.svg",
+    "alt": "Static Application Security Testing",
+    "url": "https://icons.fortinet.com/icons/Application Security/Solutions & Deployments/Static Application Security Testing.svg"
+  },
+  {
+    "file": "Steering Policies.svg",
+    "alt": "Steering Policies",
+    "url": "https://icons.fortinet.com/icons/December 2023/Steering Policies.svg"
+  },
+  {
+    "file": "Underlay monitoring performance.svg",
+    "alt": "Underlay monitoring performance",
+    "url": "https://icons.fortinet.com/icons/December 2023/Underlay monitoring performance.svg"
+  },
+  {
+    "file": "Unified Application Protection.svg",
+    "alt": "Unified Application Protection",
+    "url": "https://icons.fortinet.com/icons/New - Updated icons for 2024/June 2k24/Unified Application Protection.svg"
+  },
+  {
+    "file": "VPN.svg",
+    "alt": "VPN",
+    "url": "https://icons.fortinet.com/icons/New - Updated icons for 2024/April 2k24/VPN.svg"
+  },
+  {
+    "file": "VPN-Tunnel.svg",
+    "alt": "VPN Tunnel",
+    "url": "https://icons.fortinet.com/icons/New - Updated icons for 2024/July 2k24/VPN-Tunnel.svg"
+  },
+  {
+    "file": "WAN remediation.svg",
+    "alt": "WAN remediation",
+    "url": "https://icons.fortinet.com/icons/December 2023/WAN remediation.svg"
+  },
+  {
+    "file": "Web Application Firewall.svg",
+    "alt": "Web Application Firewall",
+    "url": "https://icons.fortinet.com/icons/Application Security/Technology/Web Application Firewall.svg"
+  },
+  {
+    "file": "ZTNA.svg",
+    "alt": "Zero Trust Access",
+    "url": "https://icons.fortinet.com/icons/New - Updated icons for 2024/April 2k24/ZTNA.svg"
+  },
+  {
+    "file": "ZTP.svg",
+    "alt": "ZTP",
+    "url": "https://icons.fortinet.com/icons/December 2023/ZTP.svg"
+  },
+  {
+    "file": "CDR.svg",
+    "alt": "CDR",
+    "url": "https://icons.fortinet.com/icons/New - Updated icons for 2024/September/Lacework/CDR.svg"
+  },
+  {
+    "file": "CIEM.svg",
+    "alt": "CIEM",
+    "url": "https://icons.fortinet.com/icons/New - Updated icons for 2024/September/Lacework/CIEM.svg"
+  },
+  {
+    "file": "Client Security.svg",
+    "alt": "Client Security",
+    "url": "https://icons.fortinet.com/icons/SOC/Technology/Client Security.svg"
+  },
+  {
+    "file": "Cloud Threat Detection.svg",
+    "alt": "Cloud Threat Detection",
+    "url": "https://icons.fortinet.com/icons/New - Updated icons for 2024/October 2k24/Cloud Threat Detection.svg"
+  },
+  {
+    "file": "Cloud Vulnerability.svg",
+    "alt": "Cloud Vulnerability",
+    "url": "https://icons.fortinet.com/icons/New - Updated icons for 2024/October 2k24/Cloud Vulnerability.svg"
+  },
+  {
+    "file": "CSPM.svg",
+    "alt": "CSPM",
+    "url": "https://icons.fortinet.com/icons/New - Updated icons for 2024/September/Lacework/CSPM.svg"
+  },
+  {
+    "file": "CWPP.svg",
+    "alt": "CWPP",
+    "url": "https://icons.fortinet.com/icons/New - Updated icons for 2024/September/Lacework/CWPP.svg"
+  },
+  {
+    "file": "Detect.svg",
+    "alt": "Detect",
+    "url": "https://icons.fortinet.com/icons/SOC/Technology/Detect.svg"
+  },
+  {
+    "file": "DevSec-Code Security.svg",
+    "alt": "DevSec Code Security",
+    "url": "https://icons.fortinet.com/icons/New - Updated icons for 2024/September/Lacework/DevSec-Code Security.svg"
+  },
+  {
+    "file": "FortiAI.svg",
+    "alt": "FortiAI",
+    "url": "https://icons.fortinet.com/icons/New - Updated icons for 2024/January 2k24/FortiAI.svg"
+  },
+  {
+    "file": "FortiAnalyzer.svg",
+    "alt": "FortiAnalyzer",
+    "url": "https://icons.fortinet.com/icons/SOC/Products/FortiAnalyzer.svg"
+  },
+  {
+    "file": "FAZ Big Data.svg",
+    "alt": "FortiAnalyzer Big Data",
+    "url": "https://icons.fortinet.com/icons/New - Updated icons for 2024/July 2k24/FAZ icons/FAZ Big Data.svg"
+  },
+  {
+    "file": "FortiAnalyzer Cloud.svg",
+    "alt": "FortiAnalyzer Cloud",
+    "url": "https://icons.fortinet.com/icons/NOC/Cloud-Management/FortiAnalyzer Cloud.svg"
+  },
+  {
+    "file": "FAZ Collector.svg",
+    "alt": "FortiAnalyzer Collector",
+    "url": "https://icons.fortinet.com/icons/New - Updated icons for 2024/July 2k24/FAZ icons/FAZ Collector.svg"
+  },
+  {
+    "file": "FAZ Member.svg",
+    "alt": "FortiAnalyzer Member",
+    "url": "https://icons.fortinet.com/icons/New - Updated icons for 2024/July 2k24/FAZ icons/FAZ Member.svg"
+  },
+  {
+    "file": "FAZ Supervisor.svg",
+    "alt": "FortiAnalyzer Supervisor",
+    "url": "https://icons.fortinet.com/icons/New - Updated icons for 2024/July 2k24/FAZ icons/FAZ Supervisor.svg"
+  },
+  {
+    "file": "FortiAuthenticator.svg",
+    "alt": "FortiAuthenticator",
+    "url": "https://icons.fortinet.com/icons/New - Updated icons for 2024/August 2k24/FortiAuthenticator.svg"
+  },
+  {
+    "file": "FortiAuthenticator Cloud.svg",
+    "alt": "FortiAuthenticator Cloud",
+    "url": "https://icons.fortinet.com/icons/ZTNA/Products/FortiAuthenticator Cloud.svg"
+  },
+  {
+    "file": "FortiClient.svg",
+    "alt": "FortiClient",
+    "url": "https://icons.fortinet.com/icons/ZTNA/Products/FortiClient.svg"
+  },
+  {
+    "file": "FortiClient-EMS.svg",
+    "alt": "FortiClient EMS",
+    "url": "https://icons.fortinet.com/icons/New - Updated icons for 2024/April 2k24/FortiClient-EMS.svg"
+  },
+  {
+    "file": "FortiCNAPP.svg",
+    "alt": "FortiCNAPP",
+    "url": "https://icons.fortinet.com/icons/New - Updated icons for 2024/July 2k24/FortiCNAPP.svg"
+  },
+  {
+    "file": "FortiCNP.svg",
+    "alt": "FortiCNP",
+    "url": "https://icons.fortinet.com/icons/New - Updated icons for 2024/September/FortiCNP.svg"
+  },
+  {
+    "file": "FortiCNP-Container-Guardian.svg",
+    "alt": "FortiCNP Container Guardian",
+    "url": "https://icons.fortinet.com/icons/New - Updated icons for 2024/June 2k24/ICON UPDATE/FortiCNP-Container-Guardian.svg"
+  },
+  {
+    "file": "FortiCSP.svg",
+    "alt": "FortiCSP",
+    "url": "https://icons.fortinet.com/icons/New - Updated icons for 2024/July 2k24/FortiCSP.svg"
+  },
+  {
+    "file": "FortiCSP Agent.svg",
+    "alt": "FortiCSP Agent",
+    "url": "https://icons.fortinet.com/icons/New - Updated icons for 2024/October 2k24/FortiCSP Agent.svg"
+  },
+  {
+    "file": "FortiCSP Manager.svg",
+    "alt": "FortiCSP Manager",
+    "url": "https://icons.fortinet.com/icons/New - Updated icons for 2024/July 2k24/FortiCSP Manager.svg"
+  },
+  {
+    "file": "FortiCWP Cloud.svg",
+    "alt": "FortiCWP Cloud",
+    "url": "https://icons.fortinet.com/icons/Services/Cloud Service Products/FortiCWP Cloud.svg"
+  },
+  {
+    "file": "FortiDeceptor.svg",
+    "alt": "FortiDeceptor",
+    "url": "https://icons.fortinet.com/icons/SOC/Products/FortiDeceptor.svg"
+  },
+  {
+    "file": "FortiDevSec Cloud.svg",
+    "alt": "FortiDevSec Cloud",
+    "url": "https://icons.fortinet.com/icons/Services/Cloud Service Products/FortiDevSec Cloud.svg"
+  },
+  {
+    "file": "FortiDLP.svg",
+    "alt": "FortiDLP",
+    "url": "https://icons.fortinet.com/icons/New - Updated icons for 2024/October 2k24/FortiDLP.svg"
+  },
+  {
+    "file": "FortiDLP-cloud.svg",
+    "alt": "FortiDLP Cloud",
+    "url": "https://icons.fortinet.com/icons/New - Updated icons for 2024/October 2k24/FortiDLP-cloud.svg"
+  },
+  {
+    "file": "FortiEDR.svg",
+    "alt": "FortiEDR",
+    "url": "https://icons.fortinet.com/icons/SOC/Products/FortiEDR.svg"
+  },
+  {
+    "file": "FortiGuard IR Service.svg",
+    "alt": "FortiGuard IR Service",
+    "url": "https://icons.fortinet.com/icons/SOC/Products/FortiGuard IR Service.svg"
+  },
+  {
+    "file": "FortiGuard MDR Service.svg",
+    "alt": "FortiGuard MDR Service",
+    "url": "https://icons.fortinet.com/icons/SOC/Products/FortiGuard MDR Service.svg"
+  },
+  {
+    "file": "FortiGuest.svg",
+    "alt": "FortiGuest",
+    "url": "https://icons.fortinet.com/icons/New - Updated icons for 2024/June 2k24/ICON UPDATE/FortiGuest.svg"
+  },
+  {
+    "file": "FortiInsight.svg",
+    "alt": "FortiInsight",
+    "url": "https://icons.fortinet.com/icons/SOC/Products/FortiInsight.svg"
+  },
+  {
+    "file": "FortiInsight Cloud.svg",
+    "alt": "FortiInsight Cloud",
+    "url": "https://icons.fortinet.com/icons/Services/Cloud Service Products/FortiInsight Cloud.svg"
+  },
+  {
+    "file": "FortiNDR.svg",
+    "alt": "FortiNDR",
+    "url": "https://icons.fortinet.com/icons/SOC/Products/FortiNDR.svg"
+  },
+  {
+    "file": "FortiNDR-Cloud.svg",
+    "alt": "FortiNDR-Cloud",
+    "url": "https://icons.fortinet.com/icons/New - Updated icons for 2024/May 2k24/FortiNDR-Cloud.svg"
+  },
+  {
+    "file": "Fortinet SOCaaS Cloud.svg",
+    "alt": "Fortinet SOCaaS Cloud",
+    "url": "https://icons.fortinet.com/icons/Services/Cloud Service Products/Fortinet SOCaaS Cloud.svg"
+  },
+  {
+    "file": "FortiPAM.svg",
+    "alt": "FortiPAM",
+    "url": "https://icons.fortinet.com/icons/ZTNA/Products/FortiPAM.svg"
+  },
+  {
+    "file": "FortiRecon.svg",
+    "alt": "FortiRecon",
+    "url": "https://icons.fortinet.com/icons/New - Updated icons for 2024/April 2k24/FortiRecon.svg"
+  },
+  {
+    "file": "FortiResponder Service.svg",
+    "alt": "FortiResponder Service",
+    "url": "https://icons.fortinet.com/icons/SOC/Technology/FortiResponder Service.svg"
+  },
+  {
+    "file": "FortiSandbox.svg",
+    "alt": "FortiSandbox",
+    "url": "https://icons.fortinet.com/icons/SOC/Products/FortiSandbox.svg"
+  },
+  {
+    "file": "FortiSandbox Cloud.svg",
+    "alt": "FortiSandbox Cloud",
+    "url": "https://icons.fortinet.com/icons/Services/Cloud Service Products/FortiSandbox Cloud.svg"
+  },
+  {
+    "file": "FortiScanner.svg",
+    "alt": "FortiScanner",
+    "url": "https://icons.fortinet.com/icons/New - Updated icons for 2024/August 2k24/FortiScanner and cloud/FortiScanner.svg"
+  },
+  {
+    "file": "fortiscanner-cloud-icon.svg",
+    "alt": "FortiScanner-Cloud",
+    "url": "https://icons.fortinet.com/icons/New - Updated icons for 2024/September/fortiscanner-cloud-icon.svg"
+  },
+  {
+    "file": "FortiSIEM.svg",
+    "alt": "FortiSIEM",
+    "url": "https://icons.fortinet.com/icons/SOC/Products/FortiSIEM.svg"
+  },
+  {
+    "file": "FortiSIEM-Cloud.svg",
+    "alt": "FortiSIEM Cloud",
+    "url": "https://icons.fortinet.com/icons/New - Updated icons for 2024/May 2k24/FortiSIEM-Cloud.svg"
+  },
+  {
+    "file": "FortiSOAR.svg",
+    "alt": "FortiSOAR",
+    "url": "https://icons.fortinet.com/icons/SOC/Products/FortiSOAR.svg"
+  },
+  {
+    "file": "FortiTester.svg",
+    "alt": "FortiTester",
+    "url": "https://icons.fortinet.com/icons/SOC/Products/FortiTester.svg"
+  },
+  {
+    "file": "FortiToken.svg",
+    "alt": "FortiToken",
+    "url": "https://icons.fortinet.com/icons/ZTNA/Products/FortiToken.svg"
+  },
+  {
+    "file": "FortiToken-Cloud.svg",
+    "alt": "FortiToken Cloud",
+    "url": "https://icons.fortinet.com/icons/New - Updated icons for 2024/June 2k24/ICON UPDATE/FortiToken-Cloud.svg"
+  },
+  {
+    "file": "FortiTrust Identity.svg",
+    "alt": "FortiTrust Identity",
+    "url": "https://icons.fortinet.com/icons/ZTNA/Products/FortiTrust Identity.svg"
+  },
+  {
+    "file": "FortiXDR.svg",
+    "alt": "FortiXDR",
+    "url": "https://icons.fortinet.com/icons/SOC/Products/FortiXDR.svg"
+  },
+  {
+    "file": "Incident Response Service.svg",
+    "alt": "Incident Response Service",
+    "url": "https://icons.fortinet.com/icons/SOC/Technology/Incident Response Service.svg"
+  },
+  {
+    "file": "Investigate.svg",
+    "alt": "Investigate",
+    "url": "https://icons.fortinet.com/icons/SOC/Technology/Investigate.svg"
+  },
+  {
+    "file": "IPS firewall.svg",
+    "alt": "IPS Firewall",
+    "url": "https://icons.fortinet.com/icons/New - Updated icons for 2024/September/IPS firewall.svg"
+  },
+  {
+    "file": "Kubernetes.svg",
+    "alt": "Kubernetes",
+    "url": "https://icons.fortinet.com/icons/New - Updated icons for 2024/September/Lacework/Kubernetes.svg"
+  },
+  {
+    "file": "Managed Detection and Response.svg",
+    "alt": "Managed Detection and Response",
+    "url": "https://icons.fortinet.com/icons/SOC/Technology/Managed Detection and Response.svg"
+  },
+  {
+    "file": "Management Tuning.svg",
+    "alt": "Management Tuning",
+    "url": "https://icons.fortinet.com/icons/SOC/Technology/Management Tuning.svg"
+  },
+  {
+    "file": "Monitoring.svg",
+    "alt": "Monitoring",
+    "url": "https://icons.fortinet.com/icons/SOC/Technology/Monitoring.svg"
+  },
+  {
+    "file": "NDR.svg",
+    "alt": "NDR",
+    "url": "https://icons.fortinet.com/icons/SOC/Technology/NDR.svg"
+  },
+  {
+    "file": "NOC-SOC 1.svg",
+    "alt": "NOC-SOC 1",
+    "url": "https://icons.fortinet.com/icons/Services/Technology/NOC-SOC 1.svg"
+  },
+  {
+    "file": "NOC-SOC 2.svg",
+    "alt": "NOC-SOC 2",
+    "url": "https://icons.fortinet.com/icons/Services/Technology/NOC-SOC 2.svg"
+  },
+  {
+    "file": "NOC-SOC 3.svg",
+    "alt": "NOC-SOC 3",
+    "url": "https://icons.fortinet.com/icons/Services/Technology/NOC-SOC 3.svg"
+  },
+  {
+    "file": "Print Spooler.svg",
+    "alt": "Print Spooler",
+    "url": "https://icons.fortinet.com/icons/SOC/Technology/Print Spooler.svg"
+  },
+  {
+    "file": "Respond.svg",
+    "alt": "Respond",
+    "url": "https://icons.fortinet.com/icons/SOC/Technology/Respond.svg"
+  },
+  {
+    "file": "Security Monitoring.svg",
+    "alt": "Security Monitoring",
+    "url": "https://icons.fortinet.com/icons/SOC/Technology/Security Monitoring.svg"
+  },
+  {
+    "file": "SOCaaS.svg",
+    "alt": "SOCaaS",
+    "url": "https://icons.fortinet.com/icons/FortiGuard Labs/Core Elements/SOCaaS.svg"
+  },
+  {
+    "file": "Threat Detection and Response.svg",
+    "alt": "Threat Detection and Response",
+    "url": "https://icons.fortinet.com/icons/SOC/Technology/Threat Detection and Response.svg"
+  },
+  {
+    "file": "threat intelligence.svg",
+    "alt": "Threat Intelligence",
+    "url": "https://icons.fortinet.com/icons/New - Updated icons for 2024/March 2k24/threat intelligence.svg"
+  },
+  {
+    "file": "Virtual Security Analyst.svg",
+    "alt": "Virtual Security Analyst",
+    "url": "https://icons.fortinet.com/icons/SOC/Technology/Virtual Security Analyst.svg"
+  },
+  {
+    "file": "Vulnerability Assessment.svg",
+    "alt": "Vulnerability Assessment",
+    "url": "https://icons.fortinet.com/icons/SOC/Technology/Vulnerability Assessment.svg"
+  },
+  {
+    "file": "Vulnerability Management.svg",
+    "alt": "Vulnerability Management",
+    "url": "https://icons.fortinet.com/icons/New - Updated icons for 2024/September/Lacework/Vulnerability Management.svg"
+  },
+  {
+    "file": "Vulnerability Scan.svg",
+    "alt": "Vulnerability Scan",
+    "url": "https://icons.fortinet.com/icons/SOC/Technology/Vulnerability Scan.svg"
+  },
+  {
+    "file": "XDR.svg",
+    "alt": "XDR",
+    "url": "https://icons.fortinet.com/icons/SOC/Technology/XDR.svg"
+  },
+  {
+    "file": "AI Network Engines.svg",
+    "alt": "AI Network Engines",
+    "url": "https://icons.fortinet.com/icons/NOC/Services/AI Network Engines.svg"
+  },
+  {
+    "file": "AI Security Engines.svg",
+    "alt": "AI Security Engines",
+    "url": "https://icons.fortinet.com/icons/NOC/Services/AI Security Engines.svg"
+  },
+  {
+    "file": "AI-Enabled Analytics.svg",
+    "alt": "AI-Enabled Analytics",
+    "url": "https://icons.fortinet.com/icons/NOC/Services/AI-Enabled Analytics.svg"
+  },
+  {
+    "file": "Fabric Automation.svg",
+    "alt": "Fabric Automation",
+    "url": "https://icons.fortinet.com/icons/NOC/Services/Fabric Automation.svg"
+  },
+  {
+    "file": "FAZ Cloud.svg",
+    "alt": "FAZ Cloud",
+    "url": "https://icons.fortinet.com/icons/NOC/Products/FAZ Cloud.svg"
+  },
+  {
+    "file": "FMG Cloud.svg",
+    "alt": "FMG Cloud",
+    "url": "https://icons.fortinet.com/icons/NOC/Products/FMG Cloud.svg"
+  },
+  {
+    "file": "FNDN.svg",
+    "alt": "FNDN",
+    "url": "https://icons.fortinet.com/icons/NOC/Products/FNDN.svg"
+  },
+  {
+    "file": "FortiCloud.svg",
+    "alt": "FortiCloud",
+    "url": "https://icons.fortinet.com/icons/NOC/Cloud-Management/FortiCloud.svg"
+  },
+  {
+    "file": "FortiCloud Premium.svg",
+    "alt": "FortiCloud Premium",
+    "url": "https://icons.fortinet.com/icons/NOC/Cloud-Management/FortiCloud Premium.svg"
+  },
+  {
+    "file": "FortiDeploy.svg",
+    "alt": "FortiDeploy",
+    "url": "https://icons.fortinet.com/icons/NOC/Products/FortiDeploy.svg"
+  },
+  {
+    "file": "FortiManager Cloud.svg",
+    "alt": "FortiManager Cloud",
+    "url": "https://icons.fortinet.com/icons/NOC/Cloud-Management/FortiManager Cloud.svg"
+  },
+  {
+    "file": "FortiMonitor Cloud.svg",
+    "alt": "FortiMonitor Cloud",
+    "url": "https://icons.fortinet.com/icons/NOC/Cloud-Management/FortiMonitor Cloud.svg"
+  },
+  {
+    "file": "FortiPortal.svg",
+    "alt": "FortiPortal",
+    "url": "https://icons.fortinet.com/icons/NOC/Products/FortiPortal.svg"
+  },
+  {
+    "file": "FortiSOAR Cloud.svg",
+    "alt": "FortiSOAR Cloud",
+    "url": "https://icons.fortinet.com/icons/NOC/Cloud-Management/FortiSOAR Cloud.svg"
+  },
+  {
+    "file": "IAM.svg",
+    "alt": "IAM",
+    "url": "https://icons.fortinet.com/icons/NOC/Cloud-Management/IAM.svg"
+  },
+  {
+    "file": "Multi-Cloud Policy.svg",
+    "alt": "Multi-Cloud Policy",
+    "url": "https://icons.fortinet.com/icons/NOC/Services/Multi-Cloud Policy.svg"
+  },
+  {
+    "file": "Orchestration.svg",
+    "alt": "Orchestration",
+    "url": "https://icons.fortinet.com/icons/NOC/Services/Orchestration.svg"
+  },
+  {
+    "file": "SD-WAN Orchestrator Service.svg",
+    "alt": "SD-WAN Orchestrator Service",
+    "url": "https://icons.fortinet.com/icons/NOC/Products/SD-WAN Orchestrator Service.svg"
+  },
+  {
+    "file": "Single Pane.svg",
+    "alt": "Single Pane",
+    "url": "https://icons.fortinet.com/icons/NOC/Services/Single Pane.svg"
+  },
+  {
+    "file": "3cx Supply Chain.svg",
+    "alt": "3cx Supply Chain",
+    "url": "https://icons.fortinet.com/icons/FortiGuard Labs/Outbreak Alerts/3cx Supply Chain.svg"
+  },
+  {
+    "file": "Active Exploitation Camera System.svg",
+    "alt": "Active Exploitation Camera System",
+    "url": "https://icons.fortinet.com/icons/FortiGuard Labs/Outbreak Alerts/Active Exploitation Camera System.svg"
+  },
+  {
+    "file": "Adobe ColdFusion Access.svg",
+    "alt": "Adobe ColdFusion Access",
+    "url": "https://icons.fortinet.com/icons/New - Updated icons for 2024/January 2k24/Adobe ColdFusion Access.svg"
+  },
+  {
+    "file": "Adobe ColdFusion Deserialization.svg",
+    "alt": "Adobe ColdFusion Deserialization",
+    "url": "https://icons.fortinet.com/icons/November-2023/Adobe ColdFusion Deserialization.svg"
+  },
+  {
+    "file": "Adult Content.svg",
+    "alt": "Adult Content",
+    "url": "https://icons.fortinet.com/icons/Services/Threats/Adult Content.svg"
+  },
+  {
+    "file": "Advanced Threat.svg",
+    "alt": "Advanced Threat",
+    "url": "https://icons.fortinet.com/icons/FortiGuard Labs/Services/Advanced Threat.svg"
+  },
+  {
+    "file": "Advanced Threat Protection.svg",
+    "alt": "Advanced Threat Protection",
+    "url": "https://icons.fortinet.com/icons/FortiGuard Labs/Core Elements/Advanced Threat Protection.svg"
+  },
+  {
+    "file": "Akira Ransomware.svg",
+    "alt": "Akira Ransomware",
+    "url": "https://icons.fortinet.com/icons/FortiGuard Labs/Outbreak Alerts/Akira Ransomware.svg"
+  },
+  {
+    "file": "AMP.svg",
+    "alt": "AMP",
+    "url": "https://icons.fortinet.com/icons/New - Updated icons for 2024/April 2k24/AMP.svg"
+  },
+  {
+    "file": "Analyzing Emotet Activity.svg",
+    "alt": "Analyzing Emotet Activity",
+    "url": "https://icons.fortinet.com/icons/FortiGuard Labs/Outbreak Alerts/Analyzing Emotet Activity.svg"
+  },
+  {
+    "file": "Androxgh0st.svg",
+    "alt": "Androxgh0st",
+    "url": "https://icons.fortinet.com/icons/New - Updated icons for 2024/January 2k24/Androxgh0st.svg"
+  },
+  {
+    "file": "Anonymous Hacker Group.svg",
+    "alt": "Anonymous Hacker Group",
+    "url": "https://icons.fortinet.com/icons/Services/Threats/Anonymous Hacker Group.svg"
+  },
+  {
+    "file": "Anti-Flood Attack Protection.svg",
+    "alt": "Anti-Flood Attack Protection",
+    "url": "https://icons.fortinet.com/icons/FortiGuard Labs/Services/Anti-Flood Attack Protection.svg"
+  },
+  {
+    "file": "Antispam.svg",
+    "alt": "Antispam",
+    "url": "https://icons.fortinet.com/icons/FortiGuard Labs/Core Elements/Antispam.svg"
+  },
+  {
+    "file": "Apache RocketMQ.svg",
+    "alt": "Apache RocketMQ",
+    "url": "https://icons.fortinet.com/icons/FortiGuard Labs/Outbreak Alerts/Apache RocketMQ.svg"
+  },
+  {
+    "file": "Application Control.svg",
+    "alt": "Application Control",
+    "url": "https://icons.fortinet.com/icons/FortiGuard Labs/Services/Application Control.svg"
+  },
+  {
+    "file": "Application Shield.svg",
+    "alt": "Application Shield",
+    "url": "https://icons.fortinet.com/icons/FortiGuard Labs/Core Elements/Application Shield.svg"
+  },
+  {
+    "file": "Application-Gear.svg",
+    "alt": "Application-Gear",
+    "url": "https://icons.fortinet.com/icons/FortiGuard Labs/Services/Application-Gear.svg"
+  },
+  {
+    "file": "Artificial Intelligence.svg",
+    "alt": "Artificial Intelligence",
+    "url": "https://icons.fortinet.com/icons/Services/Threats/Artificial Intelligence.svg"
+  },
+  {
+    "file": "Artificial Neural Network-Deep Learning.svg",
+    "alt": "Artificial Neural Network-Deep Learning",
+    "url": "https://icons.fortinet.com/icons/FortiGuard Labs/Services/Artificial Neural Network-Deep Learning.svg"
+  },
+  {
+    "file": "Asset Discovery.svg",
+    "alt": "Asset Discovery",
+    "url": "https://icons.fortinet.com/icons/New - Updated icons for 2024/July 2k24/Asset Discovery.svg"
+  },
+  {
+    "file": "Attack Surface Security Service.svg",
+    "alt": "Attack Surface Security Service",
+    "url": "https://icons.fortinet.com/icons/FortiGuard Labs/Core Elements/Attack Surface Security Service.svg"
+  },
+  {
+    "file": "Authentication Bypass.svg",
+    "alt": "Authentication Bypass",
+    "url": "https://icons.fortinet.com/icons/FortiGuard Labs/Outbreak Alerts/Authentication Bypass.svg"
+  },
+  {
+    "file": "AV.svg",
+    "alt": "AV",
+    "url": "https://icons.fortinet.com/icons/FortiGuard Labs/Core Elements/AV.svg"
+  },
+  {
+    "file": "AvosLocker.svg",
+    "alt": "AvosLocker",
+    "url": "https://icons.fortinet.com/icons/FortiGuard Labs/Outbreak Alerts/AvosLocker.svg"
+  },
+  {
+    "file": "Bitcoin Mining.svg",
+    "alt": "Bitcoin Mining",
+    "url": "https://icons.fortinet.com/icons/Services/Threats/Bitcoin Mining.svg"
+  },
+  {
+    "file": "Black Basta.svg",
+    "alt": "Black Basta",
+    "url": "https://icons.fortinet.com/icons/FortiGuard Labs/Outbreak Alerts/Black Basta.svg"
+  },
+  {
+    "file": "Blackbyte Ransomware.svg",
+    "alt": "Blackbyte Ransomware",
+    "url": "https://icons.fortinet.com/icons/FortiGuard Labs/Outbreak Alerts/Blackbyte Ransomware.svg"
+  },
+  {
+    "file": "BlackCat.svg",
+    "alt": "BlackCat",
+    "url": "https://icons.fortinet.com/icons/FortiGuard Labs/Outbreak Alerts/BlackCat.svg"
+  },
+  {
+    "file": "Bot-blue.svg",
+    "alt": "Botnet",
+    "url": "https://icons.fortinet.com/icons/New - Updated icons for 2024/April 2k24/Bot-blue.svg"
+  },
+  {
+    "file": "Broken Troubleshooting.svg",
+    "alt": "Broken Troubleshooting",
+    "url": "https://icons.fortinet.com/icons/FortiGuard Labs/Outbreak Alerts/Broken Troubleshooting.svg"
+  },
+  {
+    "file": "C2.svg",
+    "alt": "C2",
+    "url": "https://icons.fortinet.com/icons/FortiGuard Labs/Core Elements/C2.svg"
+  },
+  {
+    "file": "CASB.svg",
+    "alt": "CASB",
+    "url": "https://icons.fortinet.com/icons/FortiGuard Labs/Core Elements/CASB.svg"
+  },
+  {
+    "file": "Click Protect.svg",
+    "alt": "Click Protect",
+    "url": "https://icons.fortinet.com/icons/FortiGuard Labs/Services/Click Protect.svg"
+  },
+  {
+    "file": "Content Disarm and Reconstruction.svg",
+    "alt": "Content Disarm and Reconstruction",
+    "url": "https://icons.fortinet.com/icons/FortiGuard Labs/Services/Content Disarm and Reconstruction.svg"
+  },
+  {
+    "file": "CONTI Ransomware.svg",
+    "alt": "CONTI Ransomware",
+    "url": "https://icons.fortinet.com/icons/FortiGuard Labs/Outbreak Alerts/CONTI Ransomware.svg"
+  },
+  {
+    "file": "Cosmic Energy.svg",
+    "alt": "Cosmic Energy",
+    "url": "https://icons.fortinet.com/icons/FortiGuard Labs/Outbreak Alerts/Cosmic Energy.svg"
+  },
+  {
+    "file": "Credential Stuffing Service.svg",
+    "alt": "Credential Stuffing Service",
+    "url": "https://icons.fortinet.com/icons/FortiGuard Labs/Services/Credential Stuffing Service.svg"
+  },
+  {
+    "file": "Credential Stuffing Shield.svg",
+    "alt": "Credential Stuffing Shield",
+    "url": "https://icons.fortinet.com/icons/FortiGuard Labs/Core Elements/Credential Stuffing Shield.svg"
+  },
+  {
+    "file": "Cuba.svg",
+    "alt": "Cuba",
+    "url": "https://icons.fortinet.com/icons/FortiGuard Labs/Outbreak Alerts/Cuba.svg"
+  },
+  {
+    "file": "Darkside.svg",
+    "alt": "Darkside",
+    "url": "https://icons.fortinet.com/icons/FortiGuard Labs/Outbreak Alerts/Darkside.svg"
+  },
+  {
+    "file": "DDoS.svg",
+    "alt": "DDoS",
+    "url": "https://icons.fortinet.com/icons/November-2023/DDoS.svg"
+  },
+  {
+    "file": "DearCry.svg",
+    "alt": "DearCry",
+    "url": "https://icons.fortinet.com/icons/FortiGuard Labs/Outbreak Alerts/DearCry.svg"
+  },
+  {
+    "file": "DLP.svg",
+    "alt": "DLP",
+    "url": "https://icons.fortinet.com/icons/FortiGuard Labs/Core Elements/DLP.svg"
+  },
+  {
+    "file": "DNS.svg",
+    "alt": "DNS",
+    "url": "https://icons.fortinet.com/icons/FortiGuard Labs/Core Elements/DNS.svg"
+  },
+  {
+    "file": "Domain Reputation Service for FortiDDoS.svg",
+    "alt": "Domain Reputation Service for FortiDDoS",
+    "url": "https://icons.fortinet.com/icons/FortiGuard Labs/Services/Domain Reputation Service for FortiDDoS.svg"
+  },
+  {
+    "file": "Doman Reputation Shield.svg",
+    "alt": "Doman Reputation Shield",
+    "url": "https://icons.fortinet.com/icons/FortiGuard Labs/Core Elements/Doman Reputation Shield.svg"
+  },
+  {
+    "file": "Enterprise Protection.svg",
+    "alt": "Enterprise Protection",
+    "url": "https://icons.fortinet.com/icons/FortiGuard Labs/Core Elements/Enterprise Protection.svg"
+  },
+  {
+    "file": "Expert Systems.svg",
+    "alt": "Expert Systems",
+    "url": "https://icons.fortinet.com/icons/FortiGuard Labs/Services/Expert Systems.svg"
+  },
+  {
+    "file": "F5.svg",
+    "alt": "F5",
+    "url": "https://icons.fortinet.com/icons/FortiGuard Labs/Outbreak Alerts/F5.svg"
+  },
+  {
+    "file": "Flood Attack.svg",
+    "alt": "Flood Attack",
+    "url": "https://icons.fortinet.com/icons/FortiGuard Labs/Services/Flood Attack.svg"
+  },
+  {
+    "file": "Follina.svg",
+    "alt": "Follina",
+    "url": "https://icons.fortinet.com/icons/FortiGuard Labs/Outbreak Alerts/Follina.svg"
+  },
+  {
+    "file": "FortiCare.svg",
+    "alt": "FortiCare",
+    "url": "https://icons.fortinet.com/icons/FortiGuard Labs/Core Elements/FortiCare.svg"
+  },
+  {
+    "file": "FortiGate AI-powered Security Bundles.svg",
+    "alt": "FortiGate AI-powered Security Bundles",
+    "url": "https://icons.fortinet.com/icons/FortiGuard Labs/Services/FortiGate AI-powered Security Bundles.svg"
+  },
+  {
+    "file": "FortiGuard Labs.svg",
+    "alt": "FortiGuard Labs",
+    "url": "https://icons.fortinet.com/icons/FortiGuard Labs/Services/FortiGuard Labs.svg"
+  },
+  {
+    "file": "FortiGuard Service Bundle.svg",
+    "alt": "FortiGuard Service Bundle",
+    "url": "https://icons.fortinet.com/icons/FortiGuard Labs/Core Elements/FortiGuard Service Bundle.svg"
+  },
+  {
+    "file": "FortiShield Bot Mitigation.svg",
+    "alt": "FortiShield Bot Mitigation",
+    "url": "https://icons.fortinet.com/icons/Services/Cloud Service Products/FortiShield Bot Mitigation.svg"
+  },
+  {
+    "file": "Generic Known Threat.svg",
+    "alt": "Generic Known Threat",
+    "url": "https://icons.fortinet.com/icons/Services/Threats/Generic Known Threat.svg"
+  },
+  {
+    "file": "Generic Unknown Threat.svg",
+    "alt": "Generic Unknown Threat",
+    "url": "https://icons.fortinet.com/icons/Services/Threats/Generic Unknown Threat.svg"
+  },
+  {
+    "file": "Gootloader.svg",
+    "alt": "Gootloader",
+    "url": "https://icons.fortinet.com/icons/FortiGuard Labs/Outbreak Alerts/Gootloader.svg"
+  },
+  {
+    "file": "GPT.svg",
+    "alt": "GPT",
+    "url": "https://icons.fortinet.com/icons/FortiGuard Labs/Services/GPT.svg"
+  },
+  {
+    "file": "Guard Miner.svg",
+    "alt": "Guard Miner",
+    "url": "https://icons.fortinet.com/icons/FortiGuard Labs/Outbreak Alerts/Guard Miner.svg"
+  },
+  {
+    "file": "Hack Tool.svg",
+    "alt": "Hack Tool",
+    "url": "https://icons.fortinet.com/icons/FortiGuard Labs/Outbreak Alerts/Hack Tool.svg"
+  },
+  {
+    "file": "Hacker.svg",
+    "alt": "Hacker",
+    "url": "https://icons.fortinet.com/icons/FortiGuard Labs/Services/Hacker.svg"
+  },
+  {
+    "file": "Heart Bleed.svg",
+    "alt": "Heart Bleed",
+    "url": "https://icons.fortinet.com/icons/Services/Threats/Heart Bleed.svg"
+  },
+  {
+    "file": "HelloKitty-Ransomware.svg",
+    "alt": "HelloKitty-Ransomware",
+    "url": "https://icons.fortinet.com/icons/November-2023/HelloKitty-Ransomware.svg"
+  },
+  {
+    "file": "HermeticWiper.svg",
+    "alt": "HermeticWiper",
+    "url": "https://icons.fortinet.com/icons/FortiGuard Labs/Outbreak Alerts/HermeticWiper.svg"
+  },
+  {
+    "file": "HIVE Nightmare.svg",
+    "alt": "HIVE Nightmare",
+    "url": "https://icons.fortinet.com/icons/FortiGuard Labs/Outbreak Alerts/HIVE Nightmare.svg"
+  },
+  {
+    "file": "IBM CEV.svg",
+    "alt": "IBM CEV",
+    "url": "https://icons.fortinet.com/icons/FortiGuard Labs/Outbreak Alerts/IBM CEV.svg"
+  },
+  {
+    "file": "icedID.svg",
+    "alt": "icedID",
+    "url": "https://icons.fortinet.com/icons/FortiGuard Labs/Outbreak Alerts/icedID.svg"
+  },
+  {
+    "file": "IL CASB.svg",
+    "alt": "IL CASB",
+    "url": "https://icons.fortinet.com/icons/FortiGuard Labs/Core Elements/IL CASB.svg"
+  },
+  {
+    "file": "IL Sandbox.svg",
+    "alt": "IL Sandbox",
+    "url": "https://icons.fortinet.com/icons/FortiGuard Labs/Core Elements/IL Sandbox.svg"
+  },
+  {
+    "file": "Impersonation Analysis.svg",
+    "alt": "Impersonation Analysis",
+    "url": "https://icons.fortinet.com/icons/Services/Threats/Impersonation Analysis.svg"
+  },
+  {
+    "file": "Indicators of Compromise.svg",
+    "alt": "Indicators of Compromise",
+    "url": "https://icons.fortinet.com/icons/FortiGuard Labs/Services/Indicators of Compromise.svg"
+  },
+  {
+    "file": "inside game.svg",
+    "alt": "inside game",
+    "url": "https://icons.fortinet.com/icons/November-2023/inside game.svg"
+  },
+  {
+    "file": "IoC.svg",
+    "alt": "IoC",
+    "url": "https://icons.fortinet.com/icons/FortiGuard Labs/Core Elements/IoC.svg"
+  },
+  {
+    "file": "IoT.svg",
+    "alt": "IoT",
+    "url": "https://icons.fortinet.com/icons/FortiGuard Labs/Core Elements/IoT.svg"
+  },
+  {
+    "file": "IP Reputation.svg",
+    "alt": "IP Reputation",
+    "url": "https://icons.fortinet.com/icons/FortiGuard Labs/Services/IP Reputation.svg"
+  },
+  {
+    "file": "IP Reputation Shield.svg",
+    "alt": "IP Reputation Shield",
+    "url": "https://icons.fortinet.com/icons/FortiGuard Labs/Core Elements/IP Reputation Shield.svg"
+  },
+  {
+    "file": "IPS.svg",
+    "alt": "IPS",
+    "url": "https://icons.fortinet.com/icons/FortiGuard Labs/Core Elements/IPS.svg"
+  },
+  {
+    "file": "Ivanti Endpoint Manager Mobile.svg",
+    "alt": "Ivanti Endpoint Manager Mobile",
+    "url": "https://icons.fortinet.com/icons/FortiGuard Labs/Outbreak Alerts/Ivanti Endpoint Manager Mobile.svg"
+  },
+  {
+    "file": "KASEYA VSA.svg",
+    "alt": "KASEYA VSA",
+    "url": "https://icons.fortinet.com/icons/FortiGuard Labs/Outbreak Alerts/KASEYA VSA.svg"
+  },
+  {
+    "file": "Lemon Duck.svg",
+    "alt": "Lemon Duck",
+    "url": "https://icons.fortinet.com/icons/FortiGuard Labs/Outbreak Alerts/Lemon Duck.svg"
+  },
+  {
+    "file": "Link Archer.svg",
+    "alt": "Link Archer",
+    "url": "https://icons.fortinet.com/icons/FortiGuard Labs/Outbreak Alerts/Link Archer.svg"
+  },
+  {
+    "file": "LockBit Ransomware.svg",
+    "alt": "LockBit Ransomware",
+    "url": "https://icons.fortinet.com/icons/FortiGuard Labs/Outbreak Alerts/LockBit Ransomware.svg"
+  },
+  {
+    "file": "Log4j.svg",
+    "alt": "Log4j",
+    "url": "https://icons.fortinet.com/icons/FortiGuard Labs/Outbreak Alerts/Log4j.svg"
+  },
+  {
+    "file": "LokiBot Infostealer.svg",
+    "alt": "LokiBot Infostealer",
+    "url": "https://icons.fortinet.com/icons/FortiGuard Labs/Outbreak Alerts/LokiBot Infostealer.svg"
+  },
+  {
+    "file": "Machine Learning.svg",
+    "alt": "Machine Learning",
+    "url": "https://icons.fortinet.com/icons/FortiGuard Labs/Services/Machine Learning.svg"
+  },
+  {
+    "file": "Machine Learning Poisoning.svg",
+    "alt": "Machine Learning Poisoning",
+    "url": "https://icons.fortinet.com/icons/Services/Threats/Machine Learning Poisoning.svg"
+  },
+  {
+    "file": "Machine to Machine.svg",
+    "alt": "Machine to Machine",
+    "url": "https://icons.fortinet.com/icons/FortiGuard Labs/Services/Machine to Machine.svg"
+  },
+  {
+    "file": "Malicious App.svg",
+    "alt": "Malicious App",
+    "url": "https://icons.fortinet.com/icons/FortiGuard Labs/Services/Malicious App.svg"
+  },
+  {
+    "file": "Malicious Code.svg",
+    "alt": "Malicious Code",
+    "url": "https://icons.fortinet.com/icons/Services/Threats/Malicious Code.svg"
+  },
+  {
+    "file": "Malicious URL.svg",
+    "alt": "Malicious URL",
+    "url": "https://icons.fortinet.com/icons/FortiGuard Labs/Services/Malicious URL.svg"
+  },
+  {
+    "file": "Malware.svg",
+    "alt": "Malware",
+    "url": "https://icons.fortinet.com/icons/FortiGuard Labs/Services/Malware.svg"
+  },
+  {
+    "file": "MicroBackdoor Remote Access.svg",
+    "alt": "MicroBackdoor Remote Access",
+    "url": "https://icons.fortinet.com/icons/FortiGuard Labs/Outbreak Alerts/MicroBackdoor Remote Access.svg"
+  },
+  {
+    "file": "microsoft-sharepoint-vulnerability-teal.svg",
+    "alt": "Microsoft Sharepoint Vulnerability",
+    "url": "https://icons.fortinet.com/icons/New - Updated icons for 2024/January 2k24/microsoft-sharepoint-vulnerability-teal.svg"
+  },
+  {
+    "file": "Mortal Kombat.svg",
+    "alt": "Mortal Kombat",
+    "url": "https://icons.fortinet.com/icons/FortiGuard Labs/Outbreak Alerts/Mortal Kombat.svg"
+  },
+  {
+    "file": "MOVEit.svg",
+    "alt": "MOVEit",
+    "url": "https://icons.fortinet.com/icons/FortiGuard Labs/Outbreak Alerts/MOVEit.svg"
+  },
+  {
+    "file": "Msdt Follina.svg",
+    "alt": "Msdt Follina",
+    "url": "https://icons.fortinet.com/icons/FortiGuard Labs/Outbreak Alerts/Msdt Follina.svg"
+  },
+  {
+    "file": "MSHTML Vulnerability.svg",
+    "alt": "MSHTML Vulnerability",
+    "url": "https://icons.fortinet.com/icons/FortiGuard Labs/Outbreak Alerts/MSHTML Vulnerability.svg"
+  },
+  {
+    "file": "Natural Language Processing.svg",
+    "alt": "Natural Language Processing",
+    "url": "https://icons.fortinet.com/icons/FortiGuard Labs/Services/Natural Language Processing.svg"
+  },
+  {
+    "file": "NLP Machine Translation.svg",
+    "alt": "NLP Machine Translation",
+    "url": "https://icons.fortinet.com/icons/FortiGuard Labs/Services/NLP Machine Translation.svg"
+  },
+  {
+    "file": "NLP Text Generation.svg",
+    "alt": "NLP Text Generation",
+    "url": "https://icons.fortinet.com/icons/FortiGuard Labs/Services/NLP Text Generation.svg"
+  },
+  {
+    "file": "NOC-SOC-Service.svg",
+    "alt": "NOC-SOC Service",
+    "url": "https://icons.fortinet.com/icons/FortiGuard Labs/Services/NOC-SOC-Service.svg"
+  },
+  {
+    "file": "OT.svg",
+    "alt": "OT",
+    "url": "https://icons.fortinet.com/icons/FortiGuard Labs/Core Elements/OT.svg"
+  },
+  {
+    "file": "Outbreak Detection.svg",
+    "alt": "Outbreak Detection",
+    "url": "https://icons.fortinet.com/icons/FortiGuard Labs/Core Elements/Outbreak Detection.svg"
+  },
+  {
+    "file": "PaperCut MF.svg",
+    "alt": "PaperCut MF",
+    "url": "https://icons.fortinet.com/icons/FortiGuard Labs/Outbreak Alerts/PaperCut MF.svg"
+  },
+  {
+    "file": "Partnerships.svg",
+    "alt": "Partnerships",
+    "url": "https://icons.fortinet.com/icons/Services/Technology/Partnerships.svg"
+  },
+  {
+    "file": "Phishing.svg",
+    "alt": "Phishing",
+    "url": "https://icons.fortinet.com/icons/FortiGuard Labs/Services/Phishing.svg"
+  },
+  {
+    "file": "Planning.svg",
+    "alt": "Planning",
+    "url": "https://icons.fortinet.com/icons/FortiGuard Labs/Services/Planning.svg"
+  },
+  {
+    "file": "Prestige.svg",
+    "alt": "Prestige",
+    "url": "https://icons.fortinet.com/icons/FortiGuard Labs/Outbreak Alerts/Prestige.svg"
+  },
+  {
+    "file": "Print Nightmare.svg",
+    "alt": "Print Nightmare",
+    "url": "https://icons.fortinet.com/icons/FortiGuard Labs/Outbreak Alerts/Print Nightmare.svg"
+  },
+  {
+    "file": "Proxy Execution.svg",
+    "alt": "Proxy Execution",
+    "url": "https://icons.fortinet.com/icons/FortiGuard Labs/Outbreak Alerts/Proxy Execution.svg"
+  },
+  {
+    "file": "PSIRT issues.svg",
+    "alt": "PSIRT issues",
+    "url": "https://icons.fortinet.com/icons/November-2023/PSIRT issues.svg"
+  },
+  {
+    "file": "Ransomware.svg",
+    "alt": "Ransomware",
+    "url": "https://icons.fortinet.com/icons/Services/Threats/Ransomware.svg"
+  },
+  {
+    "file": "Raspberry Robin.svg",
+    "alt": "Raspberry Robin",
+    "url": "https://icons.fortinet.com/icons/FortiGuard Labs/Outbreak Alerts/Raspberry Robin.svg"
+  },
+  {
+    "file": "RCE Microsoft Vulnerability.svg",
+    "alt": "RCE Microsoft Vulnerability",
+    "url": "https://icons.fortinet.com/icons/FortiGuard Labs/Outbreak Alerts/RCE Microsoft Vulnerability.svg"
+  },
+  {
+    "file": "Redis.svg",
+    "alt": "Redis",
+    "url": "https://icons.fortinet.com/icons/FortiGuard Labs/Outbreak Alerts/Redis.svg"
+  },
+  {
+    "file": "RedLine.svg",
+    "alt": "RedLine",
+    "url": "https://icons.fortinet.com/icons/FortiGuard Labs/Outbreak Alerts/RedLine.svg"
+  },
+  {
+    "file": "Reduce Risk.svg",
+    "alt": "Reduce Risk",
+    "url": "https://icons.fortinet.com/icons/Services/Threats/Reduce Risk.svg"
+  },
+  {
+    "file": "Remote Access.svg",
+    "alt": "Remote Access",
+    "url": "https://icons.fortinet.com/icons/FortiGuard Labs/Outbreak Alerts/Remote Access.svg"
+  },
+  {
+    "file": "REvil Ransomware.svg",
+    "alt": "REvil Ransomware",
+    "url": "https://icons.fortinet.com/icons/FortiGuard Labs/Outbreak Alerts/REvil Ransomware.svg"
+  },
+  {
+    "file": "Rhysida Ransomware.svg",
+    "alt": "Rhysida Ransomware",
+    "url": "https://icons.fortinet.com/icons/November-2023/Rhysida Ransomware.svg"
+  },
+  {
+    "file": "Robotics.svg",
+    "alt": "Robotics",
+    "url": "https://icons.fortinet.com/icons/FortiGuard Labs/Services/Robotics.svg"
+  },
+  {
+    "file": "Router Malware.svg",
+    "alt": "Router Malware",
+    "url": "https://icons.fortinet.com/icons/FortiGuard Labs/Outbreak Alerts/Router Malware.svg"
+  },
+  {
+    "file": "Sandbox.svg",
+    "alt": "Sandbox",
+    "url": "https://icons.fortinet.com/icons/FortiGuard Labs/Core Elements/Sandbox.svg"
+  },
+  {
+    "file": "Sandbox Cloud.svg",
+    "alt": "Sandbox Cloud",
+    "url": "https://icons.fortinet.com/icons/FortiGuard Labs/Services/Sandbox Cloud.svg"
+  },
+  {
+    "file": "Snake Malware.svg",
+    "alt": "Snake Malware",
+    "url": "https://icons.fortinet.com/icons/FortiGuard Labs/Outbreak Alerts/Snake Malware.svg"
+  },
+  {
+    "file": "Solarview Compact Command.svg",
+    "alt": "Solarview Compact Command",
+    "url": "https://icons.fortinet.com/icons/FortiGuard Labs/Outbreak Alerts/Solarview Compact Command.svg"
+  },
+  {
+    "file": "Speech.svg",
+    "alt": "Speech",
+    "url": "https://icons.fortinet.com/icons/FortiGuard Labs/Services/Speech.svg"
+  },
+  {
+    "file": "Speech to Text.svg",
+    "alt": "Speech to Text",
+    "url": "https://icons.fortinet.com/icons/FortiGuard Labs/Services/Speech to Text.svg"
+  },
+  {
+    "file": "Spook.svg",
+    "alt": "Spook",
+    "url": "https://icons.fortinet.com/icons/FortiGuard Labs/Outbreak Alerts/Spook.svg"
+  },
+  {
+    "file": "SpringShell.svg",
+    "alt": "SpringShell",
+    "url": "https://icons.fortinet.com/icons/FortiGuard Labs/Outbreak Alerts/SpringShell.svg"
+  },
+  {
+    "file": "Sunburst.svg",
+    "alt": "Sunburst",
+    "url": "https://icons.fortinet.com/icons/FortiGuard Labs/Outbreak Alerts/Sunburst.svg"
+  },
+  {
+    "file": "Supervised ML.svg",
+    "alt": "Supervised ML",
+    "url": "https://icons.fortinet.com/icons/FortiGuard Labs/Services/Supervised ML.svg"
+  },
+  {
+    "file": "Supply Chain.svg",
+    "alt": "Supply Chain",
+    "url": "https://icons.fortinet.com/icons/FortiGuard Labs/Outbreak Alerts/Supply Chain.svg"
+  },
+  {
+    "file": "Tesla-malware-attack.svg",
+    "alt": "Tesla-malware-attack",
+    "url": "https://icons.fortinet.com/icons/November-2023/Tesla-malware-attack.svg"
+  },
+  {
+    "file": "Text to Speech.svg",
+    "alt": "Text to Speech",
+    "url": "https://icons.fortinet.com/icons/FortiGuard Labs/Services/Text to Speech.svg"
+  },
+  {
+    "file": "ThinkPHP RCE.svg",
+    "alt": "ThinkPHP RCE",
+    "url": "https://icons.fortinet.com/icons/FortiGuard Labs/Outbreak Alerts/ThinkPHP RCE.svg"
+  },
+  {
+    "file": "Tools.svg",
+    "alt": "Tools",
+    "url": "https://icons.fortinet.com/icons/Services/Technology/Tools.svg"
+  },
+  {
+    "file": "Unauthorized Access.svg",
+    "alt": "Unauthorized Access",
+    "url": "https://icons.fortinet.com/icons/FortiGuard Labs/Services/Unauthorized Access.svg"
+  },
+  {
+    "file": "Unified Threat Protection.svg",
+    "alt": "Unified Threat Protection",
+    "url": "https://icons.fortinet.com/icons/FortiGuard Labs/Core Elements/Unified Threat Protection.svg"
+  },
+  {
+    "file": "Unsupervised ML.svg",
+    "alt": "Unsupervised ML",
+    "url": "https://icons.fortinet.com/icons/FortiGuard Labs/Services/Unsupervised ML.svg"
+  },
+  {
+    "file": "URL.svg",
+    "alt": "URL",
+    "url": "https://icons.fortinet.com/icons/FortiGuard Labs/Core Elements/URL.svg"
+  },
+  {
+    "file": "Video Filtering.svg",
+    "alt": "Video Filtering",
+    "url": "https://icons.fortinet.com/icons/FortiGuard Labs/Core Elements/Video Filtering.svg"
+  },
+  {
+    "file": "Virtual Patching 1.svg",
+    "alt": "Virtual Patching Shield",
+    "url": "https://icons.fortinet.com/icons/New - Updated icons for 2024/July 2k24/Virtual Patching.svg"
+  },
+  {
+    "file": "Virus Outbreak Service.svg",
+    "alt": "Virus Outbreak Service",
+    "url": "https://icons.fortinet.com/icons/FortiGuard Labs/Services/Virus Outbreak Service.svg"
+  },
+  {
+    "file": "Vision.svg",
+    "alt": "Vision",
+    "url": "https://icons.fortinet.com/icons/FortiGuard Labs/Services/Vision.svg"
+  },
+  {
+    "file": "Vision Image Recognition.svg",
+    "alt": "Vision Image Recognition",
+    "url": "https://icons.fortinet.com/icons/FortiGuard Labs/Services/Vision Image Recognition.svg"
+  },
+  {
+    "file": "VM2 Sandbox.svg",
+    "alt": "VM2 Sandbox",
+    "url": "https://icons.fortinet.com/icons/FortiGuard Labs/Outbreak Alerts/VM2 Sandbox.svg"
+  },
+  {
+    "file": "VMware Command Injection Vulnerability.svg",
+    "alt": "VMware Command Injection Vulnerability",
+    "url": "https://icons.fortinet.com/icons/FortiGuard Labs/Outbreak Alerts/VMware Command Injection Vulnerability.svg"
+  },
+  {
+    "file": "Vulnerability.svg",
+    "alt": "Vulnerability",
+    "url": "https://icons.fortinet.com/icons/FortiGuard Labs/Outbreak Alerts/Vulnerability.svg"
+  },
+  {
+    "file": "Web Filtering.svg",
+    "alt": "Web Filtering",
+    "url": "https://icons.fortinet.com/icons/FortiGuard Labs/Core Elements/Web Filtering.svg"
+  },
+  {
+    "file": "Windows HTTP.svg",
+    "alt": "Windows HTTP",
+    "url": "https://icons.fortinet.com/icons/FortiGuard Labs/Outbreak Alerts/Windows HTTP.svg"
+  },
+  {
+    "file": "WooCommerce Payments.svg",
+    "alt": "WooCommerce Payments",
+    "url": "https://icons.fortinet.com/icons/FortiGuard Labs/Outbreak Alerts/WooCommerce Payments.svg"
+  },
+  {
+    "file": "Worms.svg",
+    "alt": "Worms",
+    "url": "https://icons.fortinet.com/icons/FortiGuard Labs/Services/Worms.svg"
+  },
+  {
+    "file": "Zepplin.svg",
+    "alt": "Zepplin",
+    "url": "https://icons.fortinet.com/icons/FortiGuard Labs/Outbreak Alerts/Zepplin.svg"
+  },
+  {
+    "file": "Zero Day.svg",
+    "alt": "Zero Day",
+    "url": "https://icons.fortinet.com/icons/Services/Technology/Zero Day.svg"
+  },
+  {
+    "file": "Zero Day Exploit.svg",
+    "alt": "Zero Day Exploit",
+    "url": "https://icons.fortinet.com/icons/FortiGuard Labs/Outbreak Alerts/Zero Day Exploit.svg"
+  },
+  {
+    "file": "Zoho RCE.svg",
+    "alt": "Zoho RCE",
+    "url": "https://icons.fortinet.com/icons/FortiGuard Labs/Outbreak Alerts/Zoho RCE.svg"
+  },
+  {
+    "file": "Zombie.svg",
+    "alt": "Zombie",
+    "url": "https://icons.fortinet.com/icons/Services/Threats/Zombie.svg"
+  },
+  {
+    "file": "Zyxel Router Command.svg",
+    "alt": "Zyxel Router Command",
+    "url": "https://icons.fortinet.com/icons/FortiGuard Labs/Outbreak Alerts/Zyxel Router Command.svg"
+  },
+  {
+    "file": "Zyxell Firewall.svg",
+    "alt": "Zyxell Firewall",
+    "url": "https://icons.fortinet.com/icons/FortiGuard Labs/Outbreak Alerts/Zyxell Firewall.svg"
+  },
+  {
+    "file": "Aerospace.svg",
+    "alt": "Aerospace",
+    "url": "https://icons.fortinet.com/icons/Locations and Verticals/Aerospace.svg"
+  },
+  {
+    "file": "Agriculture.svg",
+    "alt": "Agriculture",
+    "url": "https://icons.fortinet.com/icons/Locations and Verticals/Agriculture.svg"
+  },
+  {
+    "file": "Airport.svg",
+    "alt": "Airport",
+    "url": "https://icons.fortinet.com/icons/Locations and Verticals/Airport.svg"
+  },
+  {
+    "file": "Asset Management.svg",
+    "alt": "Asset Management",
+    "url": "https://icons.fortinet.com/icons/NOC/Cloud-Management/Asset Management.svg"
+  },
+  {
+    "file": "Automation Action.svg",
+    "alt": "Automation Action",
+    "url": "https://icons.fortinet.com/icons/NOC/Automation/Automation Action.svg"
+  },
+  {
+    "file": "Car.svg",
+    "alt": "Automotive",
+    "url": "https://icons.fortinet.com/icons/Locations and Verticals/Car.svg"
+  },
+  {
+    "file": "balance.svg",
+    "alt": "balance",
+    "url": "https://icons.fortinet.com/icons/November-2023/balance.svg"
+  },
+  {
+    "file": "Bank.svg",
+    "alt": "Bank",
+    "url": "https://icons.fortinet.com/icons/Locations and Verticals/Bank.svg"
+  },
+  {
+    "file": "blog.svg",
+    "alt": "blog",
+    "url": "https://icons.fortinet.com/icons/November-2023/blog.svg"
+  },
+  {
+    "file": "bluetooth.svg",
+    "alt": "bluetooth",
+    "url": "https://icons.fortinet.com/icons/New - Updated icons for 2024/February 2k24/bluetooth.svg"
+  },
+  {
+    "file": "Branch Office.svg",
+    "alt": "Branch Office",
+    "url": "https://icons.fortinet.com/icons/Locations and Verticals/Branch Office.svg"
+  },
+  {
+    "file": "Bus.svg",
+    "alt": "Bus",
+    "url": "https://icons.fortinet.com/icons/New - Updated icons for 2024/June 2k24/Bus.svg"
+  },
+  {
+    "file": "calendar.svg",
+    "alt": "calendar",
+    "url": "https://icons.fortinet.com/icons/New - Updated icons for 2024/April 2k24/calendar.svg"
+  },
+  {
+    "file": "calendar 1.svg",
+    "alt": "calendar",
+    "url": "https://icons.fortinet.com/icons/New - Updated icons for 2024/May 2k24/calendar.svg"
+  },
+  {
+    "file": "Central Management.svg",
+    "alt": "Central Management",
+    "url": "https://icons.fortinet.com/icons/Services/Technology/Central Management.svg"
+  },
+  {
+    "file": "cert.svg",
+    "alt": "cert",
+    "url": "https://icons.fortinet.com/icons/November-2023/cert.svg"
+  },
+  {
+    "file": "Chemical.svg",
+    "alt": "Chemical",
+    "url": "https://icons.fortinet.com/icons/Locations and Verticals/Chemical.svg"
+  },
+  {
+    "file": "Church.svg",
+    "alt": "Church",
+    "url": "https://icons.fortinet.com/icons/Locations and Verticals/Church.svg"
+  },
+  {
+    "file": "Cloud 2.svg",
+    "alt": "Cloud, Dynamic Cloud Policy",
+    "url": "https://icons.fortinet.com/icons/NOC/Automation/Cloud.svg"
+  },
+  {
+    "file": "Colocation.svg",
+    "alt": "Colocation",
+    "url": "https://icons.fortinet.com/icons/Services/Technology/Colocation.svg"
+  },
+  {
+    "file": "Connector.svg",
+    "alt": "Connector",
+    "url": "https://icons.fortinet.com/icons/NOC/Automation/Connector.svg"
+  },
+  {
+    "file": "Construction.svg",
+    "alt": "Construction",
+    "url": "https://icons.fortinet.com/icons/Locations and Verticals/Construction.svg"
+  },
+  {
+    "file": "content.svg",
+    "alt": "content",
+    "url": "https://icons.fortinet.com/icons/New - Updated icons for 2024/February 2k24/content.svg"
+  },
+  {
+    "file": "Convention Center.svg",
+    "alt": "Convention Center",
+    "url": "https://icons.fortinet.com/icons/Locations and Verticals/Convention Center.svg"
+  },
+  {
+    "file": "Dam.svg",
+    "alt": "Dam",
+    "url": "https://icons.fortinet.com/icons/Locations and Verticals/Dam.svg"
+  },
+  {
+    "file": "dart board.svg",
+    "alt": "dart board",
+    "url": "https://icons.fortinet.com/icons/November-2023/dart board.svg"
+  },
+  {
+    "file": "Data Center Building.svg",
+    "alt": "Data Center Building",
+    "url": "https://icons.fortinet.com/icons/Locations and Verticals/Data Center Building.svg"
+  },
+  {
+    "file": "Data Center Rack.svg",
+    "alt": "Data Center Rack",
+    "url": "https://icons.fortinet.com/icons/Locations and Verticals/Data Center Rack.svg"
+  },
+  {
+    "file": "Desktop.svg",
+    "alt": "Desktop",
+    "url": "https://icons.fortinet.com/icons/ZTNA/Technology/Desktop.svg"
+  },
+  {
+    "file": "DevOps.svg",
+    "alt": "DevOps",
+    "url": "https://icons.fortinet.com/icons/NOC/Automation/DevOps.svg"
+  },
+  {
+    "file": "digital-sales.svg",
+    "alt": "digital sales",
+    "url": "https://icons.fortinet.com/icons/November-2023/digital-sales.svg"
+  },
+  {
+    "file": "Drone.svg",
+    "alt": "Drone",
+    "url": "https://icons.fortinet.com/icons/ZTNA/Technology/Drone.svg"
+  },
+  {
+    "file": "ebooks.svg",
+    "alt": "ebooks",
+    "url": "https://icons.fortinet.com/icons/November-2023/ebooks.svg"
+  },
+  {
+    "file": "Higher Education.svg",
+    "alt": "Education Higher Ed",
+    "url": "https://icons.fortinet.com/icons/Locations and Verticals/Higher Education.svg"
+  },
+  {
+    "file": "K-12.svg",
+    "alt": "Education K-12",
+    "url": "https://icons.fortinet.com/icons/Locations and Verticals/K-12.svg"
+  },
+  {
+    "file": "ELA.svg",
+    "alt": "ELA",
+    "url": "https://icons.fortinet.com/icons/NOC/Cloud-Management/ELA.svg"
+  },
+  {
+    "file": "Endpoint CVE.svg",
+    "alt": "Endpoint CVE",
+    "url": "https://icons.fortinet.com/icons/NOC/Automation/Endpoint CVE.svg"
+  },
+  {
+    "file": "Energy Utilities.svg",
+    "alt": "Energy Utilities",
+    "url": "https://icons.fortinet.com/icons/Locations and Verticals/Energy Utilities.svg"
+  },
+  {
+    "file": "Equipment.svg",
+    "alt": "Equipment",
+    "url": "https://icons.fortinet.com/icons/Locations and Verticals/Equipment.svg"
+  },
+  {
+    "file": "EVCS.svg",
+    "alt": "EVCS",
+    "url": "https://icons.fortinet.com/icons/New - Updated icons for 2024/July 2k24/EVCS.svg"
+  },
+  {
+    "file": "EVSE.svg",
+    "alt": "EVSE",
+    "url": "https://icons.fortinet.com/icons/New - Updated icons for 2024/July 2k24/EVSE.svg"
+  },
+  {
+    "file": "Extended Fabric Ecosystem.svg",
+    "alt": "Extended Fabric Ecosystem",
+    "url": "https://icons.fortinet.com/icons/NOC/Automation/Extended Fabric Ecosystem.svg"
+  },
+  {
+    "file": "Fabric API.svg",
+    "alt": "Fabric API",
+    "url": "https://icons.fortinet.com/icons/NOC/Automation/Fabric API.svg"
+  },
+  {
+    "file": "Finance.svg",
+    "alt": "Finance",
+    "url": "https://icons.fortinet.com/icons/Locations and Verticals/Finance.svg"
+  },
+  {
+    "file": "ATM.svg",
+    "alt": "Finance ATM",
+    "url": "https://icons.fortinet.com/icons/Locations and Verticals/ATM.svg"
+  },
+  {
+    "file": "Food Manufacturing.svg",
+    "alt": "Food Manufacturing",
+    "url": "https://icons.fortinet.com/icons/Locations and Verticals/Food Manufacturing.svg"
+  },
+  {
+    "file": "Government.svg",
+    "alt": "Government",
+    "url": "https://icons.fortinet.com/icons/Locations and Verticals/Government.svg"
+  },
+  {
+    "file": "Hard Drive.svg",
+    "alt": "Hard Drive",
+    "url": "https://icons.fortinet.com/icons/ZTNA/Devices/Hard Drive.svg"
+  },
+  {
+    "file": "Headquarters.svg",
+    "alt": "Headquarters",
+    "url": "https://icons.fortinet.com/icons/Locations and Verticals/Headquarters.svg"
+  },
+  {
+    "file": "Healthcare.svg",
+    "alt": "Healthcare",
+    "url": "https://icons.fortinet.com/icons/Locations and Verticals/Healthcare.svg"
+  },
+  {
+    "file": "Healthcare App.svg",
+    "alt": "Healthcare Medical Apps",
+    "url": "https://icons.fortinet.com/icons/Locations and Verticals/Healthcare App.svg"
+  },
+  {
+    "file": "HMI.svg",
+    "alt": "HMI",
+    "url": "https://icons.fortinet.com/icons/November-2023/HMI.svg"
+  },
+  {
+    "file": "Hospital.svg",
+    "alt": "Hospital",
+    "url": "https://icons.fortinet.com/icons/Locations and Verticals/Hospital.svg"
+  },
+  {
+    "file": "Hospitality.svg",
+    "alt": "Hospitality",
+    "url": "https://icons.fortinet.com/icons/Locations and Verticals/Hospitality.svg"
+  },
+  {
+    "file": "Bell.svg",
+    "alt": "Hospitality Bell",
+    "url": "https://icons.fortinet.com/icons/Locations and Verticals/Bell.svg"
+  },
+  {
+    "file": "Hydro.svg",
+    "alt": "Hydro",
+    "url": "https://icons.fortinet.com/icons/Locations and Verticals/Hydro.svg"
+  },
+  {
+    "file": "IaaS Visibility.svg",
+    "alt": "IaaS Visibility",
+    "url": "https://icons.fortinet.com/icons/NOC/Automation/IaaS Visibility.svg"
+  },
+  {
+    "file": "Industrial Control.svg",
+    "alt": "Industrial Control",
+    "url": "https://icons.fortinet.com/icons/Locations and Verticals/Industrial Control.svg"
+  },
+  {
+    "file": "Industry Events.svg",
+    "alt": "Industry Events",
+    "url": "https://icons.fortinet.com/icons/Services/Technology/Industry Events.svg"
+  },
+  {
+    "file": "Industry Response.svg",
+    "alt": "Industry Response",
+    "url": "https://icons.fortinet.com/icons/Services/Technology/Industry Response.svg"
+  },
+  {
+    "file": "infographs.svg",
+    "alt": "infographs",
+    "url": "https://icons.fortinet.com/icons/November-2023/infographs.svg"
+  },
+  {
+    "file": "Insurance.svg",
+    "alt": "Insurance",
+    "url": "https://icons.fortinet.com/icons/Locations and Verticals/Insurance.svg"
+  },
+  {
+    "file": "ITSM.svg",
+    "alt": "ITSM",
+    "url": "https://icons.fortinet.com/icons/NOC/Automation/ITSM.svg"
+  },
+  {
+    "file": "Kiosk.svg",
+    "alt": "Kiosk",
+    "url": "https://icons.fortinet.com/icons/ZTNA/Devices/Kiosk.svg"
+  },
+  {
+    "file": "Laptop.svg",
+    "alt": "Laptop",
+    "url": "https://icons.fortinet.com/icons/ZTNA/Technology/Laptop.svg"
+  },
+  {
+    "file": "Manufacturing.svg",
+    "alt": "Manufacturing",
+    "url": "https://icons.fortinet.com/icons/Locations and Verticals/Manufacturing.svg"
+  },
+  {
+    "file": "Maritime.svg",
+    "alt": "Maritime",
+    "url": "https://icons.fortinet.com/icons/Locations and Verticals/Maritime.svg"
+  },
+  {
+    "file": "marketing-pipeline.svg",
+    "alt": "marketing pipeline",
+    "url": "https://icons.fortinet.com/icons/November-2023/marketing-pipeline.svg"
+  },
+  {
+    "file": "marketing priority.svg",
+    "alt": "marketing priority",
+    "url": "https://icons.fortinet.com/icons/November-2023/marketing priority.svg"
+  },
+  {
+    "file": "Medium Business.svg",
+    "alt": "Medium Business",
+    "url": "https://icons.fortinet.com/icons/Locations and Verticals/Medium Business.svg"
+  },
+  {
+    "file": "Mid-Enterprise.svg",
+    "alt": "Mid-Enterprise",
+    "url": "https://icons.fortinet.com/icons/Locations and Verticals/Mid-Enterprise.svg"
+  },
+  {
+    "file": "Mobile.svg",
+    "alt": "Mobile",
+    "url": "https://icons.fortinet.com/icons/ZTNA/Devices/Mobile.svg"
+  },
+  {
+    "file": "Multi User.svg",
+    "alt": "Multi-User",
+    "url": "https://icons.fortinet.com/icons/Services/Technology/Multi User.svg"
+  },
+  {
+    "file": "Oil.svg",
+    "alt": "Oil Barrel",
+    "url": "https://icons.fortinet.com/icons/Locations and Verticals/Oil.svg"
+  },
+  {
+    "file": "Oil Can.svg",
+    "alt": "Oil Can",
+    "url": "https://icons.fortinet.com/icons/Locations and Verticals/Oil Can.svg"
+  },
+  {
+    "file": "Oil Rig.svg",
+    "alt": "Oil Rig",
+    "url": "https://icons.fortinet.com/icons/New - Updated icons for 2024/July 2k24/Oil Rig.svg"
+  },
+  {
+    "file": "OT People.svg",
+    "alt": "OT People",
+    "url": "https://icons.fortinet.com/icons/Locations and Verticals/OT People.svg"
+  },
+  {
+    "file": "Pharma.svg",
+    "alt": "Pharma",
+    "url": "https://icons.fortinet.com/icons/Locations and Verticals/Pharma.svg"
+  },
+  {
+    "file": "Phone.svg",
+    "alt": "Phone",
+    "url": "https://icons.fortinet.com/icons/ZTNA/Devices/Phone.svg"
+  },
+  {
+    "file": "PIN Pad.svg",
+    "alt": "PIN Pad",
+    "url": "https://icons.fortinet.com/icons/ZTNA/Devices/PIN Pad.svg"
+  },
+  {
+    "file": "playbook.svg",
+    "alt": "playbook",
+    "url": "https://icons.fortinet.com/icons/November-2023/playbook.svg"
+  },
+  {
+    "file": "playing field.svg",
+    "alt": "playing field",
+    "url": "https://icons.fortinet.com/icons/November-2023/playing field.svg"
+  },
+  {
+    "file": "PLC.svg",
+    "alt": "PLC",
+    "url": "https://icons.fortinet.com/icons/New - Updated icons for 2024/March 2k24/PLC.svg"
+  },
+  {
+    "file": "Podcast.svg",
+    "alt": "Podcast",
+    "url": "https://icons.fortinet.com/icons/Services/Technology/Podcast.svg"
+  },
+  {
+    "file": "Point of Sale.svg",
+    "alt": "Point of Sale",
+    "url": "https://icons.fortinet.com/icons/ZTNA/Devices/Point of Sale.svg"
+  },
+  {
+    "file": "POS Machine.svg",
+    "alt": "Point of Sale Machine",
+    "url": "https://icons.fortinet.com/icons/ZTNA/Technology/POS Machine.svg"
+  },
+  {
+    "file": "Power Plant.svg",
+    "alt": "Power Plant",
+    "url": "https://icons.fortinet.com/icons/Locations and Verticals/Power Plant.svg"
+  },
+  {
+    "file": "Power.svg",
+    "alt": "Power Tower",
+    "url": "https://icons.fortinet.com/icons/Locations and Verticals/Power.svg"
+  },
+  {
+    "file": "Printer.svg",
+    "alt": "Printer",
+    "url": "https://icons.fortinet.com/icons/ZTNA/Devices/Printer.svg"
+  },
+  {
+    "file": "Residential.svg",
+    "alt": "Residential",
+    "url": "https://icons.fortinet.com/icons/Locations and Verticals/Residential.svg"
+  },
+  {
+    "file": "Retail.svg",
+    "alt": "Retail",
+    "url": "https://icons.fortinet.com/icons/Locations and Verticals/Retail.svg"
+  },
+  {
+    "file": "Retail Food.svg",
+    "alt": "Retail Food",
+    "url": "https://icons.fortinet.com/icons/Locations and Verticals/Retail Food.svg"
+  },
+  {
+    "file": "Retail Large.svg",
+    "alt": "Retail, Large",
+    "url": "https://icons.fortinet.com/icons/Locations and Verticals/Retail Large.svg"
+  },
+  {
+    "file": "Retail Small.svg",
+    "alt": "Retail, Small",
+    "url": "https://icons.fortinet.com/icons/Locations and Verticals/Retail Small.svg"
+  },
+  {
+    "file": "Robotic arm.svg",
+    "alt": "Robotic Arm",
+    "url": "https://icons.fortinet.com/icons/Locations and Verticals/Robotic arm.svg"
+  },
+  {
+    "file": "ROI assets.svg",
+    "alt": "ROI assets",
+    "url": "https://icons.fortinet.com/icons/November-2023/ROI assets.svg"
+  },
+  {
+    "file": "Safe.svg",
+    "alt": "Safe",
+    "url": "https://icons.fortinet.com/icons/Locations and Verticals/Safe.svg"
+  },
+  {
+    "file": "SASE.svg",
+    "alt": "SASE",
+    "url": "https://icons.fortinet.com/icons/NOC/Automation/SASE.svg"
+  },
+  {
+    "file": "School.svg",
+    "alt": "School",
+    "url": "https://icons.fortinet.com/icons/Locations and Verticals/School.svg"
+  },
+  {
+    "file": "SDN.svg",
+    "alt": "SDN, Dynamic SDN Policy",
+    "url": "https://icons.fortinet.com/icons/NOC/Automation/SDN.svg"
+  },
+  {
+    "file": "Mobile 1.svg",
+    "alt": "Secure Mobile Device",
+    "url": "https://icons.fortinet.com/icons/ZTNA/Technology/Mobile.svg"
+  },
+  {
+    "file": "Camera.svg",
+    "alt": "Security Camera",
+    "url": "https://icons.fortinet.com/icons/ZTNA/Technology/Camera.svg"
+  },
+  {
+    "file": "Service Provider.svg",
+    "alt": "Service Provider",
+    "url": "https://icons.fortinet.com/icons/Locations and Verticals/Service Provider.svg"
+  },
+  {
+    "file": "ship.svg",
+    "alt": "ship",
+    "url": "https://icons.fortinet.com/icons/New - Updated icons for 2024/February 2k24/ship.svg"
+  },
+  {
+    "file": "Single User.svg",
+    "alt": "Single-User",
+    "url": "https://icons.fortinet.com/icons/Services/Technology/Single User.svg"
+  },
+  {
+    "file": "Small Business.svg",
+    "alt": "Small Business",
+    "url": "https://icons.fortinet.com/icons/Locations and Verticals/Small Business.svg"
+  },
+  {
+    "file": "Car 1.svg",
+    "alt": "Smart Car",
+    "url": "https://icons.fortinet.com/icons/ZTNA/Technology/Car.svg"
+  },
+  {
+    "file": "VR.svg",
+    "alt": "Smart Glasses",
+    "url": "https://icons.fortinet.com/icons/ZTNA/Technology/VR.svg"
+  },
+  {
+    "file": "House.svg",
+    "alt": "Smart Home",
+    "url": "https://icons.fortinet.com/icons/ZTNA/Technology/House.svg"
+  },
+  {
+    "file": "Blood bag.svg",
+    "alt": "Smart Medical Device",
+    "url": "https://icons.fortinet.com/icons/ZTNA/Technology/Blood bag.svg"
+  },
+  {
+    "file": "Watch.svg",
+    "alt": "Smartwatch",
+    "url": "https://icons.fortinet.com/icons/ZTNA/Technology/Watch.svg"
+  },
+  {
+    "file": "Smokestack.svg",
+    "alt": "Smokestack",
+    "url": "https://icons.fortinet.com/icons/Locations and Verticals/Smokestack.svg"
+  },
+  {
+    "file": "SSO-Identity.svg",
+    "alt": "SSO/Indentity",
+    "url": "https://icons.fortinet.com/icons/NOC/Automation/SSO-Identity.svg"
+  },
+  {
+    "file": "Stadium.svg",
+    "alt": "Stadium",
+    "url": "https://icons.fortinet.com/icons/Locations and Verticals/Stadium.svg"
+  },
+  {
+    "file": "stream.svg",
+    "alt": "stream",
+    "url": "https://icons.fortinet.com/icons/New - Updated icons for 2024/February 2k24/stream.svg"
+  },
+  {
+    "file": "Surveillance-Camera.svg",
+    "alt": "Surveillance Camera",
+    "url": "https://icons.fortinet.com/icons/Locations and Verticals/Surveillance-Camera.svg"
+  },
+  {
+    "file": "Tablet.svg",
+    "alt": "Tablet",
+    "url": "https://icons.fortinet.com/icons/ZTNA/Technology/Tablet.svg"
+  },
+  {
+    "file": "Theme Park.svg",
+    "alt": "Theme Park",
+    "url": "https://icons.fortinet.com/icons/Locations and Verticals/Theme Park.svg"
+  },
+  {
+    "file": "Threat Feeds.svg",
+    "alt": "Threat Feeds",
+    "url": "https://icons.fortinet.com/icons/NOC/Automation/Threat Feeds.svg"
+  },
+  {
+    "file": "Plane.svg",
+    "alt": "Transportation Plane",
+    "url": "https://icons.fortinet.com/icons/Locations and Verticals/Plane.svg"
+  },
+  {
+    "file": "Train.svg",
+    "alt": "Transportation Train",
+    "url": "https://icons.fortinet.com/icons/Locations and Verticals/Train.svg"
+  },
+  {
+    "file": "Truck.svg",
+    "alt": "Transportation Truck",
+    "url": "https://icons.fortinet.com/icons/Locations and Verticals/Truck.svg"
+  },
+  {
+    "file": "University.svg",
+    "alt": "University",
+    "url": "https://icons.fortinet.com/icons/Locations and Verticals/University.svg"
+  },
+  {
+    "file": "up sell.svg",
+    "alt": "up sell",
+    "url": "https://icons.fortinet.com/icons/November-2023/up sell.svg"
+  },
+  {
+    "file": "Waste Water.svg",
+    "alt": "Waste Water",
+    "url": "https://icons.fortinet.com/icons/Locations and Verticals/Waste Water.svg"
+  },
+  {
+    "file": "Water.svg",
+    "alt": "Water",
+    "url": "https://icons.fortinet.com/icons/Locations and Verticals/Water.svg"
+  },
+  {
+    "file": "Generic-WiFi.svg",
+    "alt": "Wifi",
+    "url": "https://icons.fortinet.com/icons/New - Updated icons for 2024/January 2k24/Generic-WiFi.svg"
+  },
+  {
+    "file": "Wind Turbines.svg",
+    "alt": "Wind Turbines",
+    "url": "https://icons.fortinet.com/icons/Locations and Verticals/Wind Turbines.svg"
+  },
+  {
+    "file": "Appliance 1.svg",
+    "alt": "Wireless Appliance",
+    "url": "https://icons.fortinet.com/icons/ZTNA/Technology/Appliance.svg"
+  },
+  {
+    "file": "Controller.svg",
+    "alt": "Wireless Controller",
+    "url": "https://icons.fortinet.com/icons/ZTNA/Technology/Controller.svg"
+  },
+  {
+    "file": "Doorhandle.svg",
+    "alt": "Wireless Door",
+    "url": "https://icons.fortinet.com/icons/ZTNA/Technology/Doorhandle.svg"
+  },
+  {
+    "file": "Refrigerator.svg",
+    "alt": "Wireless Fridge",
+    "url": "https://icons.fortinet.com/icons/ZTNA/Technology/Refrigerator.svg"
+  },
+  {
+    "file": "Lightbulb.svg",
+    "alt": "Wireless Lightbulb",
+    "url": "https://icons.fortinet.com/icons/ZTNA/Technology/Lightbulb.svg"
+  },
+  {
+    "file": "Wireless PIN Pad.svg",
+    "alt": "Wireless PIN Pad",
+    "url": "https://icons.fortinet.com/icons/ZTNA/Devices/Wireless PIN Pad.svg"
+  },
+  {
+    "file": "Printer 1.svg",
+    "alt": "Wireless Printer",
+    "url": "https://icons.fortinet.com/icons/ZTNA/Technology/Printer.svg"
+  },
+  {
+    "file": "Roomba.svg",
+    "alt": "Wireless Roomba",
+    "url": "https://icons.fortinet.com/icons/ZTNA/Technology/Roomba.svg"
+  },
+  {
+    "file": "Speaker.svg",
+    "alt": "Wireless Speaker",
+    "url": "https://icons.fortinet.com/icons/ZTNA/Technology/Speaker.svg"
+  },
+  {
+    "file": "Thermostat.svg",
+    "alt": "Wireless Thermostat",
+    "url": "https://icons.fortinet.com/icons/ZTNA/Technology/Thermostat.svg"
+  }
+]

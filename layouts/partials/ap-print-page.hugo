@@ -1,0 +1,11 @@
+<h1>{{ .Title }}</h1>
+{{ $pageFolder := path.Dir .RelPermalink }}
+{{ $contentString := string .Content }}
+{{ $modifiedContent := replaceRE `<img (.*)src="([^/])`
+   (printf `<img ${1}src="%s/${2}` $pageFolder) $contentString }}
+{{ $modifiedContent := replaceRE `<video (.*)src="([^/])`
+   (printf `<video ${1}src="%s/${2}` $pageFolder) $modifiedContent }}
+{{ $modifiedContent :=replace $modifiedContent " loading=\"lazy\"" "" }} 
+{{ $modifiedContent :=replaceRE `<details class="(.*)">` `<details class="${1}" open>` $modifiedContent }} 
+{{ $modifiedContent | safeHTML }} 
+<div class="pagebreak"></div>

@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Security_Networking" data-name="Security Networking" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: #c8c8c8;
+      }
+
+      .cls-1, .cls-2, .cls-3, .cls-4 {
+        stroke-linecap: round;
+        stroke-linejoin: round;
+      }
+
+      .cls-1, .cls-3 {
+        stroke: #464646;
+      }
+
+      .cls-1, .cls-4 {
+        stroke-width: 3.67px;
+      }
+
+      .cls-5 {
+        fill: #d8291c;
+        stroke-width: 0px;
+      }
+
+      .cls-2 {
+        stroke: #c7c7c7;
+      }
+
+      .cls-2, .cls-3 {
+        stroke-width: 4px;
+      }
+
+      .cls-2, .cls-3, .cls-4 {
+        fill: none;
+      }
+
+      .cls-4 {
+        stroke: #c8c8c8;
+      }
+    </style>
+  </defs>
+  <rect class="cls-3" x="37.28" y="13.46" width="117.58" height="149.08" rx="15" ry="15"/>
+  <rect class="cls-2" x="67.11" y="112" width="57.92" height="26.27" rx="3" ry="3"/>
+  <line class="cls-4" x1="115.35" y1="129.77" x2="108.96" y2="129.77"/>
+  <line class="cls-4" x1="99.19" y1="129.77" x2="92.79" y2="129.77"/>
+  <line class="cls-4" x1="83.19" y1="129.77" x2="76.79" y2="129.77"/>
+  <line class="cls-4" x1="115.35" y1="120.77" x2="108.96" y2="120.77"/>
+  <line class="cls-4" x1="99.19" y1="120.77" x2="92.79" y2="120.77"/>
+  <line class="cls-4" x1="83.19" y1="120.77" x2="76.79" y2="120.77"/>
+  <rect class="cls-1" x="56" y="162.54" width="24" height="7.41"/>
+  <rect class="cls-1" x="116" y="162.54" width="24" height="7.41"/>
+  <polygon class="cls-1" points="81.19 182.21 54 182.21 53 169.95 82.19 169.95 81.19 182.21"/>
+  <polygon class="cls-1" points="141.59 182.21 114.41 182.21 113.41 169.95 142.59 169.95 141.59 182.21"/>
+  <g>
+    <polygon class="cls-5" points="115.96 56.73 115.96 56.73 104.75 56.73 104.75 56.73 104.75 63.93 115.96 63.93 115.97 63.93 115.97 56.73 115.96 56.73"/>
+    <polygon class="cls-5" points="90.47 74.22 90.47 74.22 101.68 74.22 101.68 74.22 101.68 67.01 90.47 67.01 90.47 74.22"/>
+    <path class="cls-5" d="M115.96,52.48c0-3.34-2.7-6.04-6.04-6.04h-5.17v7.21h11.21v-1.17Z"/>
+    <polygon class="cls-5" points="90.47 46.45 90.47 53.65 90.47 53.65 101.68 53.65 101.68 53.65 101.68 46.45 101.68 46.44 90.47 46.45 90.47 46.45"/>
+    <polygon class="cls-5" points="76.18 56.73 76.18 56.73 76.18 63.93 76.18 63.93 87.39 63.93 87.39 56.73 87.39 56.73 76.18 56.73 76.18 56.73"/>
+    <path class="cls-5" d="M104.75,74.22h5.17c3.34,0,6.04-2.7,6.04-6.04v-1.17h-11.21v7.21Z"/>
+    <path class="cls-5" d="M76.18,68.18c0,3.34,2.7,6.04,6.04,6.04h5.17s0-7.2,0-7.2h-11.21v1.17Z"/>
+    <path class="cls-5" d="M76.18,52.49v1.17h11.21v-7.21h-5.17c-3.34,0-6.04,2.7-6.04,6.04Z"/>
+  </g>
+</svg>

@@ -1,0 +1,16 @@
+:root {
+  /* Workshop */
+  --theme-color: var(--fortinet-red);
+}
+
+#content-wrapper {
+  overflow-y: scroll;
+}
+
+#R-header-wrapper {
+  background-image: url("/images/xperts-2025-background.png");
+  background-size: cover;
+}
+#logo img {
+  content: url("/images/xperts-2025-logo.svg");
+}

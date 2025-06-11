@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Security_Networking" data-name="Security Networking" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: #307fe2;
+      }
+
+      .cls-1, .cls-2 {
+        stroke-linecap: round;
+        stroke-linejoin: round;
+      }
+
+      .cls-1, .cls-2, .cls-3 {
+        stroke-width: 4px;
+      }
+
+      .cls-1, .cls-3 {
+        stroke: #464646;
+      }
+
+      .cls-2 {
+        stroke: #464646;
+      }
+
+      .cls-2, .cls-3 {
+        fill: none;
+      }
+
+      .cls-3 {
+        stroke-miterlimit: 10;
+      }
+    </style>
+  </defs>
+  <rect class="cls-2" x="37.21" y="21.46" width="117.58" height="149.08" rx="15" ry="15"/>
+  <g id="FortiSASE">
+    <line class="cls-3" x1="104.28" y1="45.28" x2="87.67" y2="45.28"/>
+    <line class="cls-3" x1="123.4" y1="65.92" x2="115.01" y2="51.38"/>
+    <line class="cls-3" x1="115.01" y1="92.69" x2="123.41" y2="78.15"/>
+    <line class="cls-3" x1="87.67" y1="98.8" x2="104.28" y2="98.8"/>
+    <line class="cls-3" x1="68.68" y1="78.18" x2="77.02" y2="92.62"/>
+    <line class="cls-3" x1="77.03" y1="51.45" x2="68.69" y2="65.89"/>
+    <circle class="cls-3" cx="66.35" cy="72.03" r="6.58"/>
+    <circle class="cls-3" cx="125.82" cy="72.04" r="6.58"/>
+    <circle class="cls-3" cx="81.19" cy="97.71" r="6.58"/>
+    <circle class="cls-3" cx="110.76" cy="97.71" r="6.58"/>
+    <circle class="cls-3" cx="110.76" cy="46.36" r="6.58"/>
+    <circle class="cls-3" cx="81.19" cy="46.36" r="6.58"/>
+    <circle class="cls-1" cx="96.08" cy="72.54" r="15.41"/>
+    <line class="cls-3" x1="88.13" y1="85.74" x2="84.5" y2="92.03"/>
+    <line class="cls-3" x1="107.55" y1="52.09" x2="103.51" y2="59.09"/>
+    <line class="cls-3" x1="88.56" y1="59.09" x2="84.49" y2="52.04"/>
+    <line class="cls-3" x1="107.55" y1="91.98" x2="103.95" y2="85.74"/>
+    <line class="cls-3" x1="111.57" y1="72.06" x2="119.24" y2="72.04"/>
+    <line class="cls-3" x1="72.92" y1="72.03" x2="80.76" y2="72.03"/>
+  </g>
+</svg>

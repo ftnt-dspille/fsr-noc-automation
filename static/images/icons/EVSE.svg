@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Security_Networking" data-name="Security Networking" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: #c8c8c8;
+      }
+
+      .cls-1, .cls-2 {
+        stroke: #464646;
+      }
+
+      .cls-1, .cls-2, .cls-3 {
+        stroke-linecap: round;
+        stroke-linejoin: round;
+        stroke-width: 4px;
+      }
+
+      .cls-2, .cls-3 {
+        fill: none;
+      }
+
+      .cls-3 {
+        stroke: #464646;
+      }
+    </style>
+  </defs>
+  <path class="cls-1" d="M114,39.27H42c-5.52,0-10,4.48-10,10v128.73h92V49.27c0-5.52-4.48-10-10-10ZM69.92,152.17l6.12-24.96h0s-20.59,0-20.59,0l29.32-35.59-6.12,24.96h0s20.6,0,20.6,0l-29.33,35.59ZM112,68H44v-16h68v16Z"/>
+  <line class="cls-3" x1="22" y1="178" x2="134" y2="178"/>
+  <path class="cls-2" d="M124,68h10c5.52,0,10,4.48,10,10v73.45c0,5.52,4.48,10,10,10h0c5.52,0,10-4.48,10-10V50"/>
+  <rect class="cls-1" x="159.61" y="42" width="8.78" height="8"/>
+  <path class="cls-1" d="M154,30h20v6.54c0,3.01-2.45,5.46-5.46,5.46h-9.08c-3.01,0-5.46-2.45-5.46-5.46v-6.54h0Z"/>
+  <g>
+    <line class="cls-1" x1="158.35" y1="30" x2="158.35" y2="22"/>
+    <line class="cls-1" x1="169.65" y1="30" x2="169.65" y2="22"/>
+  </g>
+</svg>

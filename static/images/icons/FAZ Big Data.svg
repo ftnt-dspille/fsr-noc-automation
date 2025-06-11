@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Security_Networking" data-name="Security Networking" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: #f4aba4;
+        stroke: #444;
+      }
+
+      .cls-1, .cls-2, .cls-3 {
+        stroke-linecap: round;
+        stroke-linejoin: round;
+        stroke-width: 4px;
+      }
+
+      .cls-2 {
+        fill: #2cccd3;
+      }
+
+      .cls-2, .cls-3 {
+        stroke: #464646;
+      }
+
+      .cls-4 {
+        fill: #444;
+        stroke-width: 0px;
+      }
+
+      .cls-3 {
+        fill: none;
+      }
+    </style>
+  </defs>
+  <g>
+    <path class="cls-3" d="M132.83,97.66c0,20.33-16.48,36.81-36.81,36.81s-36.81-16.48-36.81-36.81,16.47-36.8,36.81-36.81v36.81h36.81Z"/>
+    <path class="cls-2" d="M138.79,97.66h-42.78v-42.78c23.59,0,42.78,19.19,42.78,42.78Z"/>
+  </g>
+  <g id="Hyperscale_Applications" data-name="Hyperscale Applications">
+    <g>
+      <circle class="cls-2" cx="96" cy="27.74" r="14.73"/>
+      <line class="cls-1" x1="96" y1="134.48" x2="96" y2="167.49"/>
+      <line class="cls-1" x1="96" y1="42.47" x2="96" y2="54.89"/>
+      <circle class="cls-4" cx="96" cy="166.54" r="12.44"/>
+    </g>
+    <g>
+      <circle class="cls-2" cx="32.22" cy="128.13" r="14.73"/>
+      <circle class="cls-4" cx="164.95" cy="55.83" r="12.44"/>
+      <line class="cls-1" x1="131.54" y1="73.86" x2="164.94" y2="55.72"/>
+      <line class="cls-1" x1="45.04" y1="120.86" x2="61.96" y2="111.67"/>
+    </g>
+    <g>
+      <circle class="cls-2" cx="159.78" cy="128.13" r="14.73"/>
+      <circle class="cls-4" cx="27.05" cy="55.83" r="12.44"/>
+      <line class="cls-1" x1="65.73" y1="76.73" x2="27.06" y2="55.72"/>
+      <line class="cls-1" x1="146.96" y1="120.86" x2="130.06" y2="111.68"/>
+    </g>
+  </g>
+</svg>

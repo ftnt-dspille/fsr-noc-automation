@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Security_Networking" data-name="Security Networking" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: #2cccd3;
+      }
+
+      .cls-1, .cls-2 {
+        stroke: #464646;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+        stroke-width: 4px;
+      }
+
+      .cls-2 {
+        fill: none;
+      }
+    </style>
+  </defs>
+  <rect class="cls-1" x="48" y="40" width="96.21" height="34.63"/>
+  <rect class="cls-2" x="48" y="74.62" width="96.21" height="34.62"/>
+  <rect class="cls-1" x="48" y="109.25" width="96.21" height="34.75"/>
+  <line class="cls-2" x1="96" y1="178.1" x2="96" y2="144"/>
+  <polyline class="cls-2" points="48 178.1 48 144 96.1 168 144.2 144 144.2 178.1"/>
+  <polyline class="cls-2" points="84 144 96 160 108 144"/>
+  <polygon class="cls-2" points="144.21 40 48 40 96.11 14 144.21 40"/>
+</svg>

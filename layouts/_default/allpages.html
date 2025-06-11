@@ -1,0 +1,100 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="height=device-height, width=device-width, initial-scale=1.0, minimum-scale=1.0" />
+    <title>{{ .Site.Title }}</title>
+
+    <link
+      href="{{ "/fonts/fontawesome/css/fontawesome-all.min.css" | relURL }}"
+      rel="stylesheet"
+      media="print"
+      onload="this.media='all';this.onload=null;" />
+    <noscript>
+      <link
+        href="{{ "/fonts/fontawesome/css/fontawesome-all.min.css" | relURL }}"
+        rel="stylesheet" />
+    </noscript>
+    <link
+      href="{{ "/css/auto-complete/auto-complete.min.css" | relURL }}"
+      rel="stylesheet"
+      media="print"
+      onload="this.media='all';this.onload=null;" />
+    <noscript>
+      <link
+        href="{{ "/css/auto-complete/auto-complete.min.css" | relURL }}"
+        rel="stylesheet" />
+    </noscript>
+    <link
+      href="{{ "/css/perfect-scrollbar/perfect-scrollbar.min.css" | relURL }}"
+      rel="stylesheet" />
+    <link href="{{ "/css/theme.min.css" | relURL }}" rel="stylesheet" />
+    <script src="{{ "/js/mermaid/mermaid.min.js" | relURL }}" defer=""></script>
+    <style>
+      /* override the default flex layout */
+      body {
+        display: block;
+        padding: 3rem;
+        font-family: Inter, Helvetica, Tahoma, Verdana, sans-serif;
+      }
+
+      #print-button {
+        position: fixed;
+        right: 1.5rem;
+        top: 1.5rem;
+        font-size: x-large;
+      }
+
+      img:not(.inline):not(.lightbox-image) {
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+      }
+      .mermaid {
+        visibility: visible !important;
+      }
+      .tab-content {
+        margin: 0.2rem 0 0 2rem;
+        padding-left: 0.5rem;
+        padding-right: 0.5rem;
+        border: 1px solid gray;
+      }
+
+      @media print {
+        .no-print,
+        .no-print * {
+          display: none !important;
+        }
+
+        .pagebreak {
+          page-break-before: always;
+        }
+      }
+    </style>
+    {{ partial "custom-header.html" . }}
+  </head>
+
+  <body>
+    <a
+      id="print-button"
+      class="no-print"
+      title="Print this page"
+      href="#"
+      onclick="window.print();return false;"
+      ><i class="fas fa-print"></i
+    ></a>
+
+    <h1>{{ .Site.Title }}</h1>
+    {{ with .Site.Home }}
+      {{ $modifiedContent :=replace .Content " loading=\"lazy\"" "" }}
+      {{ $modifiedContent |safeHTML }}
+      <div class="pagebreak"></div>
+    {{ end }}
+    {{ range .Site.Sections }}
+      {{ partial "ap-print-section.hugo" . }}
+    {{ end }}
+    {{ partial "copyright.html" . }}
+  </body>
+</html>

@@ -1,0 +1,6 @@
+{
+  "svg.preview.background": "dark-transparent",
+  "[markdown]": {
+    "editor.formatOnSave": false
+  }
+}

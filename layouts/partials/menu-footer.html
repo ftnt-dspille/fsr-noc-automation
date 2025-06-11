@@ -1,0 +1,60 @@
+<style>
+  #footer {
+    font-size: 0.8125rem;
+    height: 6.25rem;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 2rem 1rem;
+    text-align: center;
+    min-width: 14.375rem;
+    max-width: 18.75rem;
+  }
+
+  #footer p {
+    margin: 0;
+  }
+</style>
+
+<left>
+  <div
+    style="display: flex; align-items: base; justify-content: center; gap: 0.5rem;">
+    <div>Theme:</div>
+    <span class="menu-control">
+      <button
+        type="button"
+        onclick="changeTheme()"
+        id="dark-light-mode-btn"></button>
+      <script>
+        updateThemeButton()
+      </script>
+    </span>
+  </div>
+  <div style="margin-bottom: 6px;">Crafted by the US CSE Team</div>
+
+  <a href="/"><i class="fas fa-fw fa-home"></i></a>
+  |
+  <a
+    href="https://www.fortinet.com/corporate/about-us/privacy"
+    target="_blank"
+    rel="noreferrer noopener"
+    >Privacy</a
+  >
+  |
+  <a
+    href="https://www.fortinet.com/corporate/about-us/legal"
+    target="_blank"
+    rel="noreferrer noopener"
+    >Site Terms</a
+  >
+  |
+  <a
+    href="https://www.fortinet.com/corporate/about-us/about-us"
+    target="_blank"
+    rel="noreferrer noopener"
+    >About Us</a
+  >
+  |
+  <a href="javascript:void(0);" onclick="logOut();"
+    ><i class="fas fa-fw fa-sign-out"></i
+  ></a>
+</left>

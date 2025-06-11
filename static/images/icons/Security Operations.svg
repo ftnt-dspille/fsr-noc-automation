@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Security_Networking" data-name="Security Networking" xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 192 192">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: #2cccd3;
+        stroke-width: 0px;
+      }
+    </style>
+  </defs>
+  <path class="cls-1" d="M75.4,102.1l-28.8,49.8c3.3,3.6,6.9,7,10.6,10.1l26.4-45.7h79.9c.1-1.2.2-2.5.2-3.8v-10.5h-88.4,0Z"/>
+  <path class="cls-1" d="M52.2,62h111.5V28.4c-25.5-2.6-48.1-10-67.7-21.5-19.6,11.5-42.2,18.9-67.7,21.5v75.1l24-41.5h0Z"/>
+  <path class="cls-1" d="M59.7,74.9l-29.3,50.8c1.7,5.3,4.3,10.5,7.6,15.4l29.9-51.8h95.8v-14.3s-104.1,0-104.1,0Z"/>
+  <path class="cls-1" d="M91,129.2l-23.5,40.7c10.6,7.4,21.2,12.8,28.5,15.2,17.4-5.8,53.2-28.1,64.3-55.9h-69.3Z"/>
+</svg>

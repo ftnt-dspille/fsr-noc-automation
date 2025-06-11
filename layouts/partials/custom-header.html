@@ -1,0 +1,326 @@
+{{ $assetPrefix := getenv "HUGO_ASSET_PREFIX" | default "" }}
+<style>
+    :root {
+      /* Colors */
+      --fortinet-white: 255, 255, 255;
+      --fortinet-black: 0, 0, 0;
+      --fortinet-red: 218, 41, 28;
+      --fortinet-blue: 48, 127, 226;
+      --fortinet-green: 72, 213, 151;
+      --fortinet-teel: 44, 204, 211;
+      --fortinet-purple: 144, 99, 205;
+      --fortinet-silver: 162, 178, 200;
+      --fortinet-silver-jeffMAC: 159, 178, 199;
+      --fortinet-silver70: 77, 92, 102;
+      --fortinet-lightgray: 228, 228, 228;
+      --fortinet-gray: 179, 179, 179;
+
+      --PRIMARY-color: rgb(var(--theme-color)) !important;
+      --MAIN-BG-color: rgb(var(--fortinet-white)) !important;
+      --MAIN-TEXT-color: rgb(var(--fortinet-black)) !important;
+      --MAIN-font: Inter, sans-serif;
+
+      --MAIN-LINK-color: #1c90f3 !important;
+      /* << blue; >> red#f31c1c; /* Color of links */
+      --LINK-HOVER-color: #167ad0 !important;
+      /* #d01616; /* Color of hovered links */
+
+      --MENU-SECTIONS-ACTIVE-BG-color: rgb(var(--fortinet-black)) !important;
+      --MENU-SECTIONS-BG-color: #312525;
+      /* Background color of other sections */
+      --MENU-SECTIONS-LINK-color: #ccc !important;
+      --MENU-SECTIONS-LINK-HOVER-color: #e6e6e6 !important;
+      /* rgba(var(--fortinet-white)) !important;*/
+      --MENU-SECTION-ACTIVE-CATEGORY-color: #777;
+      /* Color of active category text */
+      --MENU-SECTION-ACTIVE-CATEGORY-BG-color: #fff;
+      /* Color of background for the active category (only) */
+
+      --MENU-HEADER-BG-color: rgb(var(--theme-color)) !important;
+      --MENU-SEARCH-color: rgba(var(--fortinet-white)) !important;
+      --MENU-VISITED-color: rgb(var(--theme-color)) !important;
+
+      /* home link text color */
+      --MENU-HOME-LINK-color: #ccc !important;
+      /* Color of the home button text */
+      --MENU-HOME-LINK-HOVER-color: rgba(var(--fortinet-white)) !important;
+      /* Color of the hovered home button text */
+
+      /* notifications */
+      --BOX-WARNING-color: rgb(var(--fortinet-red)) !important;
+      --BOX-NOTE-color: rgb(var(--fortinet-teel)) !important;
+      --BOX-TIP-color: rgb(var(--fortinet-green)) !important;
+      --BOX-INFO-color: rgb(var(--fortinet-blue)) !important;
+
+      /* added adjusted to base16-snazzy chroma style */
+      --CODE-BLOCK-color: #e2e4e5 !important;
+      /* fallback color for code text */
+      --CODE-BLOCK-BG-color: rgb(var(--fortinet-gray)) !important;
+      /* fallback color for code background */
+      --CODE-BLOCK-BORDER-color: #282a36 !important;
+      /* color of block code border */
+
+      /* added */
+      --CODE-INLINE-color: #5e5e5e !important;
+      /* color for inline code text */
+      --CODE-INLINE-BG-color: #fffae9 !important;
+      /* color for inline code background */
+      --CODE-INLINE-BORDER-color: #f8e8c8 !important;
+      /* color of inline code border */
+
+      --BROWSER-theme: light;
+      /* name of the theme for browser scrollbars of the main section */
+      --MERMAID-theme: default;
+      /* name of the default Mermaid theme for this variant, can be overridden in config.toml */
+      --SWAGGER-theme: light;
+      /* name of the default Swagger theme for this variant, can be overridden in config.toml */
+    }
+    @font-face {
+      font-family: 'Inter';
+      font-style: normal;
+      font-weight: 100 1000;
+      font-stretch: 100%;
+      font-display: swap;
+      src: url('{{ printf "%s/fonts/Inter-V.ttf" $assetPrefix }}');
+  }
+    ::placeholder {
+      /* Chrome, Firefox, Opera, Safari 10.1+ */
+      color: rgb(var(--fortinet-white)) !important;
+      opacity: 1;
+      /* Firefox */
+    }
+
+    :-ms-input-placeholder {
+      /* Internet Explorer 10-11 */
+      color: rgb(var(--fortinet-white)) !important;
+    }
+
+    ::-ms-input-placeholder {
+      /* Microsoft Edge */
+      color: rgb(var(--fortinet-white)) !important;
+    }
+
+    #title {
+      font-size: 2.2rem;
+      color: rgb(var(--fortinet-white)) !important;
+    }
+
+    #subtitle {
+      font-size: 1rem;
+      /* font-style: italic; */
+      color: rgb(var(--fortinet-white)) !important;
+    }
+
+    #R-sidebar .searchbox > :first-child,
+    #R-sidebar .searchbox button,
+    .searchbox span {
+      opacity: 1;
+    }
+
+    .searchbox {
+      border: 1px solid rgba(var(--theme-color), 0.85) !important;
+    }
+
+    .searchbox input {
+      background: rgba(var(--theme-color), 0.75) !important;
+    }
+
+    #R-header #logo {
+      display: flex;
+      justify-content: space-around;
+      flex-direction: column;
+    }
+
+    @media screen and (min-width: 1300px) {
+      /* sidebar/width + ./max-width */
+      #R-body .flex-block-wrapper {
+        margin-left: auto;
+        margin-right: auto;
+        max-width: 1300px;
+        width: 100% !important;
+      }
+    }
+
+    .dark .R-sidebarmenu .active a {
+      background-color: var(--INTERNAL-BOX-BG-color) !important;
+      color: white;
+    }
+
+    .dark #R-topbar .topbar-wrapper {
+      background-color: rgba(134, 134, 134, 0.4);
+    }
+
+    :root.dark {
+      --menu-bg-color: #252525;
+      --menu-text-color: #ccc;
+      --menu-link-color: #5e99e0;
+      --menu-hover-color: #81b1f3;
+      --code-bg-color: #1e1e1e;
+      --code-text-color: #f8f8f2;
+      --code-border-color: #44475a;
+      --INTERNAL-BOX-NEUTRAL-color: #404040;
+      --INTERNAL-BOX-BG-color: #2a2a2a;
+      --INTERNAL-BOX-NEUTRAL-TEXT-color: #e0e0e0;
+      --INTERNAL-MAIN-TEXT-color: #e4e4e4;
+      --INTERNAL-MAIN-BG-color: #0a0a0a;
+    }
+    @media print {
+      :root.dark {
+        --INTERNAL-MAIN-TEXT-color: black;
+        --INTERNAL-MAIN-BG-color: white;
+        --code-text-color: black;
+        --code-bg-color: white;
+        --INTERNAL-BOX-NEUTRAL-color: white;
+        --INTERNAL-BOX-BG-color: white;
+        --INTERNAL-BOX-NEUTRAL-TEXT-color: black;
+      }
+    }
+
+    #logo img {
+      content: url('{{ printf "%s/images/white-logo.svg" $assetPrefix }}');
+  }
+</style>
+
+<script>
+    function setThemeMode() {
+      // Get user's saved preference from localStorage if it exists
+      const userPreference = localStorage.getItem('themePreference')
+
+      // Function to apply the theme
+      function applyTheme(theme) {
+        if (theme === 'dark') {
+          document.documentElement.classList.add('dark')
+          document.documentElement.classList.remove('light')
+        } else if (theme === 'light') {
+          document.documentElement.classList.add('light')
+          document.documentElement.classList.remove('dark')
+        }
+      }
+
+      // Switch statement to handle the theme logic
+      switch (userPreference) {
+        case 'dark':
+          applyTheme('dark')
+          break
+
+        case 'light':
+          applyTheme('light')
+          break
+
+        case 'system':
+        default:
+          // Use system settings if no preference or 'system' is selected
+          const systemPrefersDark = window.matchMedia(
+            '(prefers-color-scheme: dark)',
+          ).matches
+          applyTheme(systemPrefersDark ? 'dark' : 'light')
+
+          // Listen for system preference changes
+          window
+            .matchMedia('(prefers-color-scheme: dark)')
+            .addEventListener('change', (e) => {
+              applyTheme(e.matches ? 'dark' : 'light')
+            })
+          break
+      }
+      // update the button
+      updateThemeButton()
+    }
+
+    function updateThemeButton() {
+      const labels = {
+        light: '🌞',
+        dark: '🌛',
+        system: '🖥️',
+      }
+      // Get user's saved preference from localStorage if it exists
+      const userPreference = localStorage.getItem('themePreference')
+
+      // update the button's label and title
+      let label = labels.system
+      if (labels[userPreference]) {
+        label = labels[userPreference]
+      }
+
+      let btn = document.getElementById('dark-light-mode-btn')
+      if (btn) {
+        btn.innerHTML = label
+        btn.setAttribute('title', userPreference)
+      }
+    }
+
+    function changeTheme() {
+      let modes = ['system', 'light', 'dark']
+      let savedMode = localStorage.getItem('themePreference')
+      let index = modes.indexOf(savedMode)
+      if (index == -1) {
+        index = 0
+      }
+      index = (index + 1) % 3
+      mode = modes[index]
+      localStorage.setItem('themePreference', mode)
+      setThemeMode()
+    }
+
+    let analyticsData = {
+      actionId: "",
+      project:
+      '{{ strings.Trim (strings.Replace (replaceRE `^https?://[^/]+` "" .Site.BaseURL) "/" " ") "/ " }}',
+      siteTitle: "{{ .Site.Title }}",
+      pageTitle:
+      '{{ $pageTitle := ""}} {{ with .Page.Title }} {{ $pageTitle = . }} {{ else }} {{ $pageTitle = .Page.Params.tec_title }} {{ end }}{{ $pageTitle }}'
+      .trim()
+      .replace(/"/g, ""),
+      url: window.location.href,
+    }
+    function logAnalytics() {
+      analyticsData.action =
+        document.visibilityState == "visible" ? "enter" : "leave";
+      if (analyticsData.action == "enter") {
+        analyticsData.actionId = `${Math.random()}`;
+      }
+      navigator.sendBeacon("/analytics", JSON.stringify(analyticsData));
+    }
+    function logOut() {
+      analyticsData.action = "leave";
+      navigator.sendBeacon("/analytics", JSON.stringify(analyticsData));
+      document.removeEventListener("visibilitychange", logAnalytics);
+      window.location = "/logout";
+    }
+    document.removeEventListener("visibilitychange", logAnalytics);
+    document.addEventListener("visibilitychange", logAnalytics);
+    window.onload = () => {
+      // log page view
+      logAnalytics();
+      // update time local timezone display
+      let updated = document.getElementById("last-updated-time-utc");
+      if (updated) {
+        updated.textContent = new Intl.DateTimeFormat(navigator.language, {
+          dateStyle: "full",
+          timeStyle: "long",
+        }).format(new Date(updated.textContent));
+      }
+    };
+    // Initial call to set the theme when page loads
+    setThemeMode()
+</script>
+
+<!--quiz-->
+<script src="https://cdn.jsdelivr.net/npm/quizdown@latest/public/build/quizdown.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/quizdown@latest/public/build/extensions/quizdownKatex.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/quizdown@latest/public/build/extensions/quizdownHighlight.js"></script>
+<script>
+    quizdown.register(quizdownHighlight).register(quizdownKatex).init()
+</script>
+
+<!--carousel-->
+<link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/tiny-slider/2.9.4/tiny-slider.css"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tiny-slider/2.9.2/min/tiny-slider.js"></script>
+
+{{ if templates.Exists "partials/google_analytics_tag.html" }}
+{{ partial
+"google_analytics_tag.html" .
+}}
+{{ end }}
