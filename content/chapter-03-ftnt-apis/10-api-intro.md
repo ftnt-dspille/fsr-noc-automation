@@ -2,9 +2,9 @@
 title: "REST API Introduction"
 date: 2025-06-09
 draft: false
-weight: 1
+weight: 10
 description: "Learn REST APIs through pizza ordering - then apply to network automation."
-tags: knowledge
+tags: [ "knowledge" ]
 ---
 
 ## What is a REST API?

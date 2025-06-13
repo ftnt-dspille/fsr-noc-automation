@@ -1,7 +1,7 @@
 ---
 title: "FortiManager API Guide"
 date: 2025-06-09
-weight: 2
+weight: 20
 description: "A comprehensive guide to discovering, understanding, and using FortiManager APIs for network automation."
 tags: ["knowledge", "hands-on"]
 carousel:
