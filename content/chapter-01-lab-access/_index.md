@@ -1,6 +1,6 @@
 ---
 title: Intro
-linkTitle: Intro
+linkTitle: Setup and Tour
 weight: 10
 description: Introduce SOAR
 ---

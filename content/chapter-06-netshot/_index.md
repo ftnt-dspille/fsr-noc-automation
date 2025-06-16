@@ -4,6 +4,8 @@ linkTitle: "Netshot"
 weight: 60
 ---
 
+![img.png](netshot_intro_pic.png?height=600px)
+
 ## Overview
 
 Network device maintainers often need to audit and validate that devices have the configurations they should have, and receive alerts when discrepancies occur. The Netshot SP addresses this need by providing a comprehensive framework for defining how to obtain, normalize, analyze, and alert on network anomalies.
