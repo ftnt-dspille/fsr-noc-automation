@@ -6,8 +6,6 @@ description: "Using API knowledge in SOAR"
 tags: [ "knowledge", "hands-on" ]
 ---
 
-# Using APIs in SOAR Playbooks
-
 This guide demonstrates how to make generic API calls directly within SOAR playbooks when specific connectors aren't available. We'll use the Dad Joke API as a practical example.
 
 ## Dad Joke API Overview

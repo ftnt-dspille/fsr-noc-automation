@@ -10,7 +10,7 @@ We're now ready to assign a profile to the FortiGate. Now you might be thinking 
 ---
 
 ## Assign a ZTP Profile Manually
-1. Login to FortiSOAR using csadmin/```Fortinet1!```
+1. Login to FortiSOAR using csadmin/```$3curityFabric```
 2. Navigate to the module **FortiManager > Devices**
 3. Click **Synchronize All FMG DeviceDb's**
 ![Sync device dbs](images/sync_device_db.png)
