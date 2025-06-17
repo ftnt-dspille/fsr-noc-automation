@@ -36,10 +36,11 @@ Learn to create variables and reference them in subsequent steps using Jinja2 te
 #### 1. Create Your Test Playbook
 
 1. Navigate to **Automation > Playbooks**
-2. Create a new playbook in your workshop collection:
+2. Create a new collection called `00 - Jinja Practice`
+3. Create a new playbook in your workshop collection:
     - **Name**: `Testing Variables`
     - **Description**: `Practice creating and using Jinja2 variables`
-3. Click **Create**
+4. Click **Create**
 
 #### 2. Configure the Start Step
 
@@ -55,6 +56,7 @@ Learn to create variables and reference them in subsequent steps using Jinja2 te
         - **Name**: `first_name` | **Value**: `[Your First Name]`
         - **Name**: `last_name` | **Value**: `[Your Last Name]`
         - **Name**: `company` | **Value**: `[Your Company Name]`
+          ![img.png](personal_info_input.png)
 3. Click **Save**
 
 #### 4. Test Your Variables
@@ -64,6 +66,7 @@ Learn to create variables and reference them in subsequent steps using Jinja2 te
 3. Click **Trigger Playbook** to execute
 4. In the execution history, click on the **Set Personal Info** step
 5. Verify you can see all three variables with their values
+   ![img.png](personal_info_output.png)
 6. Click **Close** to exit execution history
 
 #### 5. Use Variables to Create New Data
@@ -77,7 +80,9 @@ Learn to create variables and reference them in subsequent steps using Jinja2 te
         - **Value**: `{{vars.first_name}} {{vars.last_name}}`
 
 {{% notice tip %}}
-**Using Dynamic Values**: Instead of typing Jinja2 manually, you can see the Dyanmic Values page by clicking into any field in SOAR. You'll see your previously created variables at the top of the panel. This helps prevent typos in variable names.
+**Using Dynamic Values
+**: Instead of typing Jinja2 manually, you can see the Dyanmic Values page by clicking into any field in SOAR. You'll see your previously created variables at the top of the panel. Clicking these variables will automatically add the jinja to reference that value to your step. This helps prevent typos in variable names.
+![img.png](dynamic_values_page_personal_info.png)
 {{% /notice %}}
 
 #### 6. Create a Template Message
@@ -85,6 +90,7 @@ Learn to create variables and reference them in subsequent steps using Jinja2 te
 1. Add another variable to the same step:
     - **Name**: `important_note`
     - **Value**: `Hey {{vars.first_name}} {{vars.last_name}}, do you still work at {{vars.company}}?`
+      ![img.png](full_profile_input.png)
 2. Click **Save**
 
 #### 7. Test the Complete Workflow
@@ -95,6 +101,7 @@ Learn to create variables and reference them in subsequent steps using Jinja2 te
 4. Verify that:
     - `full_name` shows your complete name
     - `important_note` shows the templated message with all variables filled in
+      ![img.png](full_profile_output.png)
 
 {{% notice warning %}}
 **Common Mistake**: Variable names are case-sensitive and must match exactly. `first_name` ≠ `First_Name`. Use the Dynamic Values panel to avoid typos!
@@ -106,6 +113,7 @@ Learn to create variables and reference them in subsequent steps using Jinja2 te
 2. Configure the step:
     
     - **Step Name**: `Process Name Data`
+    - **Action**: Execute Python Code
     - **Code**:
         ```python
         # Get the full name from the previous step
@@ -121,11 +129,6 @@ Learn to create variables and reference them in subsequent steps using Jinja2 te
         # Create a processed summary
         summary = f"Employee {name_upper} has {word_count} words in their name ({name_length} characters total) and works at {company}"
 
-        # Print results for verification
-        print(f"Original name: {name}")
-        print(f"Processed summary: {summary}")
-        print(f"Name length: {name_length}")
-
         # Return data for use in next steps
         output = {
             'processed_name': name_upper,
@@ -133,6 +136,7 @@ Learn to create variables and reference them in subsequent steps using Jinja2 te
             'word_count': word_count,
             'employee_summary': summary
         }
+        print(output)
         ```
 
 3. Click **Save**
@@ -141,25 +145,31 @@ Learn to create variables and reference them in subsequent steps using Jinja2 te
 
 1. Save and run the playbook
 2. Check the **Process Name Data** step execution results
-3. Look at both the **print statements** in the logs and the **output** data structure
+3. Expand the **output** data structure
 4. Note the JSON structure of the output - this shows you the data paths available
+   ![img.png](code_snippet_output.png)
 
 {{% notice info %}}
-**Understanding Step Output**: Code snippets return data in the `output` variable. This becomes accessible as `{{vars.steps.Process_Name_Data.processed_name}}` or `{{vars.steps.Process_Name_Data.employee_summary}}` in subsequent steps.
+**Understanding Step Output**: Code snippets return data in the `data` variable. This becomes accessible as `{{vars.steps.Process_Name_Data.data.code_output.processed_name}}` or `{{vars.steps.Process_Name_Data.data.code_output.employee_summary}}` in subsequent steps.
 {{% /notice %}}
 
 #### 10. Access Code Snippet Results
+
+{{% notice tip %}}
+Use the Dynamic values page to pick the results from the code snippet step. When clicking inside the **Value**, check the box **Show Last Run Result if available**, then expand the arrows showing the previous data. Clicking on the key **employee_summary**, fills in the Jinja for you
+![img.png](dynamic_values.png)
+
+![img.png](filled_in_jinja.png)
+{{% /notice %}}
 
 1. Add another **Set Variable** step after the code snippet
 2. Configure:
     - **Step Name**: `Use Code Results`
     - **Variables**:
         - **Name**: `final_report`
-        - **Value**: `{{vars.steps.Process_Name_Data.employee_summary}}`
+        - **Value**:
         - **Name**: `name_stats`
-        - **Value**: `Name "{{vars.steps.Process_Name_Data.processed_name}}" has {{vars.steps.Process_Name_Data.character_count}} characters and {{vars.steps.Process_Name_Data.word_count}} words.`
-        - **Name**: `processing_note`
-        - **Value**: `Data processed using Python code snippet at step: Process_Name_Data`
+        - **Value**: `Name "{{vars.processed_name}}" has {{vars.steps.character_count}} characters and {{vars.steps.Process_Name_Data.word_count}} words.`
 
 #### 11. Verify Data Path Access
 
@@ -167,6 +177,10 @@ Learn to create variables and reference them in subsequent steps using Jinja2 te
 2. In the execution results, click on **Use Code Results** step
 3. Verify that all variables contain the processed data from the code snippet
 4. If any variables are empty, check the execution results of **Process Name Data** to verify the exact JSON path structure
+
+#### 12. Correct Issues
+
+The jinja for `name_stats` has been purposefully set to be incorrect. Try to find the issues with each jinja expression and save the playbook and rerun to check the results
 
 {{% notice tip %}}
 **Data Path Discovery**: Always check the execution results of code snippet steps to see the exact structure of returned data. The JSON structure shown determines how you access the data with `{{vars.steps.Step_Name.field_name}}`.
@@ -202,56 +216,63 @@ Learn to access and manipulate data from FortiSOAR records using manual triggers
 
 1. Select **Manual** trigger
 2. Configure:
-    - **Trigger Button Label**: `🧪 Test Data Access`
+    - **Trigger Button Label**: `Test Data Access - Jinja`
+    - **Requires Record**: True
     - **Module**: `Alerts`
-    - **Requires Record**: `Yes`
+      ![img.png](trigger_alert_playbook.png)
 3. Click **Save**
 
-#### 3. Create a Test Alert
+#### 3. Extract Alert Data
+
+1. Drag from the start step and click **Set Variable**
+2. Use the **Step Name**: `Extract Alert Data``
+    - **Name**: `alert_name` | **Value**: `{{vars.input.records[0].name}}`
+    - **Name**: `alert_severity` | **Value**: `{{vars.input.records[0].severity}}`
+    - **Name**: `alert_type` | **Value**: `{{vars.input.records[0].type}}`
+    - **Name**: `source_ip` | **Value**: `{{vars.input.records[0].sourceIp}}`
+3. Save the Step
+4. Save the playbook
+   {{% notice warning %}}
+   If you don't save the playbook, you won't be able to see the playbook from the alerts page
+   {{% /notice %}}
+
+#### 4. Create a Test Alert
 
 1. Navigate to **Incident Response > Alerts**
-2. Click **+ Create**
+2. Click **+ Add**
 3. Fill in basic information:
     - **Name**: `Sample Alert for Playbook Testing`
-    - **Type**: `Malware`
-    - **Severity**: `Medium`
-    - **Source IP**: `192.168.1.100`
     - **Description**: `This is a test alert for learning Jinja2 templating`
-4. Click **Create**
-
-#### 4. Add Data Extraction Step
-
-1. Return to your playbook editor
-2. Create a new step → Select **Set Variable**
-3. Configure:
-    - **Step Name**: `Extract Alert Data`
-    - **Variables**:
-        - **Name**: `alert_name` | **Value**: `{{vars.input.records[0].name}}`
-        - **Name**: `alert_severity` | **Value**: `{{vars.input.records[0].severity}}`
-        - **Name**: `alert_type` | **Value**: `{{vars.input.records[0].type}}`
-        - **Name**: `source_ip` | **Value**: `{{vars.input.records[0].sourceIp}}`
+    - **Severity**: `Medium`
+    - **Type**: `Brute Force Attempts`
+    - **Source IP**: `192.168.1.100`
 4. Click **Save**
+    ![img.png](alert_sample.png?height=500px)
 
-#### 5. Test Data Access
+#### 5. Test Playbook from Alert
 
-1. Save the playbook
-2. Go back to **Incident Response > Alerts**
-3. Find your test alert
-4. Click **Execute** and select **🧪 Test Data Access**
-5. View the execution history
+4. Click **Execute** and select **Test Data Access - Jinja**
+    ![img.png](execute_jinja_playbook.png?height=300px)
+5. View the execution history at the top right
+    ![img.png](view_execution_history.png?height=70px)
 6. Click on the **Extract Alert Data** step
 7. Verify all variables contain the correct data from your alert
+    ![img.png](view_jinja_step_output.png?height=400px)
 
 #### 6. Explore Available Data
 
 1. In the execution history, click **ENV** at the top
-2. Expand `input > records > [0]`
+    ![img.png](click_env.png)
+2. Expand `vars > input > records > [0]`
+    ![img.png](expand_env.png?height=600px)
 3. Scroll through and explore all available fields
 4. Notice how the `name` field matches your alert name
 
 {{% notice info %}}
 **Data Exploration**: The ENV view shows all data available during playbook execution. This is invaluable for understanding what fields are available and how to access them with Jinja2.
 {{% /notice %}}
+
+You should now understand why we could access the alert data fro the playbook with `vars.input.records[0].<field_name>`
 
 ---
 
@@ -284,7 +305,7 @@ Learn advanced Jinja2 techniques for data manipulation and conditional logic.
 
 ```jinja2
 Name: risk_level
-Value: {% if vars.input.records[0].severity == "Critical" %}High Risk{% elif vars.input.records[0].severity == "High" %}Medium Risk{% else %}Low Risk{% endif %}
+Value: {% if vars.input.records[0].severity.itemValue == "Critical" %}High Risk{% elif vars.input.records[0].severity.itemValue == "High" %}Medium Risk{% else %}Low Risk{% endif %}
 ```
 
 **IP Classification**:
@@ -306,7 +327,7 @@ Value: Alert "{{vars.input.records[0].name}}" from {{vars.input.records[0].sourc
 1. Create new step → Select **Decision**
 2. Configure:
     - **Step Name**: `Check Risk Level`
-    - **Condition**: `{{vars.steps.Analyze_Alert_Data.risk_level == "High Risk"}}`
+    - **Condition**: `{{vars.risk_level == "High Risk"}}`
 
 #### 5. High Risk Path
 
@@ -325,7 +346,7 @@ Value: Alert "{{vars.input.records[0].name}}" from {{vars.input.records[0].sourc
           Alert Details:
           - Name: {{vars.input.records[0].name}}
           - Time: {{vars.input.records[0].createDate | strftime('%Y-%m-%d %H:%M:%S')}}
-          - Classification: {{vars.steps.Analyze_Alert_Data.ip_classification}}
+          - Classification: {{vars.ip_classification}}
           ```
 
 #### 6. Low Risk Path
@@ -341,7 +362,7 @@ Value: Alert "{{vars.input.records[0].name}}" from {{vars.input.records[0].sourc
           - Log activity for trend analysis
           - Review in next security meeting
           
-          Risk Assessment: {{vars.steps.Analyze_Alert_Data.risk_level}}
+          Risk Assessment: {{vars.risk_level}}
           ```
 
 ---
@@ -355,7 +376,7 @@ Value: Alert "{{vars.input.records[0].name}}" from {{vars.input.records[0].sourc
 {{description | title}}
 
 <!-- String operations -->
-{% if hostname | contains('DC') %}
+{% if "DC" in hostname %}
 Domain Controller Detected
 {% endif %}
 
