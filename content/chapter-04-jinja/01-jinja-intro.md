@@ -43,6 +43,16 @@ graph LR
     A[Template File] --> C["Jinja Engine (FortiSOAR)"]
     B[Data Values] --> C
     C --> D[Generated Configuration]
+    
+    classDef default fill:#f8fafc,stroke:#374151,stroke-width:2px,color:#1f2937
+    classDef engine fill:#4f46e5,stroke:#312e81,stroke-width:3px,color:#ffffff
+    
+    class C engine
+    
+    linkStyle 0 stroke:#dc2626,stroke-width:3px
+    linkStyle 1 stroke:#dc2626,stroke-width:3px
+    linkStyle 2 stroke:#dc2626,stroke-width:3px
+
 ```
 
 The template contains your standard FortiGate configuration with variables marked by special syntax, and the data provides the specific values for each device.

@@ -11,7 +11,7 @@ tags: [ "knowledge" ]
 
 Think of a REST API like ordering pizza over the phone. You call the pizza place (API endpoint), tell them what you want (HTTP request), and they respond with your order status or the pizza itself (HTTP response).
 
-**Key Concept:** REST APIs use standard HTTP methods to perform operations, just like standardized ways to order food.
+**Key Concept:** REST APIs use standard HTTP methods to perform operations
 
 ## The Four Essential HTTP Methods (Pizza Edition)
 
@@ -26,7 +26,7 @@ Think of a REST API like ordering pizza over the phone. You call the pizza place
 
 **Base URL:** `https://tonys-pizza.com/api/v1/`
 
-**Pizza Endpoints:**
+**Example Pizza Endpoints:**
 
 ```
 GET    /menu                       # See what's available
@@ -36,7 +36,7 @@ PUT    /orders/12345              # Change your order
 DELETE /orders/12345              # Cancel your order
 ```
 
-**Network Endpoints:**
+**Example Network Endpoints:**
 
 ```
 GET    /devices                   # List all devices
@@ -48,6 +48,8 @@ DELETE /devices/fw-01            # Remove device
 
 ## HTTP Status Codes (Pizza Responses)
 
+Response codes are important to understand since they indicate either a success or problem that occurred with the request. The table below describes the most common response codes you will see when working with API's
+
 | Code    | Pizza Meaning                           | Network Meaning | When You See It           |
 |---------|-----------------------------------------|-----------------|---------------------------|
 | **200** | "Your pizza is ready!"                  | Success         | Operation completed       |
@@ -58,6 +60,8 @@ DELETE /devices/fw-01            # Remove device
 | **500** | "Our oven is broken"                    | Server Error    | API/device internal error |
 
 ## Request/Response Format
+
+
 
 **Pizza Order Request:**
 
@@ -231,4 +235,4 @@ curl -X PUT "https://switch.company.com/api/v1/interfaces/GigE0/1" \
 }
 ```
 
-**The Big Picture:** If you can understand ordering pizza through an app, you can understand network automation through APIs. The concepts are identical - you're just ordering firewall policies instead of pepperoni!
+Next we'll look at how to use the API in FortiManager

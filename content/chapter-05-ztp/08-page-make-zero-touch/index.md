@@ -2,6 +2,7 @@
 title: Making ZTP "Zero Touch"
 menuTitle: Making ZTP "Zero Touch"
 weight: 80
+draft: true
 tags: hands-on
 ---
 
@@ -43,7 +44,7 @@ Let's now imagine that we have a new branch office **Branch2** that we need to o
     - **FortiGate IP**: ```192.168.0.2```
     - **FortiManager**: ```192.168.0.3```
     - **Username**: ```admin```
-    - **Password**: ```fortinet```
+    - **Password**: ```$3curityFabric```
 4. Click **Execute**
 
 {{% notice note %}}

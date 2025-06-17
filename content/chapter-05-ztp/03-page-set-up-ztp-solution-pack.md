@@ -61,7 +61,7 @@ There are a couple of important things we need to configure before we can use th
 
 1. Login to the FortiManager UI (Get IP of the FortiManager VM from your Evoke instance) with the following credentials:
     - Username: `admin`
-    - Password: `fortinet` 
+    - Password: `$3curityFabric` 
 2. Open the integrated SSH terminal
 ![ssh_terminal](images/fmg_ssh.png?height=50px)
 3. Run the following command to create a new API Admin (Use the copy button below)
