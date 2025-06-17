@@ -36,21 +36,24 @@ The easiest way to understand FortiManager APIs is to watch what happens when yo
 
 **Step-by-Step Process:**
 
-1. **Open Developer Tools**
+1. Login to FortiManager.
+    ![img_2.png](fortimanager_button.png)
+
+2. **Open Developer Tools**
     - Press `Ctrl + Shift + I` (Windows/Linux) or `Cmd + Option + I` (Mac)
     - Alternatively, press `F12`
     - Or right-click and select "Inspect"
 
-2. **Prepare Network Monitoring**
+3. **Prepare Network Monitoring**
     - Click on the **Network** tab in DevTools
     - Clear any existing entries by clicking the clear button (🚫)
     - Ensure recording is active (red record button should be pressed)
 
-3. **Execute the Action**
+4. **Execute the Action**
     - In the FortiManager web interface, perform the action you want to replicate
     - Examples: Create a policy, add a device, modify settings
 
-4. **Filter and Analyze**
+5. **Filter and Analyze**
     - In the DevTools Network tab, type `json` in the filter box
     - This shows only API calls that send/receive JSON data
     - Click on any API call to see details
