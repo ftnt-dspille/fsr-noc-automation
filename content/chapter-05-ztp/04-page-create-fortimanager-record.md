@@ -13,7 +13,7 @@ We will begin configuring FortiSOAR to connect to FortiManager, which allows us 
    ![Add FortiManager Record](images/managers_module.png?height=500px)
 2. Enter the following information:
     - **Manager Name**: ```FortiManager```
-    - **Manager IP**: ```192.168.0.3```
+    - **Manager IP**: ```10.100.88.10```
     - **Admin RPC Username**: ```fortisoar```
     - **Admin RPC Password**: ```fortinet```
    

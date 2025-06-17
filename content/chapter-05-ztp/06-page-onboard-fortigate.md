@@ -14,12 +14,16 @@ Do not Authorize Branch1 during this process. We will do that later.
 {{% /notice %}}
 
 ## Onboard a FortiGate
-1. Login to Enterprise Core using admin/```$3curityFabric```
+1. Login to Branch1 using admin/```$3curityFabric```
 2. Navigate to **Security Fabric > Fabric Connectors**.
 3. Click **Central Management**
     - Click **Enabled**
     - Type `10.100.88.10` in the **IP Address** field.
     - Click OK
+4. Click **Accept** so that the Fortigate trusts the Fortimanager Serial
+5. Click OK 
+6. Click Close
+   ![img.png](close_fmg_status.png)
 
 ![Authorize FMG](images/authorize_fmg.png)
 
