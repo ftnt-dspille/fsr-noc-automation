@@ -80,8 +80,7 @@ Learn to create variables and reference them in subsequent steps using Jinja2 te
         - **Value**: `{{vars.first_name}} {{vars.last_name}}`
 
 {{% notice tip %}}
-**Using Dynamic Values
-**: Instead of typing Jinja2 manually, you can see the Dyanmic Values page by clicking into any field in SOAR. You'll see your previously created variables at the top of the panel. Clicking these variables will automatically add the jinja to reference that value to your step. This helps prevent typos in variable names.
+**Using Dynamic Values**: Instead of typing Jinja2 manually, you can see the Dynamic Values page by clicking into any field in SOAR. You'll see your previously created variables at the top of the panel. Clicking these variables will automatically add the jinja to reference that value to your step. This helps prevent typos in variable names.
 ![img.png](dynamic_values_page_personal_info.png)
 {{% /notice %}}
 

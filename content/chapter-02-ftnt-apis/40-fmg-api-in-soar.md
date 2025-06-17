@@ -4,7 +4,7 @@ linkTitle: FMG API in SOAR
 weight: 40
 ---
 
-The FortiManager JSON RPC connector was created by myself (Dylan Spille) to better work with the RPC actions that foritmanager supports. In order to use this connector, you do need to have familarity with FMG API endpoints, and how to format the request data. Make sure you've read the FMG API section before this chapter.
+The FortiManager JSON RPC connector was created by myself (Dylan Spille) to better work with the RPC actions that FortiManager supports. In order to use this connector, you do need to have familiarity with FMG API endpoints, and how to format the request data. Make sure you've read the FMG API section before this chapter.
 
 ## Prerequisites
 
@@ -62,8 +62,8 @@ The Venn diagram between playbooks, jinja, and API in SOAR is very much like a c
 7. Provide the Follow details
     - Step Name: `Get Devices`
       **Action** : JSON RPC Get
-    - url:`/dvmdb/device`
-    - data:
+    - **URL**:`/dvmdb/device`
+    - **Data**:
     ```json
     {
       "fields": [
@@ -87,7 +87,7 @@ The Venn diagram between playbooks, jinja, and API in SOAR is very much like a c
 9. Click **Save Playbook**
 10. Click the Play button ![img.png](img.png?height=50px&classes=inline)
 11. Click **Trigger Playbook**
-12. Once the Executed Playbook Logs opens, click the step **Get Devices**. Expand the output data and you will see the json respones from the api call
+12. Once the Executed Playbook Logs opens, click the step **Get Devices**. Expand the output data and you will see the json responses from the api call
     ![img_1.png](get_fmg_devices_output.png)
     {{% notice note %}}
     Important things to see in the API Output are the **name**, **sn**, and **mgmt_mode** values. mgmt_mode is `unreg` because we have not authorized the device yet
@@ -124,9 +124,10 @@ Now that we can see unregistered devices, let's create a playbook to authorize t
 3. Save the Playbook
 4. Run/Trigger the playbook
 5. If you switch to the FMG soon enough, you will see the add device task running
-    ![img_1.png](fmg_add_device.png)
+   ![img_1.png](fmg_add_device.png)
 6. If successfully added, you will see this json output in SOAR
-    ![img_1.png](auth_device_output.png)
+   ![img_1.png](auth_device_output.png)
+
 ## Get Configuration from FMG CMDB
 
 ### Retrieve Device Configuration
@@ -142,12 +143,13 @@ Now that we can see unregistered devices, let's create a playbook to authorize t
      "option": ["get meta"]
    }
    ```
-3. Save/Trigger the playbook. 
+3. Save/Trigger the playbook.
    Your step output should look like this
-    
-    ![img_1.png](img_1.png)
+   
+   ![img_1.png](img_1.png)
 
 ## Additional use cases
+
 Additional cases will be added depending on time, such as:
 
 - Gettign config directly from Fortigate with sys/proxy/json
