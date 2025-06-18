@@ -1,7 +1,7 @@
 ---
 title: "Splunk Integration"
 linkTitle: "Splunk"
-weight: 70
+weight: 10
 description: "Complete guide to integrating FortiSOAR with Splunk for automated threat detection and response"
 tags: [ "integration", "splunk", "siem", "automation" ]
 ---

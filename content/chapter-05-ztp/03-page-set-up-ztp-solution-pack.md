@@ -5,66 +5,118 @@ weight: 30
 tags: hands-on
 ---
 
-### Install the ZTP Framework
+# ZTP Solution Pack Setup Guide
 
-1. Go to the Content Hub by clicking the **Content Hub** tab in the left pane
+This guide walks you through the complete setup process for the ZTP (Zero Touch Provisioning) Solution Pack, including installation, configuration, and user setup.
+
+## Prerequisites
+
+Before beginning, ensure you have administrative access to both FortiSOAR and FortiManager systems.
+
+## Step 1: Install the ZTP Framework
+
+1. Navigate to the **Content Hub** by clicking the Content Hub tab in the left navigation pane
 2. Search for `FortiManager ZTP Flow` in the Content Hub
-![ztp_search](images/ztp_search.png?height=400px)
+   
+   ![ZTP Search](images/ztp_search.png?height=400px)
+
 3. Open the Solution Pack and click the **Install** button
 4. Wait for the installation to complete
 
 {{% notice note %}}
-There are a couple of important things we need to configure before we can use the ZTP Solution Pack. 
+Important configuration steps are required before the ZTP Solution Pack can be used effectively.
 {{% /notice %}}
 
-### Configure Code Snippet Connector
+## Step 2: Configure Code Snippet Connector
 
-1. Make sure you have Connectors not filtered out in the Content Hub
+1. Ensure Connectors are not filtered out in the Content Hub view
 2. Search for `Code Snippet` in the Content Hub
-![code_snippet_search](images/code_snippet_search.png?height=400px)
-3. Open the connector, and check the **Mark as Default Configuration** checkbox
+   
+   ![Code Snippet Search](images/code_snippet_search.png?height=400px)
+
+3. Open the connector and check the **Mark as Default Configuration** checkbox
 4. Click **Save**
-![code_snippet_connector](images/configure_code_snippet.png?height=600px)
+   
+   ![Code Snippet Configuration](images/configure_code_snippet.png?height=600px)
 
-### Configure System Settings
+## Step 3: Configure System Settings
 
-1. Navigate to the System Settings page by clicking the gear icon in the top right corner of the FortiSOAR UI
-![system_settings](images/system_settings.png?height=50px)
+### Access System Settings
 
-#### Configure Playbook Appliance Role
+Navigate to System Settings by clicking the gear icon in the top right corner of the FortiSOAR UI.
 
-1. Scroll on the left side and click **Appliances**
-![appliances](images/appliances.png?height=300px)
-2. Click the **Playbook** record (don't click the checkbox)
-3. On the Roles table, check the box for "FortiManager-Playbook-Appliance"
-![playbook_role](images/playbook_appliance_roles.png?height=300px)
+![System Settings](images/system_settings.png?height=50px)
+
+### Configure Playbook Appliance Role
+
+The configuration steps vary depending on your FSR version:
+
+#### For FSR Version 7.6.0 and Later
+
+1. In the left sidebar, scroll down and click **Access Keys**
+2. Select the **Appliances** tab
+   
+   ![Appliance 7.6.0+](appliance_760.png)
+
+#### For FSR Version Prior to 7.6.0
+
+1. In the left sidebar, scroll down and click **Appliances**
+   
+   ![Appliances Pre-7.6.0](images/appliances.png?height=300px)
+
+### Complete Appliance Configuration
+
+**Note:** These steps apply to all FSR versions after accessing the appropriate section above.
+
+1. Click on the **Playbook** record (click the record name, not the checkbox)
+2. In the Roles table, check the box for "FortiManager-Playbook-Appliance"
+   
+   ![Playbook Role Configuration](images/playbook_appliance_roles.png?height=300px)
+
+3. Click **Save** at the bottom of the page
+
+## Step 4: Configure User Roles and Access
+
+### Set Up CS Admin User Role
+
+1. In the left sidebar, scroll down and click **Users**
+   
+   ![Users](images/users.png?height=300px)
+
+2. Click the **CS Admin** record (click the record name, not the checkbox)
+3. In the Roles table, check the box for "FortiManager-Admin"
+   
+   ![CS Admin Roles](images/csadmin_roles.png?height=300px)
+
 4. Click **Save** at the bottom
 
-#### Configure your User Role
+### Switch to CS Admin Account
 
-1. Scroll on the left side and click **Users**
-![users](images/users.png?height=300px)
-2. Click the **CS Admin** record (don't click the checkbox)
-3. On the Roles table, check the box for "FortiManager-Admin"
-![playbook_role](images/csadmin_roles.png?height=300px)
-4. Click **Save** at the bottom
-5. Logout of the FortiSOAR UI
-![logout](images/logout_fortisoar.png)
-6. Login to the FortiSOAR with the following credentials:
-    - Username: `csadmin`
-    - Password: `$3curityFabric`
-7. Verify that you now see **FortiManager** section at the bottom left of navigation pane
-![fmg_nav](images/fortimanager_modules_expanded.png)
+1. Log out of the current FortiSOAR session
+   
+   ![Logout FortiSOAR](images/logout_fortisoar.png)
 
- 
-### Create an API Account on the FortiManager
+2. Log back into FortiSOAR using the CS Admin credentials:
+    - **Username:** `csadmin`
+    - **Password:** `$3curityFabric`
 
-1. Login to the FortiManager UI (Get IP of the FortiManager VM from your Evoke instance) with the following credentials:
-    - Username: `admin`
-    - Password: `$3curityFabric` 
-2. Open the integrated SSH terminal
-![ssh_terminal](images/fmg_ssh.png?height=50px)
-3. Run the following command to create a new API Admin (Use the copy button below)
+3. Verify the setup by confirming you can see the **FortiManager** section in the bottom left navigation pane
+   
+   ![FortiManager Navigation](images/fortimanager_modules_expanded.png)
+
+## Step 5: Configure FortiManager API Access
+
+### Create FortiManager API Account
+
+1. Access the FortiManager UI using the IP address from your Evoke instance
+2. Log in with the following credentials:
+    - **Username:** `admin`
+    - **Password:** `$3curityFabric`
+3. Open the integrated SSH terminal to proceed with API account configuration
+   
+   ![ssh_terminal](images/fmg_ssh.png?height=50px)
+
+4. Run the following command to create a new API Admin (Use the copy button below)
    ```shell
    config system admin user
        edit "fortisoar"
@@ -77,6 +129,6 @@ There are a couple of important things we need to configure before we can use th
    end
    ```
 
-4. Verify the new user was created by navigating to **System Settings > Administrators** and checking for the new user
+5. Verify the new user was created by navigating to **System Settings > Administrators** and checking for the new user
 
 ![FortiSOAR User](images/new_fmg_user.png)
