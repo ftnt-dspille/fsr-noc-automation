@@ -2,7 +2,6 @@
 title: Making ZTP "Zero Touch"
 menuTitle: Making ZTP "Zero Touch"
 weight: 80
-draft: true
 tags: hands-on
 ---
 
@@ -10,43 +9,54 @@ So far there has been a lot of touch! But we're _very_ close to zero now. In thi
 
 ---
 
-## Modify the ZTP Profile
+## Modify the ZTP Profile to be Automatic
 
-1. Navigate to **FortiManager > ZTP Profiles** and edit the **Branch ZTP Profile**.
-2. At the bottom right of the record click **Edit Record**
-3. Change the **Assignment Mode** field to **Automatic**.
-4. Click **Save**.
+1. Navigate to **FortiManager > ZTP Profiles** and edit the **Branch ZTP Profile**
+2. At the bottom right of the record, click **Edit Record**
+3. Change the **Assignment Mode** field from `Manual` to `Automatic`
+4. Click **Save**
+
+Now the next time a device is created on FortiSOAR, the profile will be assigned automatically without manual intervention.
 
 ![Set ZTP profile to automatic](images/ztp_profile_auto.png)
 
 ---
 
-## Import Playbook Collection
+## Schedule the Device Synchronization
 
-{{% resources style="green" title="Files" /%}}
+1. Navigate to **Automation > Schedules**
+   
+   ![Schedule Management](schedules.png)
 
-1. Download **FOS ZTP Helpers.zip** file above
-2. Go to **System > Application Editor> Import Wizard**
-3. click **Import from File** and select the file **FOS ZTP Helpers.zip**
-   ![Import Wizard](images/appeditor.png?height=300px)
-4. Leave all the default settings and click ![Continue button](images/continue.png?height=40px&classes=inline) twice, and then click **Run Import**
-   ![Select configuration to import](images/selectconfigs.png?height=250px)
-5. The import should complete without error.
+2. Click **Create New Schedule**
 
-## Trigger ZTP
+3. Fill out the schedule with the following details:
+    - **Name**: `Retrieve Unauthorized Fortigates`
+    - **Start Schedule**: `True` (enable the schedule)
+    - **Playbook Reference**: `Synch All FMG Device DB Button`
+    - **Schedule Frequency**: `Every X minutes`
+    - **Interval**: `5` (can be adjusted as low as 1 minute)
 
-Let's now imagine that we have a new branch office **Branch2** that we need to onboard. Here is how we could do it using API
+4. Click **Save**
 
-1. Navigate to **FortiManager > Devices**
-2. Click the Execute button and select "Set FMG via FOS API" from the dropdown
-   ![Set FMG via FOS API](images/set_fmg_via_fos_api.png)
-3. Provide the following information
-    - **FortiGate IP**: ```192.168.0.2```
-    - **FortiManager**: ```192.168.0.3```
-    - **Username**: ```admin```
-    - **Password**: ```$3curityFabric```
-4. Click **Execute**
+This will automatically pull in new unauthorized devices every 5 minutes, eliminating the need for manual synchronization.
 
-{{% notice note %}}
-There is no Branch2 in our Evoke lab, but that playbook would have configured the FortiGate to register to FortiManager. Then the ZTP profile would have been automatically assigned to the device and provisioning would kick off.
-{{% /notice %}}
+---
+
+## Onboard Branch2
+
+1. Login to the Branch2 FortiGate using the web interface
+2. Follow the steps outlined [here](/chapter-05-ztp/06-page-onboard-fortigate) to register the FortiGate to FortiManager
+3. The device will appear as "Unauthorized" in FortiManager
+
+---
+
+## Watch the Automation in Action
+
+Now you can observe the Branch2 device being automatically:
+
+- **Discovered** by the scheduled synchronization (within 5 minutes)
+- **Assigned** the Branch ZTP Profile automatically
+- **Configured** with all the settings from your ZTP profile
+
+The entire process should complete without any manual intervention, achieving true zero-touch provisioning.

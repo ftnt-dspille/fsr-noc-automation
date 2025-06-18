@@ -56,7 +56,7 @@ The configuration steps vary depending on your FSR version:
 1. In the left sidebar, scroll down and click **Access Keys**
 2. Select the **Appliances** tab
    
-   ![Appliance 7.6.0+](appliance_760.png)
+   ![Appliance 7.6.0+](appliance_760.png?height=400px)
 
 #### For FSR Version Prior to 7.6.0
 
@@ -69,9 +69,9 @@ The configuration steps vary depending on your FSR version:
 **Note:** These steps apply to all FSR versions after accessing the appropriate section above.
 
 1. Click on the **Playbook** record (click the record name, not the checkbox)
-2. In the Roles table, check the box for "FortiManager-Playbook-Appliance"
+2. In the Roles table, check the box for **FortiManager-Playbook-Appliance**
    
-   ![Playbook Role Configuration](images/playbook_appliance_roles.png?height=300px)
+   ![Playbook Role Configuration](images/playbook_appliance_roles.png?height=400px)
 
 3. Click **Save** at the bottom of the page
 
