@@ -34,7 +34,7 @@ logoImage = "white-logo.svg"
 # The banner text under Fortinet logo on the top left of the project. Better to be short.
 logoBannerText = "NOC Automation with FSR"
 # Small text under the title
-logoBannerSubText = "Internal Only"
+# logoBannerSubText = "Internal Only"
 ################################# END EDITING #################################
 
 
