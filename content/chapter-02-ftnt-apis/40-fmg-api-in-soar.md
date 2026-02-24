@@ -28,6 +28,15 @@ The Venn diagram between playbooks, jinja, and API in SOAR is very much like a c
        next
    end
    ```
+4. Allow FortiGate VMs in FortiManager CLI
+```cli
+config system global
+set fgfm-allow-vm enable
+end
+```
+{{% notice warning %}}
+If you do not allow vm's, you will get a certificate error when trying to register fortigates to fortimanager
+{{% /notice %}}
 
 ## Setup FMG JSON RPC Connector
 
