@@ -1,3 +1,52 @@
 baseURL = "https://ftnt-dspille.github.io/fsr-noc-automation"
 canonifyURLs = true
 relativeURLs = false
+
+
+# Shows a checkmark for visited pages on the menu
+showVisitedLinks = true
+# Disable search function. It will hide search bar
+disableSearch = false
+# Javascript and CSS cache are automatically busted when new version of site is generated.
+# Set this to true to disable this behavior (some proxies don't handle well this optimization)
+disableAssetsBusting = true
+# Set this to true to disable copy-to-clipboard button for inline code.
+disableInlineCopyToClipBoard = false
+# A title for shortcuts in menu is set by default. Set this to true to disable it.
+disableShortcutsTitle = false
+
+# If set to false, a Home button will appear below the search bar on the menu.
+# It is redirecting to the landing page of the current language if specified. (Default is "/")
+disableLandingPageButton = true
+# When using mulitlingual website, disable the switch language button.
+disableLanguageSwitchingButton = true
+# Hide breadcrumbs in the header and only show the current page title
+disableBreadcrumb = false
+# Hide Next and Previous page buttons normally displayed full height beside content
+disableNextPrev = false
+# Order sections in menu by "weight" or "title". Default to "weight"
+ordersectionsby = "weight"
+
+landingPageName = "<i class='fas fa-home'></i> Home"
+
+version = "v0.0.0"
+
+[[menu.shortcuts]]
+name = "<i class='fas fa-print'></i> Single Page View (for printing)"
+url = "allpages.html"
+weight = 1
+
+[outputs]
+home = ["HTML", "RSS"]
+
+[markup]
+defaultMarkdownHandler = "goldmark"
+[markup.goldmark]
+hrefTargetBlank = true
+[markup.highlight]
+guessSyntax = true
+
+
+[caches]
+[caches.images]
+dir = ':cacheDir/images'
