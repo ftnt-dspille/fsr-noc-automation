@@ -2,7 +2,7 @@ baseURL = "https://ftnt-dspille.github.io/fsr-noc-automation"
 canonifyURLs = true
 relativeURLs = false
 
-
+[params]
 # Shows a checkmark for visited pages on the menu
 showVisitedLinks = true
 # Disable search function. It will hide search bar
