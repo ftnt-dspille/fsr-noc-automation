@@ -5,8 +5,6 @@ weight: 30
 tags: hands-on
 ---
 
-# ZTP Solution Pack Setup Guide
-
 This guide walks you through the complete setup process for the ZTP (Zero Touch Provisioning) Solution Pack, including installation, configuration, and user setup.
 
 ## Prerequisites
@@ -19,7 +17,10 @@ Before beginning, ensure you have administrative access to both FortiSOAR and Fo
 2. Search for `FortiManager ZTP Flow` in the Content Hub
    
    ![ZTP Search](images/ztp_search.png?height=400px)
-
+   {{% notice warning %}}
+   If you already see that FortiManager ZTP is installed, then the steps on this page have already been completed for you. Do not install any ZTP Solution Packs. The rest of this page is more informational on the typical process. Example if already installed: 
+![img.png](ztp_installed_already.png?height=500px)
+   {{% /notice %}}
 3. Open the Solution Pack and click the **Install** button
 4. Wait for the installation to complete
 
@@ -34,10 +35,11 @@ Important configuration steps are required before the ZTP Solution Pack can be u
    
    ![Code Snippet Search](images/code_snippet_search.png?height=400px)
 
-3. Open the connector and check the **Mark as Default Configuration** checkbox
+3. Open the connector and check the **Mark as Default Configuration** checkbox, if it's not already set.
+
+![Code Snippet Configuration](images/configure_code_snippet.png?height=600px)
+
 4. Click **Save**
-   
-   ![Code Snippet Configuration](images/configure_code_snippet.png?height=600px)
 
 ## Step 3: Configure System Settings
 
@@ -90,7 +92,7 @@ The configuration steps vary depending on your FSR version:
 
 4. Click **Save** at the bottom
 
-### Switch to CS Admin Account
+### Relogin with the csadmin Account
 
 1. Log out of the current FortiSOAR session
    
