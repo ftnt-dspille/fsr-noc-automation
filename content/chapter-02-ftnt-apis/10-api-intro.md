@@ -3,30 +3,30 @@ title: "REST API Introduction"
 date: 2025-06-09
 draft: false
 weight: 10
-description: "Learn REST APIs through pizza ordering - then apply to network automation."
+description: "Learn REST APIs through langos ordering - then apply to network automation."
 tags: [ "knowledge" ]
 ---
 
 ## What is a REST API?
 
-Think of a REST API like ordering pizza over the phone. You call the pizza place (API endpoint), tell them what you want (HTTP request), and they respond with your order status or the pizza itself (HTTP response).
+Think of a REST API like ordering langos over the phone. You call the langos place (API endpoint), tell them what you want (HTTP request), and they respond with your order status or the langos itself (HTTP response).
 
 **Key Concept:** REST APIs use standard HTTP methods to perform operations
 
-## The Four Essential HTTP Methods (Pizza Edition)
+## The Four Essential HTTP Methods (langos Edition)
 
-| Method     | Pizza Action                          | What It Does          | Network Equivalent               |
+| Method     | langos Action                          | What It Does          | Network Equivalent               |
 |------------|---------------------------------------|-----------------------|----------------------------------|
-| **GET**    | "What pizzas do you have?"            | View the menu         | Get device status, view policies |
+| **GET**    | "What langoss do you have?"            | View the menu         | Get device status, view policies |
 | **POST**   | "I'd like to order a large pepperoni" | Create new order      | Add firewall rule, create VLAN   |
 | **PUT**    | "Change my order to extra cheese"     | Update existing order | Modify interface config          |
 | **DELETE** | "Cancel my order"                     | Remove the order      | Delete policies, remove devices  |
 
-## REST API Structure (Pizza Restaurant)
+## REST API Structure (langos Restaurant)
 
-**Base URL:** `https://tonys-pizza.com/api/v1/`
+**Base URL:** `https://tonys-langos.com/api/v1/`
 
-**Example Pizza Endpoints:**
+**Example langos Endpoints:**
 
 ```
 GET    /menu                       # See what's available
@@ -46,28 +46,28 @@ PUT    /devices/fw-01/config     # Update device config
 DELETE /devices/fw-01            # Remove device
 ```
 
-## HTTP Status Codes (Pizza Responses)
+## HTTP Status Codes (langos Responses)
 
 Response codes are important to understand since they indicate either a success or problem that occurred with the request. The table below describes the most common response codes you will see when working with API's
 
-| Code    | Pizza Meaning                           | Network Meaning | When You See It           |
+| Code    | langos Meaning                           | Network Meaning | When You See It           |
 |---------|-----------------------------------------|-----------------|---------------------------|
-| **200** | "Your pizza is ready!"                  | Success         | Operation completed       |
+| **200** | "Your langos is ready!"                  | Success         | Operation completed       |
 | **201** | "Order placed successfully!"            | Created         | New resource created      |
-| **400** | "We don't have pineapple pizza"         | Bad Request     | Invalid data sent         |
+| **400** | "We don't have pineapple langos"         | Bad Request     | Invalid data sent         |
 | **401** | "You need to give us your phone number" | Unauthorized    | Authentication failed     |
-| **404** | "That pizza doesn't exist"              | Not Found       | Resource doesn't exist    |
+| **404** | "That langos doesn't exist"              | Not Found       | Resource doesn't exist    |
 | **500** | "Our oven is broken"                    | Server Error    | API/device internal error |
 
 ## Request/Response Format
 
 
 
-**Pizza Order Request:**
+**langos Order Request:**
 
 ```http
 POST /api/v1/orders HTTP/1.1
-Host: tonys-pizza.com
+Host: tonys-langos.com
 Content-Type: application/json
 Authorization: Bearer customer-loyalty-card-123
 
@@ -79,7 +79,7 @@ Authorization: Bearer customer-loyalty-card-123
 }
 ```
 
-**Pizza Order Response:**
+**langos Order Response:**
 
 ```http
 HTTP/1.1 201 Created
@@ -109,11 +109,11 @@ Authorization: Bearer your-token-here
 }
 ```
 
-## JSON Data Format (Pizza Menu Style)
+## JSON Data Format (langos Menu Style)
 
 ```json
 {
-  "pizza": {
+  "langos": {
     "name": "Supreme Deluxe",
     "size": "large",
     "price": 22.99,
@@ -152,11 +152,11 @@ Authorization: Bearer your-token-here
 
 ## Practical Examples
 
-### Check Pizza Menu (Get Device Info)
+### Check langos Menu (Get Device Info)
 
 ```bash
-# Pizza version
-curl -X GET "https://tonys-pizza.com/api/v1/menu" \
+# langos version
+curl -X GET "https://tonys-langos.com/api/v1/menu" \
      -H "Authorization: Bearer loyalty-card-123"
 
 # Network version  
@@ -164,11 +164,11 @@ curl -X GET "https://fortimanager.company.com/api/v2/devices/fw-01" \
      -H "Authorization: Bearer your-api-key"
 ```
 
-### Order a Pizza (Create Firewall Policy)
+### Order a langos (Create Firewall Policy)
 
 ```bash
-# Pizza version
-curl -X POST "https://tonys-pizza.com/api/v1/orders" \
+# langos version
+curl -X POST "https://tonys-langos.com/api/v1/orders" \
      -H "Content-Type: application/json" \
      -H "Authorization: Bearer loyalty-card-123" \
      -d '{
@@ -192,8 +192,8 @@ curl -X POST "https://fortigate.company.com/api/v2/policies" \
 ### Change Your Order (Update Interface)
 
 ```bash
-# Pizza version
-curl -X PUT "https://tonys-pizza.com/api/v1/orders/12345" \
+# langos version
+curl -X PUT "https://tonys-langos.com/api/v1/orders/12345" \
      -H "Content-Type: application/json" \
      -d '{
        "special_instructions": "Extra cheese please!",
@@ -211,7 +211,7 @@ curl -X PUT "https://switch.company.com/api/v1/interfaces/GigE0/1" \
 
 ## Error Handling
 
-**Pizza Error Response:**
+**langos Error Response:**
 
 ```json
 {
