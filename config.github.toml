@@ -1,5 +1,5 @@
 baseURL = "https://ftnt-dspille.github.io/fsr-noc-automation"
-canonifyURLs = true
+canonifyURLs = false
 relativeURLs = false
 
 [params]
