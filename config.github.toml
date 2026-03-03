@@ -35,6 +35,10 @@ version = "v0.0.0"
 name = "<i class='fas fa-print'></i> Single Page View (for printing)"
 url = "allpages.html"
 weight = 1
+[[menu.shortcuts]]
+name = "<i class='fas fa-file-powerpoint'></i> SOAR NOC PowerPoint Download"
+url = "FortiSOAR NOC Deep Dive.pptx"
+weight = 2
 
 [outputs]
 home = ["HTML", "RSS"]
