@@ -114,9 +114,6 @@ The metafields are used to pass variables to the scripts. The metafields are ref
        config firewall address
            purge
        end
-       config firewall service
-           purge
-       end
        ```
 
 3. Click **Create**.
@@ -143,7 +140,7 @@ The order priority is used to determine the order in which the scripts are execu
             edit "{{devmeta.admin_user_name}}"
                 set accprofile "super_admin"
                 set vdom "root"
-                set password fortinet
+                set password fortinet4A!!
             next
         end
         config system interface
