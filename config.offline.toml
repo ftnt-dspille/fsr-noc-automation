@@ -1,0 +1,4 @@
+baseURL = "/"
+canonifyURLs = false
+relativeURLs = true
+uglyurls = true
