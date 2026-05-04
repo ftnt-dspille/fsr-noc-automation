@@ -1,4 +1,11 @@
-{{ $assetPrefix := getenv "HUGO_ASSET_PREFIX" | default "" }}
+{{- $assetBase := absURL "" -}}
+{{- if site.Params.offlineBuild -}}
+  {{- $assetBase = "" -}}
+  {{- $dir := path.Dir .RelPermalink -}}
+  {{- range split (strings.Trim $dir "/") "/" -}}
+    {{- if ne . "" -}}{{- $assetBase = printf "../%s" $assetBase -}}{{- end -}}
+  {{- end -}}
+{{- end -}}
 <style>
     :root {
       /* Colors */
@@ -81,7 +88,7 @@
       font-weight: 100 1000;
       font-stretch: 100%;
       font-display: swap;
-      src: url('{{ printf "%s/fonts/Inter-V.ttf" $assetPrefix }}');
+      src: url('{{ printf "%sfonts/Inter-V.ttf" $assetBase }}');
   }
     ::placeholder {
       /* Chrome, Firefox, Opera, Safari 10.1+ */
@@ -177,7 +184,7 @@
     }
 
     #logo img {
-      content: url('{{ printf "%s/images/white-logo.svg" $assetPrefix }}');
+      content: url('{{ printf "%simages/white-logo.svg" $assetBase }}');
   }
 </style>
 

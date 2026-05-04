@@ -3,6 +3,6 @@
   --theme-color: var(--fortinet-blue);
 }
 #logo img {
-  content: url("/images/logo-black-red.svg");
+  content: url("../images/logo-black-red.svg");
 }
 

@@ -2,3 +2,6 @@ baseURL = "/"
 canonifyURLs = false
 relativeURLs = true
 uglyurls = true
+
+[params]
+offlineBuild = true
