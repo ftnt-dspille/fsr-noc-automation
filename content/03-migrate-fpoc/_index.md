@@ -2,6 +2,7 @@
 title: "Migration Options"
 linkTitle: "Migration Options"
 weight: 30
+description: "Ways to migrate an existing FortiPOC environment to Fabric Studio"
 ---
 
 There are two different ways to migrate from fortipoc to fabric studio.

@@ -2,6 +2,7 @@
 title: "Fabric Studio API"
 linkTitle: "Fabric Studio API"
 weight: 60
+description: "Discover and use the Fabric Studio REST API and Python client"
 ---
 
 Fabric Studio provides comprehensive API support with multiple discovery methods to help you understand and utilize available endpoints effectively.
