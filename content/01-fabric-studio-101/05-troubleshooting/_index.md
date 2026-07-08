@@ -5,8 +5,6 @@ weight: 50
 description: "How to solve common problems when using Fabric Studio"
 ---
 
-# Troubleshooting Guide
-
 This guide covers common issues you may encounter when using Fabric Studio and provides step-by-step solutions.
 
 ## Unable to SSH to Device

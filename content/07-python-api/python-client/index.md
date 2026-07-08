@@ -5,8 +5,6 @@ date: 2025-05-28T11:09:55-05:00
 weight: 10
 ---
 
-# Python Client for Fabric Studio
-
 Welcome to the Python client documentation for Fabric Studio! This comprehensive wrapper simplifies HTTP requests to the Fabric Studio API, making it easy to integrate Fabric Studio functionality into your Python applications.
 
 ## Overview

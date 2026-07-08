@@ -88,13 +88,13 @@ fortisoar-fs-5-28-25.fpoc                                                       
 
 ---
 
-# VM Access Management Guide
+## VM Access Management Guide
 
-## Overview
+### Overview
 
 VM access controls how you can connect to virtual machines in your fabric. This guide covers viewing existing access methods and creating new ones.
 
-## Command Structure
+### Command Structure
 
 All VM access commands follow this pattern:
 
@@ -102,7 +102,7 @@ All VM access commands follow this pattern:
 model vm access <action> [options] [arguments]
 ```
 
-## Available Access Types
+### Available Access Types
 
 - **SERIAL** - Serial console access
 - **SSH** - Secure Shell access (port 22)
@@ -111,16 +111,16 @@ model vm access <action> [options] [arguments]
 - **SPICE** - Remote desktop protocol
 - **VNC** - Virtual Network Computing remote desktop
 
-## Access Modes
+### Access Modes
 
 - **PRIVATE** - Internal network access only
 - **PUBLIC** - External network access (use with caution)
 
 ---
 
-## Viewing VM Access
+### Viewing VM Access
 
-### 1. List All VMs in a Fabric
+#### 1. List All VMs in a Fabric
 
 ```bash
 model fabric vm list <fabric_id>
@@ -132,13 +132,13 @@ model fabric vm list <fabric_id>
 model fabric vm list 4
 ```
 
-### 2. View All VM Access Entries
+#### 2. View All VM Access Entries
 
 ```bash
 model vm access list
 ```
 
-### 3. View Access for Specific VM
+#### 3. View Access for Specific VM
 
 ```bash
 model vm access list --select "vm=<vm_id>"
@@ -150,7 +150,7 @@ model vm access list --select "vm=<vm_id>"
 model vm access list --select "vm=67"
 ```
 
-### 4. Get Detailed Access Information
+#### 4. Get Detailed Access Information
 
 ```bash
 model vm access detail <access_id>
@@ -162,7 +162,7 @@ model vm access detail <access_id>
 model vm access detail 50
 ```
 
-### 5. Additional List Options
+#### 5. Additional List Options
 
 ```bash
 # With pagination
@@ -177,15 +177,15 @@ model vm access list --related-fields vm,fabric
 
 ---
 
-## Creating VM Access
+### Creating VM Access
 
-### Basic Syntax
+#### Basic Syntax
 
 ```bash
 model vm access create '<json_object>'
 ```
 
-### JSON Object Structure
+#### JSON Object Structure
 
 ```json
 {
@@ -197,45 +197,45 @@ model vm access create '<json_object>'
 }
 ```
 
-### Common Access Creation Examples
+#### Common Access Creation Examples
 
-#### SSH Access
+##### SSH Access
 
 ```bash
 model vm access create '{"vm": 67, "type": "SSH", "mode": "PRIVATE", "name": "SSH", "dport": 22}'
 ```
 
-#### HTTP Access
+##### HTTP Access
 
 ```bash
 model vm access create '{"vm": 67, "type": "HTTP", "mode": "PRIVATE", "name": "HTTP", "dport": 80}'
 ```
 
-#### HTTPS Access
+##### HTTPS Access
 
 ```bash
 model vm access create '{"vm": 67, "type": "HTTPS", "mode": "PRIVATE", "name": "HTTPS", "dport": 443}'
 ```
 
-#### Serial Console Access
+##### Serial Console Access
 
 ```bash
 model vm access create '{"vm": 67, "type": "SERIAL", "mode": "PRIVATE", "name": "SERIAL", "dport": 0}'
 ```
 
-#### SPICE Remote Desktop
+##### SPICE Remote Desktop
 
 ```bash
 model vm access create '{"vm": 67, "type": "SPICE", "mode": "PRIVATE", "name": "SPICE", "dport": 0}'
 ```
 
-#### VNC Remote Desktop
+##### VNC Remote Desktop
 
 ```bash
 model vm access create '{"vm": 67, "type": "VNC", "mode": "PRIVATE", "name": "VNC", "dport": 0}'
 ```
 
-### Descriptive Naming Convention
+#### Descriptive Naming Convention
 
 For consistency with existing entries, use descriptive names:
 
@@ -245,21 +245,21 @@ model vm access create '{"vm": 67, "type": "HTTPS", "mode": "PRIVATE", "name": "
 
 ---
 
-## Deleting VM Access
+### Deleting VM Access
 
-### Delete Access Entry
+#### Delete Access Entry
 
 ```bash
 model vm access delete <access_id>
 ```
 
-### Interactive Deletion
+#### Interactive Deletion
 
 ```bash
 model vm access delete <access_id> --interactive
 ```
 
-### Force Deletion (no confirmation)
+#### Force Deletion (no confirmation)
 
 ```bash
 model vm access delete <access_id> --yes
@@ -267,9 +267,9 @@ model vm access delete <access_id> --yes
 
 ---
 
-## Complete Workflow Example
+### Complete Workflow Example
 
-### Step 1: Find Your VM
+#### Step 1: Find Your VM
 
 ```bash
 # List all VMs in fabric 4
@@ -279,7 +279,7 @@ model fabric vm list 4
 # 67 BASIC:Ubuntu-Cloud
 ```
 
-### Step 2: Check Existing Access
+#### Step 2: Check Existing Access
 
 ```bash
 # Check current access for VM 67
@@ -290,7 +290,7 @@ model vm access list --select "vm=67"
 # 227 Default SPICE PRIVATE access to Ubuntu-Cloud
 ```
 
-### Step 3: Add New Access
+#### Step 3: Add New Access
 
 ```bash
 # Add HTTPS access
@@ -300,7 +300,7 @@ model vm access create '{"vm": 67, "type": "HTTPS", "mode": "PRIVATE", "name": "
 model vm access create '{"vm": 67, "type": "SSH", "mode": "PRIVATE", "name": "SSH", "dport": 22}'
 ```
 
-### Step 4: Verify Creation
+#### Step 4: Verify Creation
 
 ```bash
 # Check access again
@@ -309,13 +309,13 @@ model vm access list --select "vm=67"
 # Should now show all access methods including new ones
 ```
 
-### Step 5: Apply changes to Fabric
+#### Step 5: Apply changes to Fabric
 
 Open your Fabric and Sync the change to the device
 ![img.png](sync_access.png)
 ---
 
-## JSON Mode
+### JSON Mode
 
 Enable JSON output for programmatic processing:
 
