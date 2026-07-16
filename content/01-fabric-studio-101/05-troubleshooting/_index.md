@@ -49,9 +49,25 @@ After confirming global settings, configure device-specific access:
 **Additional Resources:** For comprehensive information on Security Policies, visit the [Fabric Studio Documentation](https://register.fabricstudio.net/docs/fabric-studio/2.0.2/security.html#ssh-access-to-device)
 {{% /notice %}}
 
-## Adding SSH Access When Not Listed
+## Adding Access That Isn't Listed
 
-If SSH is not available in the Access section, you'll need to manually add it by modifying the device meta file.
+If SSH, HTTP, or HTTPS isn't available in a device's Access section, there are two
+different ways to add it — and picking the wrong one costs you a lot of time.
+
+| You want to… | Do this |
+|---|---|
+| Add access to **one existing VM** | Use the CLI: [VM Access]({{% relref "/06-handy-commands/02-vm-access" %}}). One command, no image changes, no repository refresh. |
+| Add access to **every future VM built from a firmware image** | Edit the image's `.meta` file — the procedure below. |
+
+**For a single device, use the [VM Access]({{% relref "/06-handy-commands/02-vm-access" %}})
+page.** `model vm access create` adds the entry directly to the VM model. The
+`.meta` procedure below edits the *firmware image*, so it only affects VMs
+deployed from that image afterwards — it is not the quick fix for one device.
+
+### Baking access into a firmware image
+
+Use this when you want the access type present by default on every VM deployed
+from an image.
 
 ### Prerequisites
 
@@ -143,9 +159,10 @@ The meta file changes won't take effect on installed fabrics until you perform a
 
 ![Device Sync SSH Access](device_sync_access_shh.png)
 
-## Adding HTTP/HTTPS Access When Not Listed
+## Adding HTTP/HTTPS Access to One Device
 
-If HTTPS access is missing from your device configuration, follow these steps to add it manually.
+If HTTPS is missing from a single device's Access section, add it from the CLI —
+no image edit and no repository refresh needed.
 
 ### Initial Assessment
 
@@ -156,11 +173,20 @@ When HTTPS is not listed in the Access section:
 ### Step-by-Step Process
 
 #### Step 1: Locate VM ID
-1. Click the **Info** tab
-2. Scroll down to view the **JSON format** of access settings
-3. Note the **VM ID** from the `vm` field (example: `66`)
+
+You can read it from the UI — click the **Info** tab, scroll to the **JSON
+format** of access settings, and note the **VM ID** from the `vm` field
+(example: `66`):
 
 ![Find VM ID](find_vm_id.png)
+
+Or list it from the CLI, where the first column is the VM ID:
+
+```bash
+(cmm-master-fs-001) # model fabric vm list 5
+40 fgt1 [fgt000] (FGT)
+41 lxc1 [lxc000] (LXC)
+```
 
 #### Step 2: Access SSH Interface
 Click the **SSH** button in Fabric Studio:
@@ -171,8 +197,35 @@ Click the **SSH** button in Fabric Studio:
 Execute the following command, replacing `66` with your actual VM ID:
 
 ```bash
-model vm access create '{"vm": 66, "type": "HTTPS", "mode": "PRIVATE", "name": "HTTPS", "dport": 443}'
+(cmm-master-fs-001) # model vm access create '{"vm": 66, "type": "HTTPS", "mode": "PUBLIC", "name": "HTTPS", "dport": 443}'
+115 HTTPS PUBLIC access to lxc1 from 13001 to 443
 ```
+
+{{% notice warning %}}
+**Use `"mode": "PUBLIC"`, not `PRIVATE`.** A `PRIVATE` entry is created
+successfully and appears in every listing, but it's reachable only inside the pod
+— no external port is opened. `PUBLIC` is what lets you connect from your own
+machine.
+{{% /notice %}}
+
+#### Step 4: Sync the device
+
+The entry is in the model, but nothing is listening until you push it to the
+running device:
+
+```bash
+(cmm-master-fs-001) # runtime vm synchronize 66
+558 [admin] "Synchronize 'lxc1' device" running since 2026-07-16 18:03:18+00:00
+
+(cmm-master-fs-001) # task detail 558
+558 "Synchronize 'lxc1' device" ends with 0 code
+```
+
+Then connect on the port from the create output — `https://<pod-host>:13001` above.
+
+For the full reference — access types, `HTTPS2HTTP` for plain-HTTP guests, the
+pod-wide security gate, and updating or deleting entries — see
+[VM Access]({{% relref "/06-handy-commands/02-vm-access" %}}).
 
 ## Additional Resources
 
