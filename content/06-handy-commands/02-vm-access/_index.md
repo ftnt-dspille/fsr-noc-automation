@@ -180,6 +180,21 @@ List every access on the pod, with pagination and ordering:
 
 ## Step 5 — Create access
 
+> **Not every type can be created this way — and it's version-dependent.** On some
+> Fabric Studio versions, `model vm access create` only accepts **HTTP**, **HTTPS**,
+> and **HTTPS2HTTP** as *extra* accesses. Trying to add `SSH` (or `RDP`, `VNC`,
+> `SPICE`, `SERIAL`) fails with:
+> ```
+> Can only create HTTP, HTTPS or HTTPS2HTTP extra access
+> ```
+> Those types are only present when the firmware image's `.meta` declares them as
+> **default** accesses. So if you need SSH on a VM that doesn't already have it and
+> you hit that error, the CLI can't add it — you must
+> [bake it into the firmware `.meta`](#baking-access-into-a-firmware-image-the-meta-route).
+> Newer versions are more permissive (they also allow `RDP`/`SPICE`/`SSH`), so
+> whether the SSH example below works depends on your pod — try it, and fall back to
+> the `.meta` route if it's rejected.
+
 The argument is a **JSON object**, single-quoted. Note this is *not* the
 `key='value'` format the CLI uses when it *prints* objects — passing that back in
 fails with `Expecting value: line 1 column 1`.
@@ -227,6 +242,11 @@ Fabric Studio picked.
 ```
 
 #### SSH access
+
+Works only on FS versions that allow SSH as an extra access (see the warning at
+the top of this step). If it returns `Can only create HTTP, HTTPS or HTTPS2HTTP
+extra access`, use the [`.meta` route](#baking-access-into-a-firmware-image-the-meta-route)
+instead.
 
 ```bash
 (cmm-master-fs-001) # model vm access create '{"vm": 41, "type": "SSH", "mode": "PUBLIC", "name": "SSH", "dport": 22}'
@@ -340,6 +360,101 @@ create output, e.g. `https://<pod-host>:13001` for the HTTPS entry above.
 
 ---
 
+## Baking access into a firmware image (the `.meta` route)
+
+This is the route to use when either (a) you want an access type present **by
+default on every VM built from a firmware image**, or (b) `model vm access create`
+**refused** the type you need — SSH/RDP/VNC/SPICE/SERIAL on the restricted FS
+versions that only allow HTTP/HTTPS/HTTPS2HTTP as extras (see Step 5). You edit the
+image's `.meta` sidecar in the repository home shell, so it changes the *firmware*,
+not a single VM.
+
+Two consequences worth knowing before you start:
+
+- It affects VMs deployed from that image **afterwards** — an already-running VM
+  needs a sync (Step D) to pick it up.
+- An access baked into the `.meta` shows up as a **default** access that Fabric
+  Studio then won't let you delete from the model (`Can't delete a default
+  access`). That's expected — it's how a default differs from a CLI-added extra.
+
+> **Which one do I want?** One existing VM, and the type is HTTP/HTTPS/HTTPS2HTTP →
+> `model vm access create` (Step 5). SSH/console types, or every future VM from an
+> image → the `.meta` edit below.
+
+> **Reality check on what a forward is.** Adding the access (either way) only makes
+> Fabric Studio open the external port and forward it to the guest. Something inside
+> the guest still has to be **listening** — an SSH forward to an image with no
+> `sshd` running connects to nothing. The `.meta` convention lines up with images
+> that actually ship the service.
+
+### Step A — Open the repository home shell and find the image
+
+```bash
+(cmm-master-fs-001) # system repository home shell
+admin@cmm-master-fs-001:~$ cd firmwares/
+admin@cmm-master-fs-001:~$ ls
+```
+
+Note your device's firmware name (e.g. `Ubuntu-Branch2.final.qcow2`). The sidecar
+is that name plus `.meta` — `Ubuntu-Branch2.final.qcow2.meta`. (Directory-style
+firmwares carry an `active.meta` inside `firmwares/<Name>/` instead.)
+
+![The firmware name, as shown on the device](images/firmware_name_used.png)
+
+![Opening the repository home shell and the firmwares directory](images/example_commands.png)
+
+### Step B — Edit the `.meta` and add the access line
+
+```bash
+admin@cmm-master-fs-001:~$ vi <firmware-name>.meta
+# Example: vi Ubuntu-Branch2.final.qcow2.meta
+```
+
+Navigate to the `accesses` section and add a line for the access type you want —
+for example, SSH:
+
+```xml
+<access path="" port="22" type="SSH"></access>
+```
+
+Then save and quit (`ESC`, `:wq`, Enter). The `type`/`port` follow the same table
+as Step 3 above (`SSH`/22, `HTTPS`/443, `SERIAL`/0, …).
+
+![The accesses section with the new SSH entry added below VNC](images/two_access_entries.png)
+
+### Step C — Refresh the repository (required)
+
+After editing a `.meta` directly you **must** tell Fabric Studio about the change,
+or the UI and model never see it:
+
+```bash
+admin@cmm-master-fs-001:~$ exit
+(cmm-master-fs-001) # system repository home refresh
+```
+
+The refresh prints the diff it detected on the firmware's meta.
+
+![The repository refresh reporting the meta change it detected](images/repo_sync_changes.png)
+
+Refresh the FS UI and open a device built from that image — the new access type is
+now listed.
+
+![SSH now present in the device's Access section](images/ssh_access_now_present.png)
+
+### Step D — Sync each device to make it live
+
+The `.meta` edit changes what *new* VMs inherit; an existing installed VM still
+needs a sync to pick it up and open the port forward — the same
+`runtime vm synchronize <VM_ID>` as [Step 8](#step-8--apply-the-change-to-the-fabric).
+
+![Syncing the device so the new SSH forward is created](images/device_sync_access_shh.png)
+
+> **Full screenshots and the vi walkthrough** live on the
+> [Troubleshooting]({{% relref "/01-fabric-studio-101/05-troubleshooting" %}}) page
+> under "Baking access into a firmware image".
+
+---
+
 ## Complete worked example
 
 Add an HTTPS UI to the `lxc1` container, start to finish:
@@ -437,7 +552,10 @@ Disable it again with `cli json disable`.
 | Symptom | Cause |
 |---|---|
 | `Expecting value: line 1 column 1 (char 0)` | You passed `key='value'` instead of JSON. Use `'{"vm": 41, ...}'`. |
-| Entry exists, nothing listening | Mode is `PRIVATE`, or you haven't synced the VM (Step 8). |
+| `Can only create HTTP, HTTPS or HTTPS2HTTP extra access` | This FS version won't let the CLI add `SSH`/`RDP`/`VNC`/`SPICE`/`SERIAL` as an extra. Bake it into the firmware [`.meta`](#baking-access-into-a-firmware-image-the-meta-route) instead. |
+| `Vm access with this Vm and Name already exists` | That access type is already on the VM (often a `.meta` default) — don't re-create it; update or view the existing entry. |
+| `Can't delete a default access` | The entry came from the firmware `.meta`, not the CLI. Defaults can't be deleted from the model; edit the `.meta` if you truly need it gone. |
+| Entry exists, nothing listening | Mode is `PRIVATE`, you haven't synced the VM (Step 8), or the guest isn't running the service on that port. |
 | Sync task failed | `task log <id>` — it prints exactly which stage failed. |
 | PUBLIC entry, still no port | The pod-wide gate is `no` — check `system security preferences get`. |
 | `delete` hangs forever | Missing `--yes`; it's waiting on a confirm prompt. |
