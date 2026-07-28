@@ -162,10 +162,9 @@ Now that we can see unregistered devices, let's create a playbook to authorize t
 
 Additional cases will be added depending on time, such as:
 
-- Getting config directly from Fortigate with sys/proxy/json
+- ~~Getting config directly from Fortigate with sys/proxy/json~~ → see [Firmware Upgrade via FMG](/chapter-02-ftnt-apis/50-firmware-upgrade)
+- ~~Changing config on FMG DB + kick off a device install~~ → see [FMG Provisioning Ladder](/chapter-02-ftnt-apis/45-fmg-provisioning-ladder)
 - Changing config directly with sys/proxy/json
-- Changing device config on FMG DB
-- Kick off a device install
-- Create firewall objects
+- Create firewall objects (covered in the provisioning ladder)
 - Create and run a simple CLI script
 
