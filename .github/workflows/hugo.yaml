@@ -12,7 +12,7 @@ on:
 
 # Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
 permissions:
-  contents: read
+  contents: write
   pages: write
   id-token: write
 
@@ -86,6 +86,26 @@ jobs:
         run: |
           echo "Looking for duplicate subpaths in public HTML files..."
           grep -r "fsr-noc-automation/fsr-noc-automation" ./public || echo "✅ No duplicated subpaths found"
+
+      - name: Build offline zip (file:// compatible)
+        run: |
+          hugo \
+            --gc \
+            --minify \
+            --config config.toml,config.offline.toml \
+            --cacheDir "${{ runner.temp }}/hugo_cache" \
+            -d ./public-offline
+          cd ./public-offline
+          zip -r ../noc-automation-offline.zip .
+      - name: Publish offline zip to GitHub Release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release delete offline-latest --yes 2>/dev/null || true
+          gh release create offline-latest noc-automation-offline.zip \
+            --title "Offline Workshop (latest)" \
+            --notes "Auto-updated on every push to main. Extract and open index.html locally via file://." \
+            --latest=false
 
       - name: Cache Save
         id: cache-save

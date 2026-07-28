@@ -4,9 +4,9 @@
 }
 
 #R-header-wrapper {
-  background-image: url("/images/xperts-2023-background.png");
+  background-image: url("../images/xperts-2023-background.png");
   background-size: cover;
 }
 #logo img {
-  content: url("/images/xperts-2023-2-lines.svg");
+  content: url("../images/xperts-2023-2-lines.svg");
 }

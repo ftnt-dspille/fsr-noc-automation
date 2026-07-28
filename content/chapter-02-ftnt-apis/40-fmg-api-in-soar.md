@@ -28,6 +28,15 @@ The Venn diagram between playbooks, jinja, and API in SOAR is very much like a c
        next
    end
    ```
+4. Allow FortiGate VMs in FortiManager CLI
+```cli
+config system global
+set fgfm-allow-vm enable
+end
+```
+{{% notice warning %}}
+If you do not allow vm's, you will get a certificate error when trying to register fortigates to fortimanager
+{{% /notice %}}
 
 ## Setup FMG JSON RPC Connector
 
@@ -89,9 +98,10 @@ The Venn diagram between playbooks, jinja, and API in SOAR is very much like a c
 11. Click **Trigger Playbook**
 12. Once the Executed Playbook Logs opens, click the step **Get Devices**. Expand the output data and you will see the json responses from the api call
     ![img_1.png](get_fmg_devices_output.png)
-    {{% notice note %}}
-    Important things to see in the API Output are the **name**, **sn**, and **mgmt_mode** values. mgmt_mode is `unreg` because we have not authorized the device yet
-    {{% /notice %}}
+
+{{% notice note %}}
+Important things to see in the API Output are the **name**, **sn**, and **mgmt_mode** values. mgmt_mode is `unreg` because we have not authorized the device yet
+{{% /notice %}}
 
 ## Authorize a Device
 

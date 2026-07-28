@@ -34,7 +34,7 @@ logoImage = "white-logo.svg"
 # The banner text under Fortinet logo on the top left of the project. Better to be short.
 logoBannerText = "NOC Automation with FSR"
 # Small text under the title
-logoBannerSubText = "Internal Only"
+# logoBannerSubText = "Internal Only"
 ################################# END EDITING #################################
 
 
@@ -70,6 +70,16 @@ version = "v0.0.0"
 name = "<i class='fas fa-print'></i> Single Page View (for printing)"
 url = "allpages.html"
 weight = 1
+
+[[menu.shortcuts]]
+name = "<i class='fas fa-file-powerpoint'></i> SOAR NOC PowerPoint Download"
+url = "FortiSOAR NOC Deep Dive.pptx"
+weight = 2
+
+[[menu.shortcuts]]
+name = "<i class='fas fa-file-archive'></i> Offline Workshop Download"
+url = "https://github.com/ftnt-dspille/fsr-noc-automation/releases/download/offline-latest/noc-automation-offline.zip"
+weight = 3
 
 [outputs]
 home = ["HTML", "RSS"]

@@ -3,5 +3,5 @@
   --theme-color: var(--fortinet-green);
 }
 #logo img {
-  content: url("/images/logo-black-red.svg");
+  content: url("../images/logo-black-red.svg");
 }
