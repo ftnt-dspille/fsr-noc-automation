@@ -34,7 +34,7 @@ Now that we've covered the playbook basics, let's get hands-on with building a c
 7. Click **Save**
 8. Click and hold the blue glowing arrows and drag your mouse out and let go to create a new action step. This will pop up the list of steps we can choose next
 
-    ![Description](images/drag_playbook_step.gif)
+    ![Dragging from a step connector dot to add the next step](images/drag_playbook_step.gif)
 
 9. Select the **Send Email** action, towards the bottom left of the page
 10. Fill in the fields
@@ -59,7 +59,7 @@ You have now created and triggered your first playbook. You should receive an em
 {{% notice tip %}}
 You can click on the step output to see the details of the step. This is useful for debugging and understanding what is happening in the playbook.
 
-![img.png](images/execution_history.png)
+![Playbook execution history with step output expanded](images/execution_history.png)
 {{% /notice %}}
 
 ### Trigger playbook from a button

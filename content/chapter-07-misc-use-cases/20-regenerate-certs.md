@@ -7,7 +7,7 @@ weight: 20
 ### Identify traffic log filter.
 
 Using the browser network debug to identify the syntax of the filter
-![img.png](identify_log_filter.png)
+![Browser network debug showing the traffic log filter syntax](identify_log_filter.png)
 
 ```text
 /api/v2/log/memory/traffic/forward?start=0&rows=500&filter=subtype=*%22forward%22&filter=dstip=@%228.8.8.8%22&filter=_metadata.timestamp%3E=%221750246709000%22

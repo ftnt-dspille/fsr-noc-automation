@@ -2,28 +2,34 @@
 title: "FortiGate Firmware Upgrade via FMG Proxy"
 linkTitle: "Firmware Upgrade via FMG"
 weight: 50
-description: "Use the FortiManager /sys/proxy/json endpoint to list available firmware on a FortiGate and trigger an upgrade — all from a SOAR playbook."
+description: "Use the FortiManager /sys/proxy/json endpoint to list available firmware on a FortiGate, resolve the image ID for a target version, and trigger the upgrade -- all from a SOAR playbook."
 tags: ["hands-on", "knowledge"]
 ---
 
 ## Why this use case?
 
-When a PSIRT advisory drops, you need to find every vulnerable FortiGate and upgrade it. Doing this manually across dozens of devices is error-prone and slow. FortiManager already manages those devices — so we can use its established tunnels to proxy FortiGate REST API calls from SOAR, without authenticating to each FortiGate individually.
+When a PSIRT advisory drops, you need to find every vulnerable FortiGate and upgrade it. Doing this manually across dozens of devices is error-prone and slow. FortiManager already manages those devices -- so we can use its established tunnels to proxy FortiGate REST API calls from SOAR, without authenticating to each FortiGate individually.
 
-This chapter teaches the two key API calls:
+This chapter builds a playbook that:
 
-1. **List available firmware** on a FortiGate via the FMG proxy
-2. **Trigger a firmware upgrade** on that FortiGate via the same proxy
+1. **Lists available firmware** on a FortiGate via the FMG proxy
+2. **Resolves the image ID** for a target version with a Code Snippet step
+3. **Triggers the upgrade** via the same proxy
+4. **Verifies** the device came back on the new firmware
 
-Both use the same FortiManager JSON RPC connector and the same `/sys/proxy/json` endpoint you met in the [FMG API guide](/chapter-02-ftnt-apis/20-fmg-api). The difference is what we proxy *to* — FortiOS REST API endpoints on each FortiGate.
+Everything uses the FortiManager JSON RPC connector and the `/sys/proxy/json` endpoint you met in the [FMG API guide](/chapter-02-ftnt-apis/20-fmg-api). The difference is what we proxy *to* -- FortiOS REST API endpoints on each FortiGate.
 
 ---
 
 ## Prerequisites
 
 - The **FortiManager JSON RPC** connector configured and health-checked (see [FMG API in SOAR](/chapter-02-ftnt-apis/40-fmg-api-in-soar))
-- A FortiGate managed by FortiManager in the `root` ADOM
+- A FortiGate managed by FortiManager in the `root` ADOM, with `conn_status` of `up`
 - Familiarity with the [FMG proxy method](/chapter-02-ftnt-apis/20-fmg-api#fortigate-api-calls-via-fortimanager-proxy-method)
+
+{{% notice warning %}}
+This chapter really upgrades a FortiGate. The device reboots and drops off FortiManager for several minutes. Only run it against a lab device you are willing to have offline.
+{{% /notice %}}
 
 ---
 
@@ -31,231 +37,315 @@ Both use the same FortiManager JSON RPC connector and the same `/sys/proxy/json`
 
 The `/sys/proxy/json` endpoint lets FortiManager forward REST API calls to managed FortiGates. Instead of talking to each FortiGate directly, you send one request to FortiManager with:
 
-| Field | What it does |
-|-------|-------------|
-| `target` | Which FortiGate(s) to proxy to (ADOM-scoped) |
-| `action` | HTTP method (`get`, `post`, `put`, `delete`) |
-| `resource` | The FortiOS REST API path to call on the target |
-| `payload` | Request body (for `post`/`put`) |
+| Field      | What it does                                       |
+|------------|----------------------------------------------------|
+| `target`   | Which FortiGate(s) to proxy to (ADOM-scoped)       |
+| `action`   | HTTP method (`get`, `post`, `put`, `delete`)       |
+| `resource` | The FortiOS REST API path to call on the target    |
+| `payload`  | Request body (for `post`/`put`)                    |
 
-FortiManager forwards the request to the FortiGate through its management tunnel and returns the FortiGate's response. You never need to authenticate to the FortiGate directly.
+FortiManager forwards the request through its management tunnel and returns the FortiGate's response. You never authenticate to the FortiGate directly.
 
 ```
 SOAR Playbook → FortiManager /sys/proxy/json → FortiGate REST API
                       (manages tunnel)           /api/v2/monitor/system/firmware
 ```
 
+{{% notice note %}}
+The `target` field uses the ADOM-scoped device path: `adom/<adom>/device/<device_name>`. For a device in the `root` ADOM that's `adom/root/device/fgt-2`. You can also target a group with `adom/<adom>/group/<group_name>`.
+{{% /notice %}}
+
 ---
 
-## 2. List available firmware on a FortiGate
+## 2. Create the playbook
 
-The FortiOS API exposes a firmware monitor endpoint at `/api/v2/monitor/system/firmware`. Calling this via the FMG proxy returns every firmware image available for that specific FortiGate platform, including the `id` needed to trigger an upgrade.
+1. On the left pane select **Orchestration > Playbooks**
+2. Click **+ New Collection**, enter **Name**: `00 - FMG Firmware`, and click **Create**
+3. Click **+ Add Playbook**, enter **Name**: `Upgrade FortiGate Firmware`, and click **Create**
+4. In the trigger list select **Referenced**
 
-### Create the playbook
+### Define the device name
 
-1. Navigate to **Automation > Playbooks**.
-2. Create a new collection called `00 - FMG Firmware`.
-3. Create a new playbook called `Get Available Firmware`.
-4. Choose the **Referenced** trigger step.
-5. Drag a new **Connector** step and pick the **FortiManager JSON RPC** connector.
-6. Configure the step:
+The **Referenced** trigger has no "input parameters" field -- its editor is just **Step Name** and the **Step Utilities** bar. To give the playbook a device name to work with, define a playbook variable:
 
-   | Field | Value |
-   |-------|-------|
-   | **Step Name** | `Get Available Firmware` |
-   | **Action** | `JSON RPC Exec` |
-   | **URL** | `/sys/proxy/json` |
-   | **Data** | *(see below)* |
+5. In the **Step Utilities** bar at the bottom, click **+ Variables**
+6. Enter **Variable**: `device_name`, **Value**: the name of your managed FortiGate (e.g. `fgt-2`)
+7. Click **Save**
 
-   ```json
-   {
-     "action": "get",
-     "resource": "/api/v2/monitor/system/firmware",
-     "target": ["adom/root/device/{{vars.input.params.device_name}}"]
-   }
-   ```
+    ![Referenced trigger with a playbook variable](images/fmg_referenced_trigger_variable.png?height=280px)
 
-7. Save the step and the playbook.
-8. Add an input parameter: `device_name` (text, required).
+{{% notice warning %}}
+Because this is a **Referenced** trigger, the variable you just created is referenced as `{{vars.device_name}}` -- **not** `{{vars.input.params.device_name}}`. As the screenshot above shows, the trigger editor has no parameters field at all: just **Step Name** and the **Step Utilities** bar. Playbook *parameters* are supplied by the calling playbook's **Reference a Playbook** step; the values you set here are plain playbook variables.
+{{% /notice %}}
+
+---
+
+## 3. List available firmware
+
+The FortiOS API exposes a firmware monitor endpoint at `/api/v2/monitor/system/firmware`. Calling it through the FMG proxy returns every firmware image available for that platform, including the `id` needed to trigger an upgrade.
+
+8. Hover the **Start** step to reveal its blue connector dots, then drag from a dot onto empty canvas and release to open the step list
+9. Select **Connector** (under **EXECUTE**), then choose **Fortinet FortiManager JSON RPC**
+10. Fill in the step:
+
+    | Field             | Value                                     |
+    |-------------------|-------------------------------------------|
+    | **Step Name**     | `Get Available Firmware`                  |
+    | **Target**        | `Self`                                    |
+    | **Configuration** | your FortiManager connector configuration |
+    | **Action**        | `JSON RPC Exec`                           |
+    | **URL**           | `/sys/proxy/json`                         |
+
+11. In the **Data** editor, enter:
+
+    ```json
+    {"action": "get", "resource": "/api/v2/monitor/system/firmware", "target": ["adom/root/device/{{vars.device_name}}"]}
+    ```
+
+12. Click **Save**
+
+The finished step looks like this:
+
+![Connector step editor](images/fmg_connector_step_editor.png?height=620px)
+
+The **Action** dropdown lists every JSON-RPC method the connector supports:
+
+![JSON RPC actions](images/fmg_json_rpc_actions.png?height=260px)
+
+{{% notice note %}}
+**Configuration** is a required field that the step tables in older guides omit. It selects *which* FortiManager the step talks to. The **URL** and **Data** fields only appear after you pick an **Action**.
+{{% /notice %}}
+
+{{% notice warning %}}
+The **Data** field is a JSON code editor, not a plain text box. It is pre-filled with `{}` and **auto-closes brackets as you type**, so pasting or typing a complete JSON object typically leaves a stray `}` at the end and a red syntax marker in the gutter. Check the marker before saving and delete any extra trailing characters.
+{{% /notice %}}
+
+### Turn on DEBUG mode
+
+By default a playbook runs in **INFO** mode, which records only each step's status and execution time. The step's input and output -- the JSON you actually want to read -- are not stored.
+
+13. Click **Running In INFO Mode** in the top bar
+14. Set **Select Execution Log Level** to `DEBUG` and click **Apply**
+
+    ![Playbook execution log level](images/fmg_debug_log_level.png?height=430px)
+
+{{% notice note %}}
+FortiSOAR states this in-product: *"To enable detailed playbook execution logging like step input, output, configuration and other information helpful in debugging, you can run the playbook in DEBUG mode."* Turn DEBUG back off for production playbooks -- it fills storage quickly.
+{{% /notice %}}
 
 ### Run it
 
-1. Click the **Play** button, then **Trigger Playbook**.
-2. Enter a device name (e.g., `fgt-2`) when prompted.
-3. Open the execution log and expand the step output.
+15. Click **Save Playbook**
+16. Click the **Play** button, then **Trigger Playbook**. (If prompted with **Playbook not saved**, click **Save and Test**.)
+17. When the **Executed Playbook Logs** view opens, click the **Get Available Firmware** step and expand **OUTPUT**
 
 ### What you'll see
 
-The response contains an `available` array with one entry per firmware image. Each entry has the version broken into `major`, `minor`, `patch` fields, plus an `id` that you'll need for the upgrade call:
+The step output is wrapped in a `data` object, alongside the step's own status fields:
+
+```
+OUTPUT
+  data
+    status: 0
+    execute_response [1]
+  status: Success
+  message
+  operation: null
+  execution_time
+```
+
+![Step output nesting](images/fmg_step_output_nesting.png?height=330px)
+
+Inside `execute_response[0].response.results` there are **two** collections:
 
 ```json
 {
-  "execute_response": [
+  "current": {
+    "name": "FortiOS", "id": "current", "version": "v7.2.13",
+    "major": 7, "minor": 2, "patch": 13, "build": 1762,
+    "release-type": "GA", "maturity": "M", "source": "current",
+    "platform-id": "FGVMK6"
+  },
+  "available": [
     {
-      "response": {
-        "status": "success",
-        "http_status": 200,
-        "results": {
-          "available": [
-            {
-              "id": "07000000FIMG0013700019",
-              "major": 7,
-              "minor": 0,
-              "patch": 19
-            },
-            {
-              "id": "07000000FIMG0013700018",
-              "major": 7,
-              "minor": 0,
-              "patch": 18
-            }
-          ]
-        }
-      }
+      "name": "FortiOS", "id": "07004000FIMG0013704012", "version": "v7.4.12",
+      "major": 7, "minor": 4, "patch": 12, "build": 2902,
+      "release-type": "GA", "maturity": "M", "source": "fortiguard"
     }
   ]
 }
 ```
 
-{{% notice note %}}
-The `target` field uses the ADOM-scoped device path: `adom/<adom>/device/<device_name>`. For a device in the `root` ADOM, that's `adom/root/device/fgt-2`. You can also target a group with `adom/<adom>/group/<group_name>`.
-{{% /notice %}}
-
-{{% notice note %}}
-The full list can contain 99+ firmware images spanning multiple major versions (5.6 through 8.0). The `id` field is a FortiManager-internal identifier that encodes the platform and version — you need it exactly as returned to trigger the upgrade.
-{{% /notice %}}
-
-### Verify
-
-> **Verify:** The step output shows `status: "success"` and the `available` array contains multiple firmware entries with `id`, `major`, `minor`, and `patch` fields.
-
----
-
-## 3. Resolve the target firmware ID
-
-The upgrade call needs the firmware `id`, not a version string. You need to match the target version (e.g., `7.0.19`) against the available list to find the right `id`.
-
-Add a **Code Snippet** step after the firmware lookup:
-
-| Field | Value |
-|-------|-------|
-| **Step Name** | `Resolve Firmware ID` |
-| **Connector** | `code-snippet` |
-| **Operation** | `Execute Python Code` |
-
-```python
-import json
-
-target_version = "{{ vars.input.params.target_version }}"
-fw_response = json.loads('''{{ vars.steps.Get_Available_Firmware | tojson }}''')
-
-# Navigate the connector response wrapper
-execute_response = fw_response.get('execute_response', [])
-if not execute_response:
-    available = []
-else:
-    results = execute_response[0].get('response', {}).get('results', {})
-    available = results.get('available', []) if isinstance(results, dict) else []
-
-# Parse target version into major.minor.patch
-parts = target_version.split('.')
-if len(parts) != 3:
-    print(json.dumps({"firmware_id": None, "error": "Invalid version: " + target_version}))
-else:
-    t_major, t_minor, t_patch = int(parts[0]), int(parts[1]), int(parts[2])
-    firmware_id = None
-    for fw in available:
-        if (fw.get('major') == t_major and
-            fw.get('minor') == t_minor and
-            fw.get('patch') == t_patch):
-            firmware_id = fw.get('id')
-            break
-
-    if not firmware_id:
-        print(json.dumps({"firmware_id": None, "error": "Version not found"}))
-    else:
-        print(json.dumps({"firmware_id": firmware_id, "version": target_version}))
-```
-
-This step outputs a JSON object with either `firmware_id` (found) or `error` (not found).
-
-### Verify
-
-> **Verify:** The step output shows a JSON object with `firmware_id` set to a non-null value (e.g., `"07000000FIMG0013700019"` for v7.0.19).
-
----
-
-## 4. Branch on whether firmware was found
-
-Add a **Decision** step to route based on whether the firmware ID was resolved:
-
-| Field | Value |
-|-------|-------|
-| **Step Name** | `Check Firmware Found` |
-
-| Condition | When | Next Step |
-|-----------|------|-----------|
-| `Firmware Found` | `{{ vars.steps.Resolve_Firmware_ID.output.firmware_id is not none }}` | Trigger Upgrade |
-| `Not Found` | *(default)* | Update Alert With Error |
-
----
-
-## 5. Trigger the firmware upgrade
-
-This is the money step — it tells the FortiGate to upgrade itself using the resolved firmware ID.
-
-Add a **Connector** step:
-
-| Field | Value |
-|-------|-------|
-| **Step Name** | `Trigger Upgrade` |
-| **Action** | `JSON RPC Exec` |
-| **URL** | `/sys/proxy/json` |
-| **Data** | *(see below)* |
-| **Track Task** | False |
-
-```json
-{
-  "action": "post",
-  "resource": "/api/v2/monitor/system/firmware/upgrade",
-  "target": ["adom/root/device/{{vars.input.params.device_name}}"],
-  "payload": {
-    "source": "fortiguard",
-    "filename": "{{vars.steps.Resolve_Firmware_ID.output.firmware_id}}"
-  }
-}
-```
-
-### Key fields explained
-
-| Field | Value | Why |
-|-------|-------|-----|
-| `action` | `post` | The upgrade is a POST to the FortiOS API |
-| `resource` | `/api/v2/monitor/system/firmware/upgrade` | The FortiOS firmware upgrade endpoint |
-| `source` | `fortiguard` | Pull the image from FortiGuard — no need to pre-stage in FMG |
-| `filename` | The firmware `id` from step 3 | Identifies which image to install |
+| Field                    | Why it matters                                                        |
+|--------------------------|-----------------------------------------------------------------------|
+| `current`                | The firmware the device is running right now                          |
+| `available`              | Every image the device can move to -- roughly 99 entries               |
+| `id`                     | The FortiManager-internal image identifier the upgrade call needs     |
+| `major` / `minor` / `patch` | The version, already split for you -- match on these, not on strings |
+| `maturity`               | `M` (mature) or `F` (feature)                                         |
+| `source`                 | `fortiguard` for downloadable images, `current` for the running one   |
 
 {{% notice warning %}}
-The `source` field controls where the firmware image comes from:
-- `fortiguard` — pulls directly from FortiGuard (internet-connected FortiGate)
-- `fmgbased` — uses an image staged in FortiManager's image repository
-
-Use `fortiguard` unless you've pre-staged images in FMG. No staging needed for this workshop.
+**The version the device is already running never appears in `available`.** On a box running 7.2.13, the `available` list tops out at 7.2.12 for that branch. If you write a playbook that "upgrades" a device to the version it already has, it will always fail to resolve an ID. Pick a target the device can actually move to.
 {{% /notice %}}
 
-{{% notice note %}}
-**Do NOT enable `Track Task`** for this call. Unlike the `add/device` task you used in the [Authorize Device](/chapter-02-ftnt-apis/40-fmg-api-in-soar#authorize-a-device) chapter, the firmware upgrade is **fire-and-forget** — FortiManager returns HTTP 200 immediately and the FortiGate reboots asynchronously. There is no FMG task object to poll. The reference playbook confirms this: `track_task` is not set on the upgrade step.
+> **Verify:** The step output shows `status: Success`, and `data.execute_response[0].response.results` contains a `current` object and an `available` array with many entries.
+
+---
+
+## 4. Resolve the target firmware ID
+
+The upgrade call needs the image `id`, not a version string, so match your target version against the `available` list.
+
+18. Drag out a new step from **Get Available Firmware** and select **Code Snippet** (under **EXECUTE**)
+19. Fill in the step:
+
+    | Field             | Value                  |
+    |-------------------|------------------------|
+    | **Step Name**     | `Resolve Firmware ID`  |
+    | **Configuration** | `default`              |
+    | **Action**        | `Execute Python Code`  |
+
+20. In the **Python Function** editor, enter:
+
+    ```python
+    import json
+    resp = json.loads('''{{ vars.steps.Get_Available_Firmware.data | tojson }}''')
+    er = resp.get("execute_response", [])
+    results = er[0].get("response", {}).get("results", {}) if er else {}
+    available = results.get("available", [])
+    current = results.get("current", {})
+    target_major, target_minor, target_patch = 7, 4, 12
+    firmware_id = None
+    for fw in available:
+        if (fw.get("major") == target_major
+                and fw.get("minor") == target_minor
+                and fw.get("patch") == target_patch):
+            firmware_id = fw.get("id")
+            break
+    print(json.dumps({
+        "firmware_id": firmware_id,
+        "current": current.get("version"),
+        "available_count": len(available),
+    }))
+    ```
+
+    ![Code Snippet step](images/fmg_code_snippet_step.png?height=640px)
+
+21. Click **Save**, then **Save Playbook**, and run the playbook again
+
+{{% notice warning %}}
+Two traps in this step:
+
+- The **Action** dropdown offers both `Execute Python Code` and `Execute Python Code (Deprecated)`. Pick the first.
+- The Code Snippet sandbox **restricts Python builtins**. Using `next()` fails the step with `Uses of ['next'] is restricted in the code snippet. Remove ['next'] from the code snippet and retry, or add it in connector configuration.` The explicit `for` loop above is safe; if you need a restricted builtin, allow it in the connector configuration.
 {{% /notice %}}
-
-### Run it
-
-1. Save the step and playbook.
-2. Trigger with `device_name: fgt-2`, `target_version: 7.0.19`.
-3. Watch the execution log — the step should return `status: "success"`.
 
 ### What you'll see
 
-The response confirms the upgrade was accepted. The FortiGate will reboot shortly:
+A Code Snippet step puts whatever you `print` under `data.code_output`:
+
+```
+OUTPUT
+  data
+    code_output
+      current : v7.2.13
+      firmware_id : 07004000FIMG0013704012
+      available_count : 99
+  status: Success
+```
+
+![Code Snippet output](images/fmg_code_output.png?height=380px)
+
+> **Verify:** `data.code_output.firmware_id` is a non-null image ID, and `available_count` is greater than zero.
+
+---
+
+## 5. Referencing step output in Jinja
+
+Both of the paths above follow the same rule, and it is the most common source of broken FMG playbooks:
+
+| What you want                   | Correct expression                                                  |
+|---------------------------------|---------------------------------------------------------------------|
+| A playbook variable             | `{{vars.device_name}}`                                              |
+| A connector step's API response | `{{vars.steps.Get_Available_Firmware.data.execute_response}}`        |
+| A Code Snippet's printed output | `{{vars.steps.Resolve_Firmware_ID.data.code_output.firmware_id}}`    |
+
+{{% notice warning %}}
+Every step's result is nested under **`data`**. Expressions like `vars.steps.Get_Available_Firmware.execute_response` or `vars.steps.Resolve_Firmware_ID.output.firmware_id` silently resolve to nothing -- the step runs, the playbook continues, and you get an empty value instead of an error. Spaces in a step name become underscores.
+{{% /notice %}}
+
+---
+
+## 6. Branch on whether firmware was found
+
+Add a **Decision** step (under **EVALUATE**) after `Resolve Firmware ID` so the playbook only attempts an upgrade when an ID was actually resolved.
+
+The Decision editor is built from numbered **Condition** blocks plus one **Default Step**:
+
+![Decision step editor](images/fmg_decision_step.png?height=580px)
+
+Under **Condition 1**, enter the expression:
+
+```
+vars.steps.Resolve_Firmware_ID.data.code_output.firmware_id != None
+```
+
+Then set **Select A Step To Execute** to your upgrade step, and give it a **Branch Tooltip** -- that text becomes the label drawn on the connector in the canvas. Under **Default Step**, point **Select Default Step To Execute** at your "not found" path.
+
+{{% notice warning %}}
+**Write the condition without `{{ }}`.** The field is documented in the UI as *"Only advanced expression is available"* and FortiSOAR wraps the expression in braces itself when you save. Adding your own produces a doubly-wrapped expression. This matches the **Condition** and **Loop** boxes in the Step Utilities bar, which are brace-free for the same reason -- and it is the opposite of every other Jinja field in the designer.
+{{% /notice %}}
+
+---
+
+## 7. Trigger the firmware upgrade
+
+This is the step that actually changes the device.
+
+22. Drag out a new step from the Decision's "found" branch and select **Connector > Fortinet FortiManager JSON RPC**
+23. Fill in the step:
+
+    | Field             | Value                                     |
+    |-------------------|-------------------------------------------|
+    | **Step Name**     | `Trigger Upgrade`                         |
+    | **Configuration** | your FortiManager connector configuration |
+    | **Action**        | `JSON RPC Exec`                           |
+    | **URL**           | `/sys/proxy/json`                         |
+    | **Track Task**    | unchecked                                 |
+
+24. In **Data**, enter:
+
+    ```json
+    {"action": "post", "resource": "/api/v2/monitor/system/firmware/upgrade", "target": ["adom/root/device/{{vars.device_name}}"], "payload": {"source": "fortiguard", "filename": "{{vars.steps.Resolve_Firmware_ID.data.code_output.firmware_id}}"}}
+    ```
+
+25. Click **Save**, then **Save Playbook**, and run it
+
+The finished step looks like this -- note that **Track Task** is off, so none of the task-timeout fields appear:
+
+![Trigger Upgrade step](images/fmg_trigger_upgrade_step.png?height=600px)
+
+### Key fields explained
+
+| Field      | Value                                        | Why                                                    |
+|------------|----------------------------------------------|--------------------------------------------------------|
+| `action`   | `post`                                       | The upgrade is a POST to the FortiOS API                |
+| `resource` | `/api/v2/monitor/system/firmware/upgrade`    | The FortiOS firmware upgrade endpoint                   |
+| `source`   | `fortiguard`                                 | Pull the image from FortiGuard -- no staging in FMG      |
+| `filename` | The image `id` resolved in step 4            | Identifies which image to install                       |
+
+{{% notice note %}}
+The `source` field controls where the image comes from -- `fortiguard` pulls directly from FortiGuard (needs an internet-connected FortiGate), `fmgbased` uses an image staged in FortiManager's repository. Use `fortiguard` unless you have pre-staged images.
+{{% /notice %}}
+
+{{% notice note %}}
+**Leave `Track Task` unchecked.** Unlike the policy install in the [provisioning ladder](/chapter-02-ftnt-apis/45-fmg-provisioning-ladder), this call is fire-and-forget: FortiManager accepts the request immediately and the FortiGate reboots asynchronously. There is no FMG task object to poll.
+{{% /notice %}}
+
+### What you'll see
+
+The response below was captured from a real upgrade run on a device that was on 7.0.19 at the time, which is why the version and build differ from the worked example above:
 
 ```json
 {
@@ -263,171 +353,93 @@ The response confirms the upgrade was accepted. The FortiGate will reboot shortl
     {
       "response": {
         "http_method": "POST",
-        "status": "success",
-        "http_status": 200,
+        "results": { "status": "success" },
         "vdom": "root",
         "path": "system",
         "name": "firmware",
         "action": "upgrade",
+        "status": "success",
         "serial": "<your-fortigate-serial>",
         "version": "v7.0.19",
         "build": 696
-      }
+      },
+      "status": { "code": 0, "message": "OK" },
+      "target": "fgt-2"
     }
-  ]
+  ],
+  "status": 0
 }
 ```
 
-### Verify
+{{% notice warning %}}
+Two things about this response mislead people:
 
-> **Verify:** The step output shows `status: "success"` and `http_status: 200`. Within 30-60 seconds, the FortiGate will disconnect from FortiManager (rebooting) and come back on the new firmware.
+- There is **no `http_status` field**. Acceptance is signalled by `response.status` being `success` and the sibling `status.code` being `0`.
+- `version` and `build` report the **firmware the device was running when it accepted the request** -- the old version, not the target. Seeing `v7.0.19` here does not mean the upgrade failed.
+{{% /notice %}}
+
+> **Verify:** `response.status` is `success` and `status.code` is `0`. Within a minute or two the FortiGate disconnects from FortiManager to reboot.
 
 ---
 
-## 6. Verify the upgrade completed
+## 8. Verify the upgrade completed
 
-After the upgrade, the FortiGate reboots and reconnects to FortiManager. You can verify the new firmware by re-reading the device record from the FMG device database.
-
-Add a **Connector** step:
-
-| Field | Value |
-|-------|-------|
-| **Step Name** | `Verify Upgrade` |
-| **Action** | `JSON RPC Get` |
-| **URL** | `/dvmdb/adom/root/device` |
-| **Data** | *(empty)* |
-
-The response contains a list of all managed devices. Find your device and check the `os_ver`, `mr`, and `patch` fields:
+The device reboots and reconnects to FortiManager. To confirm the new firmware, read it back with the same proxy call from step 3 and look at `current`:
 
 ```json
 {
-  "name": "fgt-2",
-  "os_ver": "7.0",
-  "mr": 0,
-  "patch": 19,
-  "build": 696,
-  "sn": "<your-fortigate-serial>",
-  "conn_status": "up",
-  "platform_str": "FortiGate-VM64-KVM"
+  "current": {
+    "version": "v7.2.13",
+    "major": 7, "minor": 2, "patch": 13,
+    "build": 1762,
+    "release-type": "GA", "maturity": "M"
+  }
 }
 ```
 
-{{% notice tip %}}
-The device will show `conn_status: down` while it reboots, then return to `up` on the new firmware. This typically takes 1-3 minutes. If you're automating this, add a **Delay** step (120 seconds) between the upgrade and the verify.
+{{% notice warning %}}
+**Do not verify with the `os_ver` field from `/dvmdb/adom/root/device`.** It is not the running version and it does not change the way you expect. After a real upgrade from 7.0.19 to 7.2.13, the device database reports:
+
+```json
+{ "os_ver": "7.0", "mr": 2, "patch": 13, "build": 1762, "conn_status": "up" }
+```
+
+`os_ver` still reads `7.0` on a device running 7.2.13. If you check `os_ver` alone you will wrongly conclude the upgrade failed. Reconstruct the version as `<major from os_ver>.<mr>.<patch>` -- or just read `current.version` through the proxy, which is unambiguous.
 {{% /notice %}}
 
-### Verify
+{{% notice tip %}}
+The device shows `conn_status: down` while it reboots, then returns to `up` on the new firmware. If you automate this, put a **Wait** step (under **EVALUATE**) between the upgrade and the verify. There is no step called "Delay".
+{{% /notice %}}
 
-> **Verify:** The device's `os_ver`, `mr`, and `patch` fields now reflect the target version, and `conn_status` is `up`.
+> **Verify:** The proxy's `current.version` reports your target version, and `conn_status` is back to `up`.
 
 ---
 
-## 7. Put it all together
+## Troubleshooting
 
-Here's the complete playbook flow:
+### "No tunnel" on any proxy call
 
-```
-Start (manual, params: device_name, target_version)
-  → Get Available Firmware (FMG /sys/proxy/json → FGT /api/v2/monitor/system/firmware)
-  → Resolve Firmware ID (Python: match version → id)
-  → Check Firmware Found (decision)
-    → Found:  Trigger Upgrade (FMG /sys/proxy/json → FGT /api/v2/monitor/system/firmware/upgrade)
-              → Verify Upgrade (FMG /dvmdb/adom/root/device)
-              → Done
-    → Missing: Update Alert With Error → Done
-```
+If the FortiGate's management tunnel is down, the proxy fails in a shape that is easy to misread:
 
-### The complete YAML
-
-If you're using the YAML playbook compiler, here's the complete playbook in YAML form:
-
-{{% expand "Click to view the YAML playbook" %}}
-
-```yaml
-collection: UC1c - FortiGate Firmware Upgrade via FMG
-description: Upgrade a FortiGate's firmware via FortiManager's /sys/proxy/json endpoint.
-visible: true
-
-playbooks:
-  - name: Trigger FGT Firmware Upgrade via FMG
-    is_active: true
-    parameters: [device_name, adom, target_version]
-    steps:
-      - name: Start
-        type: start
-        next: Set Variables
-
-      - name: Set Variables
-        type: set_variable
-        next: Get Available Firmware
-        vars:
-          device_name: "{{ vars.input.params.device_name }}"
-          adom: "{{ vars.input.params.adom | default('root') }}"
-          target_version: "{{ vars.input.params.target_version }}"
-
-      - name: Get Available Firmware
-        type: connector
-        connector: fortinet-fortimanager-json-rpc
-        operation: json_rpc_execute
-        config: "fortimanager-lab"
-        params:
-          url: "/sys/proxy/json"
-          data: '{"action": "get", "resource": "/api/v2/monitor/system/firmware", "target": ["adom/{{ vars.adom }}/device/{{ vars.device_name }}"]}'
-        next: Resolve Firmware ID
-
-      - name: Resolve Firmware ID
-        type: code_snippet
-        next: Check Firmware Found
-        code: |
-          import json
-          target_version = "{{ vars.target_version }}"
-          fw_response = json.loads('''{{ vars.steps.Get_Available_Firmware | tojson }}''')
-          execute_response = fw_response.get('execute_response', [])
-          available = []
-          if execute_response:
-              results = execute_response[0].get('response', {}).get('results', {})
-              available = results.get('available', []) if isinstance(results, dict) else []
-          parts = target_version.split('.')
-          if len(parts) != 3:
-              print(json.dumps({"firmware_id": None, "error": "Invalid version"}))
-          else:
-              t_major, t_minor, t_patch = int(parts[0]), int(parts[1]), int(parts[2])
-              firmware_id = None
-              for fw in available:
-                  if (fw.get('major') == t_major and fw.get('minor') == t_minor
-                          and fw.get('patch') == t_patch):
-                      firmware_id = fw.get('id')
-                      break
-              if not firmware_id:
-                  print(json.dumps({"firmware_id": None, "error": "Version not found"}))
-              else:
-                  print(json.dumps({"firmware_id": firmware_id, "version": target_version}))
-
-      - name: Check Firmware Found
-        type: decision
-        conditions:
-          - display: Firmware Found
-            when: "{{ vars.steps.Resolve_Firmware_ID.output.firmware_id is not none }}"
-            next: Trigger Upgrade
-          - display: Not Found
-            default: true
-            next: Done
-
-      - name: Trigger Upgrade
-        type: connector
-        connector: fortinet-fortimanager-json-rpc
-        operation: json_rpc_execute
-        config: "fortimanager-lab"
-        params:
-          url: "/sys/proxy/json"
-          data: '{"action": "post", "resource": "/api/v2/monitor/system/firmware/upgrade", "target": ["adom/{{ vars.adom }}/device/{{ vars.device_name }}"], "payload": {"source": "fortiguard", "filename": "{{ vars.steps.Resolve_Firmware_ID.output.firmware_id }}"}}'
-        next: Done
-
-      - name: Done
-        type: end
+```json
+{
+  "execute_response": [
+    {
+      "status": { "code": -1, "message": "fgt-2(1311) error: No tunnel 80.\n" },
+      "target": "fgt-2"
+    }
+  ],
+  "status": 0
+}
 ```
 
-{{% /expand %}}
+{{% notice warning %}}
+Note what is **missing**: there is no `response` key at all. Playbook logic that reaches straight for `execute_response[0].response.results` will fail with a confusing error rather than a clear "device unreachable". Guard for the `response` key before indexing into it -- the Python in step 4 does this with `.get("response", {})`.
+
+Also note the outer `status` is still `0`. The transport succeeded; only the proxied call failed.
+{{% /notice %}}
+
+Check the device's `conn_status` in FortiManager before assuming your playbook is at fault.
 
 ---
 
@@ -435,21 +447,23 @@ playbooks:
 
 You've built a playbook that upgrades FortiGate firmware from SOAR using FortiManager as a proxy:
 
-- ✅ Listed available firmware on a FortiGate via `/sys/proxy/json` → `/api/v2/monitor/system/firmware`
-- ✅ Resolved the firmware `id` for a target version using a Python code snippet
+- ✅ Listed available firmware via `/sys/proxy/json` → `/api/v2/monitor/system/firmware`
+- ✅ Resolved the image `id` for a target version with a Code Snippet step
 - ✅ Triggered the upgrade via `/sys/proxy/json` → `/api/v2/monitor/system/firmware/upgrade`
-- ✅ Verified the upgrade by reading the device record from `/dvmdb/adom/root/device`
-- ✅ Learned that the upgrade is fire-and-forget (no `track_task` needed)
+- ✅ Verified the new version from the proxy's `current` object
 
 ### Key takeaways
 
-| Concept | What you learned |
-|---------|------------------|
-| **Proxy pattern** | FMG `/sys/proxy/json` forwards REST calls to managed FortiGates — no direct FGT auth needed |
-| **Firmware `id`** | The upgrade call needs the FortiManager-internal `id`, not a version string |
-| **`source: fortiguard`** | Pulls the image from FortiGuard directly — no FMG image staging |
-| **Fire-and-forget** | The upgrade returns 200 immediately; the FGT reboots asynchronously (no task to poll) |
+| Concept                | What you learned                                                                       |
+|------------------------|----------------------------------------------------------------------------------------|
+| **Proxy pattern**      | FMG `/sys/proxy/json` forwards REST calls to managed FortiGates -- no direct FGT auth     |
+| **Firmware `id`**      | The upgrade needs the FortiManager-internal `id`, not a version string                  |
+| **`current` vs `available`** | The running version is never in `available` -- you cannot "upgrade" to it           |
+| **Output nesting**     | Every step's result lives under `data`; Code Snippet output under `data.code_output`    |
+| **DEBUG mode**         | Step input/output is only recorded when the playbook runs in DEBUG                      |
+| **Fire-and-forget**    | The upgrade returns immediately with no task to poll; don't set `Track Task`            |
+| **`os_ver` lies**      | It does not track the running version -- verify with the proxy's `current.version`       |
 
 ### Real-world extension
 
-In a PSIRT response scenario, this playbook would be triggered from a PSIRT alert. A companion playbook reads affected FortiOS version ranges from the PSIRT email, pulls all managed FortiGates from `/dvmdb/adom/<adom>/device`, cross-references each device's current version, and produces a `vulnerableDevices` list. The upgrade playbook then loops over that list with `for_each`, upgrading every vulnerable device in one run.
+In a PSIRT response scenario, this playbook would be triggered from a PSIRT alert. A companion playbook reads affected FortiOS version ranges from the advisory, pulls all managed FortiGates from `/dvmdb/adom/<adom>/device`, cross-references each device's current version, and produces a `vulnerableDevices` list. The upgrade playbook then loops over that list, upgrading every vulnerable device in one run.

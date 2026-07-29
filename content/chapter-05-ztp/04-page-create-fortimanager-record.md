@@ -13,7 +13,7 @@ We will begin configuring FortiSOAR to connect to FortiManager, which allows us 
 1. Navigate to **FortiManager > Managers**
    {{% notice note %}}
    If you already see a Manager Record, you don't need to create a new one. You can skip to [here]({{< relref "#viewing-the-manager-record">}})
-   ![img.png](manager_record_created.png)
+   ![Existing FortiManager manager record](manager_record_created.png)
    {{% /notice %}}
 2. Click the ![Add button](images/add.png?classes=inline) button to add a new record.
    ![Add FortiManager Record](images/managers_module.png?height=500px)

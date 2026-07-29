@@ -258,11 +258,11 @@ Let's practice basic variable substitution using the FortiSOAR Jinja Editor.
 **To access the Jinja Editor:**
 
 1. On the left pane, navigate to **Automation > Playbooks**
-   ![img_4.png](images/nav_to_playbooks.png)
+   ![Navigating to Automation > Playbooks](images/nav_to_playbooks.png)
 
 2. Create a new playbook or edit an existing one
 3. Click the **Tools dropdown** on the top right and select **Jinja Editor**
-   ![img_2.png](images/nav_to_jinja_editor.png)
+   ![Jinja Editor in the Tools dropdown](images/nav_to_jinja_editor.png)
 
 **Exercise:**
 
@@ -270,7 +270,7 @@ In the Jinja Editor, you'll see two panels:
 
 - **Left panel**: Enter your Jinja template
 - **Right panel**: Enter your JSON Data
-  ![img_6.png](images/jinja_editor_example.png?height=500px)
+  ![Jinja Editor with a template and JSON data](images/jinja_editor_example.png?height=500px)
 
 Click **Render** to see the output of the Template
 
@@ -611,7 +611,7 @@ VLAN: {{ subnets['192.168.1.0/24'].vlan }}
 **Task:** Use the above JSON in the Jinja Editor, and try to access the subnets without using bracket notation. What kind of error do you see?
 
 {{% expand "Solution" %}}
-![img_7.png](images/error_accessing_dict.png)
+![Error raised when accessing a dictionary key with dot notation](images/error_accessing_dict.png)
 We see an error that the subnets dictionary doesn't have a key named "192" . This is because the special character `.` is getting treated as its own key.
 {{% /expand %}}
 

@@ -37,7 +37,7 @@ The easiest way to understand FortiManager APIs is to watch what happens when yo
 **Step-by-Step Process:**
 
 1. Login to FortiManager.
-    ![img_2.png](fortimanager_button.png)
+    ![FortiManager login button](fortimanager_button.png)
 
 2. **Open Developer Tools**
     - Press `Ctrl + Shift + I` (Windows/Linux) or `Cmd + Option + I` (Mac)
@@ -58,7 +58,7 @@ The easiest way to understand FortiManager APIs is to watch what happens when yo
     - This shows only API calls that send/receive JSON data
     - Click on any API call to see details
 
-![img.png](images/fmg_api_debug.png)
+![Chrome DevTools network tab showing FortiManager API calls](images/fmg_api_debug.png)
 
 ### What You'll See in DevTools
 
@@ -118,7 +118,7 @@ This is my favorite method by far. This is an example based API Doc that has exa
 
 https://how-to-fortimanager-api.readthedocs.io/en/latest/index.html
 
-![img.png](images/fmg_api_by_example.png?height=600px)
+![FMG API By Example documentation site](images/fmg_api_by_example.png?height=600px)
 
 ---
 
@@ -384,6 +384,6 @@ This example demonstrates querying admin users from all FortiGates in the ADOM u
 ```
 
 This is what the api looked like in FNDN for querying fortigate admin users (/api/v2/cmdb + /system/admin)
-![img.png](fortios_fndn_admin_users.png?height=300px)
+![FNDN entry for the FortiOS admin users endpoint](fortios_fndn_admin_users.png?height=300px)
 
 Make sure to check out all the options available with /sys/proxy/json [here](https://how-to-fortimanager-api.readthedocs.io/en/latest/016_sys_proxy_json.html)

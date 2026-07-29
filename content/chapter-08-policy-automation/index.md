@@ -34,13 +34,13 @@ This automation demonstrates how FortiSOAR creates firewall policies on FortiMan
 
 1. Log into **FortiManager**
 2. Navigate to **Policy & Objects → Policy Packages**
-   ![img.png](steps_to_creat_package.png)
+   ![Policy & Objects > Policy Packages navigation](steps_to_creat_package.png)
 
 3. Click **Policy Package > New** and name it `Automation_Package`.
-   ![img.png](naming_package.png)
+   ![Naming the new policy package](naming_package.png)
 
 4. Click **OK** to create the package.
-   ![img.png](new_package.png)
+   ![Confirming creation of the policy package](new_package.png)
 5. Assign an installation target to the package so we can test installing it later on. 
 
 ### Task 1.2: Create and Run a Database Script
@@ -49,7 +49,7 @@ The script initializes the policy table inside the package.
 
 1. Navigate to **Device Manager → Scripts**
 2. Click **Create New > Script**
-   ![img.png](nav_to_script.png)
+   ![Create New > Script menu](nav_to_script.png)
 4. Name it `Create_Automation_Policies`, with _Run script on_ as **Policy Package or ADOM Database**, and with this content:
 
 ```cli
@@ -378,22 +378,22 @@ config firewall policy
 end
 ```
 
-![img.png](fill_script_contents.png)
+![Script contents filled in](fill_script_contents.png)
 
 3. Click **OK** to save the script.
 4. Fill in a change note if prompted
-   ![img_1.png](change_note.png)
+   ![Change note prompt](change_note.png)
 3. Select the script and click **Run Script**.
-   ![img.png](select_script_and_run.png)
+   ![Selecting the script and clicking Run Script](select_script_and_run.png)
 4. Select the **Automation_Package** and click **Run Now**
-   ![img.png](select_automation_package.png)
+   ![Selecting the Automation_Package to run against](select_automation_package.png)
 
 **Expected Result:** The script executes successfully and a policy table exists in the package.
-![img.png](run_successful.png)
+![Script run completed successfully](run_successful.png)
 
 ### Task 1.3: Record Required Values
 
-Note these values — you'll need them when configuring FortiSOAR:
+Note these values -- you'll need them when configuring FortiSOAR:
 
 | Value               | Your Entry           |
 |---------------------|----------------------|
@@ -413,16 +413,16 @@ The ZTP Solution Pack **must be installed before** importing the automation pack
 1. Login to **FortiSOAR** as **csadmin**
 1. Navigate to **Content Hub → Solution Packs**
 2. Confirm that **FortiManager ZTP Flow** Solution Pack is Installed
-   ![img.png](ZTP_Flow_installed.png?height=500px)
+   ![FortiManager ZTP Flow solution pack installed](ZTP_Flow_installed.png?height=500px)
 
 If you do not see the Solution Pack installed, Open the Pack and click **Install**.
 
 ### Task 2.3: Enable Custom Connectors
 
 1. In the **System Settings** menu, click **Advanced Developer Settings** and enable the **Custom Connectors** feature.
-   ![img_1.png](adv_dev_features_menu.png)
+   ![Advanced Developer Settings menu](adv_dev_features_menu.png)
 2. Click the checkbox under **Build your own connector**
-   ![img_1.png](enable_connectors.png)
+   ![Build your own connector checkbox](enable_connectors.png)
 3. Click **Submit**
 
 ### Task 2.4: Import the Automation Package
@@ -431,19 +431,19 @@ If you do not see the Solution Pack installed, Open the Pack and click **Install
    {{% resources style="blue" title="Download me" pattern="FortiSOA.*.zip" /%}}
 2. Navigate to **System Settings → Import Wizard**
 3. Click **Import from File**
-   ![img.png](import_from_file.png)
-   ![img_1.png](img_1.png)
+   ![Import from File button](import_from_file.png)
+   ![Selecting the automation package file to import](img_1.png)
 
 4. Upload the `.zip` export file from this repository
 5. Click **Continue**
-   ![img_1.png](confirm_select_config_import.png)
+   ![Confirming the configuration import selection](confirm_select_config_import.png)
 6. Click **0 Connectors** and click **Import All**
-   ![img_1.png](import_connector.png)
+   ![Importing all connectors from the package](import_connector.png)
 7. Click **Continue**
 8. Click **Run Import**
 9. Click **I have reviewed the changes - Publish**
 9. Wait for the import to complete
-   ![img_1.png](import_success.png)
+   ![Import completed successfully](import_success.png)
 
 ### Task 2.5: Configure the Connector
 
@@ -451,42 +451,42 @@ If you do not see the Solution Pack installed, Open the Pack and click **Install
    {{% resources style="blue" title="Download me" pattern="fortinet-fortimanager.*.tgz" /%}}
 
 1. Open the **Content Hub > Manage** tab and click **Upload > Upload Connector**
-   ![img_1.png](manage_upload_connector.png)
+   ![Upload Connector from the Content Hub Manage tab](manage_upload_connector.png)
    {{% notice warning %}}
    Do not upload the connector without first checking the box to **Replace existing version**
    {{% /notice %}}
 2. Click **Replace existing version**
-   ![img_1.png](replace_version_checkbox.png)
+   ![Replace existing version checkbox](replace_version_checkbox.png)
 3. Upload the connector file you downloaded
-   ![img_2.png](upload_success.png)
+   ![Connector uploaded successfully](upload_success.png)
 4. Exit the connector
 
 ### Task 2.2: Create a FortiManager Manager Record
 
 1. Using the left navigation menu, browse to **FortiManger → Managers**
-   ![img.png](fortimanager_module.png?height=500px)
+   ![FortiManager > Managers navigation](fortimanager_module.png?height=500px)
 2. Confirm you see an entry in the table for a ForitManager record
-   ![img.png](confirm_entry.png)
+   ![FortiManager record listed in the table](confirm_entry.png)
 
 #### If you do not see an entry:
 
 1. Create a new **FortiManager Manager** entry by clicking **+Add**
 2. Fill in a manager-name and click **Save**
-   ![img.png](fill_fmg_record.png)
+   ![Filling in the manager name](fill_fmg_record.png)
 3. You should get a prompt to fill in the Device Details and click **Continue**
-   ![img.png](fill_in_ip_and_credentials.png?height=500px)
+   ![Device details prompt for address and credentials](fill_in_ip_and_credentials.png?height=500px)
 3. Note the **Manager Name** since it will be referenced by the connector
 
 ### Create a connector config
 
 1. Open the Manager Record
 2. Click **Execute > Create Connector Configuration**
-   ![img_2.png](create_connector_config.png)
+   ![Execute > Create Connector Configuration](create_connector_config.png)
 3. Type in the password for your fortmanger. In the FNDN lab it is `fortinet`. Click Continue
-   ![img_2.png](fill_in_password.png)
+   ![Password prompt for the FortiManager connector configuration](fill_in_password.png)
 4. Go back to the Content Hub and confirm you see a config in your fortimanager json rpc connector
 5. Make sure to mark the config as default by clicking the checkbox. Save the config
-   ![img_2.png](mark_connector_default.png)
+   ![Marking the connector configuration as default](mark_connector_default.png)
 
 ---
 
@@ -495,7 +495,7 @@ If you do not see the Solution Pack installed, Open the Pack and click **Install
 ### Task 3.1: Configure a Policy Request
 
 1. Navigate to the Policy Requests module, it should be at the bottom of the left navigation menu. You may have to scroll on the navigation menu to find it.
-   ![img_2.png](policy_request_module.png)
+   ![Policy Requests module in the left navigation](policy_request_module.png)
 1. Open the `CHG00001` record in the **Policy Requests** module
 2. Update the following fields:
 
@@ -505,15 +505,15 @@ If you do not see the Solution Pack installed, Open the Pack and click **Install
 | ADOM           | Enter your ADOM name                  |
 | Policy Package | `Automation_Package`                  |
 
-![img_2.png](select_fmg_on_request.png)
+![Policy request form with the FortiManager selected](select_fmg_on_request.png)
 
 ### Task 3.2: Execute and Monitor the Playbook
 
 1. Click **Execute → Create Policy from Request** and follow any prompts
 2. Navigate to **Automation → Playbook Execution** to monitor progress
-    ![img_2.png](policy_requests_creatuib.png)
+    ![Playbook Execution view monitoring progress](policy_requests_creatuib.png)
 3. Once the playbook adds the policy, you will get a popup asking if you want to install the policy to the device based on the installation targets. 
-   ![img_2.png](instllation_targets.png)
+   ![Installation targets prompt after the policy is added](instllation_targets.png)
 4. Click **Push to firewall**
 
 You have now successfully configured FortiSOAR to automate policy creation and installation.

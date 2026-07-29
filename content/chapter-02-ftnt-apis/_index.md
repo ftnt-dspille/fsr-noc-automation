@@ -8,4 +8,4 @@ weight: 20
 
 {{% children %}}
 
-![img.png](curl_meme.png)
+![Chapter title image](curl_meme.png)

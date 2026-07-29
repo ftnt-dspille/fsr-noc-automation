@@ -129,7 +129,7 @@ Expected response:
    Splunk API Port: 8089
    Verify SSL: False (unchecked)
    ```
-   ![img.png](splunk_connector_config.png?height=600px)
+   ![Splunk connector configuration](splunk_connector_config.png?height=600px)
 
 2. Click **Save**, and verify you the Health Check passes
 
@@ -221,7 +221,7 @@ After running the script, lets check that we see logs in Splunk
 
 1. Navigate to **Search and Reporting**
 2. Search for `sourcetype="fortinet:firewall"`
-   ![img.png](splunk_search_results.png?height=500px)
+   ![Splunk search results for the firewall sourcetype](splunk_search_results.png?height=500px)
 
 ## Query Splunk from FortiSOAR
 
@@ -241,12 +241,12 @@ After running the script, lets check that we see logs in Splunk
     | stats sum(bpdu_count) as total_bpdu_events by devname
    ```
     - Delete the text inside the **Earliest Time** Field. The default time won't work with the query. Your configuration should look like the image below.
-      ![img.png](splunk_action_bpdu_config.png?height=500px)
+      ![Splunk query step with the Earliest Time field cleared](splunk_action_bpdu_config.png?height=500px)
 5. Save the step
 6. Save and run the playbook.
 
 7. Check the playbook results. If your query worked you will see output like this
-   ![img.png](splunk_bpdu_query_results.png?height=400px)
+   ![Splunk query results in the playbook output](splunk_bpdu_query_results.png?height=400px)
 
 ## Create a Schedule to automate running this playbook
 
@@ -257,4 +257,4 @@ After running the script, lets check that we see logs in Splunk
     - **Playbook Reference**: _Search for you playbook name_ `BPDU packet received`
     - Select **Schedule Frequency**: _Hourly_
 3. Click Save
-    ![img.png](schedule_settings.png?height=500px)
+    ![Playbook schedule settings](schedule_settings.png?height=500px)

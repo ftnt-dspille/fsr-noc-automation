@@ -4,7 +4,7 @@ linkTitle: "Netshot"
 weight: 60
 ---
 
-![img.png](netshot_intro_pic.png?height=600px)
+![Chapter title image](netshot_intro_pic.png?height=600px)
 
 ## Overview
 

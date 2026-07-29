@@ -2,388 +2,271 @@
 title: "Approvals and Error Handling"
 linkTitle: "Approvals & Errors"
 weight: 45
-description: "Pause playbooks for human reviews, route on approval/rejection, and handle step failures with ignore_errors, retry loops, and decision branching."
-tags: ["hands-on", "knowledge"]
+description: "Pause a playbook for a human decision with the Approval step, route on approve/reject, escalate on timeout, and handle step failures with Ignore Error and do-until retries."
+tags: [ "hands-on", "knowledge" ]
 ---
 
-## Why this matters
+So far you've built playbooks that run straight through from trigger to end. Production playbooks need two more things:
 
-So far you've built playbooks that run straight through from trigger to end. Real production playbooks need two things:
+1. **A gatekeeper** -- pause and wait for a human to approve or reject before taking action
+2. **Error handling** -- keep running when a step fails, and retry transient failures
 
-1. **Gatekeeper steps** — pause for a human to approve or reject before taking action
-2. **Error handling** — keep running when a step fails, retry on transient errors, and route differently on failure
+This chapter covers both, and you'll build a working approval playbook at the end.
 
-This chapter covers both.
+### Prerequisites
 
----
-
-## Prerequisites
-
-- Completed [Playbook fundamentals](/chapter-03-playbooks) and the [Hands-on playbook exercises](/chapter-03-playbooks/04-hands-on)
-- A configured connector for testing (FortiGate, FortiManager, Generic HTTP, or Utilities)
-- Familiarity with Jinja expressions from the [Jinja chapter](/chapter-04-jinja)
+- Completed the [Hands-on playbook exercises](/chapter-03-playbooks/04-hands-on)
+- At least one alert in the **Alerts** module to run the playbook against
 
 ---
 
-## Manual Input: the gatekeeper step
+## The three "ask a human" steps
 
-The **Manual Input** step pauses a running playbook and waits for a human to click a button or submit a form. It's the building block for approvals, analyst review, and yes/no confirmations.
+Under **EVALUATE** in the step picker there are three steps that pause a playbook and wait for a person:
 
-### Manual Input without approvals
+| Step             | Use it when                                                                                   |
+|------------------|-----------------------------------------------------------------------------------------------|
+| **Approval**     | You need a formal approve/reject decision, optionally owned by a team, with a timeout         |
+| **Manual Input** | You need the analyst to *fill in data* (an IP, a reason, a dropdown choice) before continuing |
+| **Manual Task**  | You need someone to go do something outside FortiSOAR and mark it done                        |
 
-Set up a basic two-button manual input:
-
-1. Create a new playbook called `Manual Input — Yes/No`.
-2. Add a **Manual** trigger step.
-3. Add a **Manual Input** step:
-
-| Field | Value |
-|-------|-------|
-| **Step Name** | `Confirm Action` |
-| **Step Title** | `Proceed with firewall change?` |
-| **Description** | `Block 10.200.1.50 on Enterprise_Core?` |
-| **Options** | *(see below)* |
-
-Add two options:
-
-| Option | Label | Primary? | Next Step |
-|--------|-------|----------|-----------|
-| 1 | `Yes — Block it` | Yes | *(the success path step)* |
-| 2 | `No — Skip` | No | *(the skip path step)* |
-
-Add two connector steps — one for `Yes` (e.g., FortiGate `add_firewall_address`) and one for `No` (e.g., Utilities `No-Op`). Connect the Manual Input's Yes branch to the blocker step and the No branch to the no-op step.
-
-{{% notice note %}}
-The **Primary** button is styled as the default/highlighted action. It does not auto-execute — it's purely visual.
+{{% notice note %}} **Approval is its own step type.** You do not build an approval by adding a Manual Input and flipping a setting -- pick **Approval** from the step list and you get the approve/reject responses, team assignment, and escalation out of the box.
 {{% /notice %}}
 
-### How the playbook pauses
+---
 
-When a playbook hits a Manual Input step, the run status changes to **paused** and the step status changes to **awaiting**. The playbook sits there until someone clicks a button. During that pause:
+## Anatomy of the Approval step
 
-- All subsequent steps are skipped
-- The playbook is visible in the execution history as pending
-- The person who clicks the button must have permission to interact with the workflow
+When you add an **Approval** step, the editor has four collapsible sections plus the step name.
+
+### 1. Assignee
+
+The top section controls **who can answer the prompt**:
+
+| Option                   | Behaviour                                            |
+|--------------------------|------------------------------------------------------|
+| **Specific Users**       | Only the listed users see and can action the prompt  |
+| **Specific Team**        | Any member of the selected team can action it        |
+| **No specific assignee** | Anyone with permission on the playbook can action it |
+
+The dropdown next to **Specific Team** lists the teams that exist on the appliance -- you pick the team from the list, you don't type a name or an ID.
+
+### 2. Input Prompt Design
+
+This is the prompt the approver actually reads.
+
+| Field           | Notes                                                                                                                             |
+|-----------------|-----------------------------------------------------------------------------------------------------------------------------------|
+| **Title**       | The heading on the prompt, e.g. `Close this alert?`                                                                               |
+| **Description** | A markdown editor with **Write** and **Preview** tabs. Jinja is evaluated here, so you can pull values off the triggering record. |
+
+### 3. Response Mapping
+
+The **Approve** and **Reject** responses already exist -- you don't add them. For each one you pick which step runs next, and one of them is flagged **Primary** (the highlighted button on the prompt).
+
+**Customize Playbook Resumed Message** sets the text shown after someone answers. It defaults to `Awaiting Playbook resumed successfully.`
+
+### 4. Escalation
+
+Answers the question *"what if nobody responds?"*
+
+Set **Do you wish to configure time-based escalations?** to **Yes** and you get:
+
+- **If the decision is not provided within** `[N]` `[Minute(s) / Hour(s) / Day(s)]`
+- **Then the following step will be run:** -- you explicitly choose the escalation step
+
+If you leave this at **No**, the playbook waits indefinitely.
 
 ---
 
-## Approval steps
+## Error handling: the Step Utilities bar
 
-When you need a formal approve/reject gate with team routing, notifications, and timeout — you use an **approval**. Under the hood it's the same Manual Input step with `is_approval: true`. This unlocks:
+Error handling isn't in the body of the step form -- it's the bar along the bottom of the step editor.
 
-- **Team assignment** — the prompt is owned by a specific team; only team members can answer it
-- **Timeout auto-routing** — if no one responds before the deadline, the playbook auto-continues on the timeout path
-- **Notification channels** — in-app and email notifications when the approval prompt opens
+![Step Utilities bar](images/step_utilities_bar.png?height=40px)
 
-### Configure an approval
+Two of these matter for error handling:
 
-Add a **Manual Input** step and enable the approval mode:
+### Ignore Error
 
-| Field | Value |
-|-------|-------|
-| **Step Name** | `Security Approval` |
-| **Is Approval** | `True` |
-| **Step Title** | `Open port to application` |
-| **Description** | `Approve opening {{ app_name }} to {{ host }}:{{ port }}` |
-| **Assign To** | *(select a team)* |
-| **Options** | `Approve` (primary) and `Reject` |
-| **Timeout** | *(optional — days/hours/minutes)* |
+The **Ignore Error** toggle on the right defaults to **No**. Flip it to **Yes** and the step can fail without failing the whole playbook -- execution carries on to the next step.
 
-Connect the `Approve` branch to the steps that should run on approval. Connect the `Reject` branch to cleanup or notification steps.
+Use it for non-essential steps: notifications, logging, best-effort enrichment.
+
+### Loop → do until (retries)
+
+Click **+ Loop** and change the loop type from `for each` to `do until` to turn the step into a retry loop:
+
+![Do until loop](images/step_do_until.png?height=300px)
+
+| Field               | Notes                                                                                                                                                                    |
+|---------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| **Condition**       | The placeholder says **"Expression without `{{ }}`"** -- write the bare expression, e.g. `vars.result.status_code == 200`, **not** `{{ vars.result.status_code == 200 }}` |
+| **Retries**         | How many attempts. Default `3`                                                                                                                                           |
+| **Delay (seconds)** | Wait between attempts. Default `5`                                                                                                                                       |
 
 {{% notice warning %}}
-**Team assignment gotcha:** the approval `assign_to` field must be a **team IRI**, not a team name. If you set `assign_to` to a plain string or leave it unset, the prompt becomes invisible to the approval polling mechanism and no team member will see it. Use the team selection UI in the step editor to get the IRI right.
+The braces are the most common mistake here. Every other Jinja field in the designer wants `{{ ... }}`; the **Condition** boxes under Loop and Condition do not. Wrapping it in braces makes the expression evaluate as a non-empty string, which is always truthy, so the loop exits after one pass.
 {{% /notice %}}
-
-### Timeout behavior
-
-When you set a timeout on an approval:
-
-- The playbook waits up to the deadline
-- If no one responds, the playbook auto-resumes following the step's `step_iri` target (usually the rejection or skip path)
-- The run does not fail — it continues on the configured path
-
-### Two-tier approval chain
-
-Common pattern: run an approval gate for one team, then for another, sequentially.
-
-```
-Start → SOC Tier 1 Approval
-         → Approve → Security Tier 2 Approval
-              → Approve → [proceed with change]
-              → Reject → [send rejection notice]
-         → Reject → [send rejection notice]
-```
-
-Each approval step is a separate Manual Input step with `is_approval: true` and different `assign_to` teams.
-
----
-
-## Decision steps for error branching
-
-Decision steps let you evaluate conditions and route to different branches. Combined with Jinja, they handle dynamic error routing.
-
-### Decision step configuration
-
-Add a **Decision** step and define conditions:
-
-| Field | Value |
-|-------|-------|
-| **Step Name** | `Check Response` |
-| **Conditions** | *(Jinja expressions, one per branch)* |
-
-Example conditions:
-
-| Label | Condition | Next Step |
-|-------|-----------|-----------|
-| **Success** | `{{ vars.steps.API_Call.data.status_code == 200 }}` | `Process Response` |
-| **Rate Limited** | `{{ vars.steps.API_Call.data.status_code == 429 }}` | `Wait and Retry` |
-| **Other Error** | *(else branch)* | `Log Error` |
-
-### Decision evaluation order
-
-Conditions are evaluated top-to-bottom. The first matching condition wins. The `else` branch catches everything that didn't match earlier conditions. Only one branch runs.
-
----
-
-## Error handling mechanisms
-
-Playbook steps can fail — connectors time out, APIs return errors, records aren't found. FortiSOAR provides three levels of error handling:
-
-### 1. Per-step: `ignore_errors`
-
-Set **Ignore Errors** on a step to prevent its failure from stopping the playbook:
-
-- The step fails, but the playbook continues to the next step
-- The step's output is still available (may be empty or contain error details)
-
-Use this for non-essential steps — notifications, logging, enrichment — where failure shouldn't abort the entire workflow.
-
-### 2. Per-step: Do-Until retry loop
-
-Set a **Do Until** condition + **Delay** + **Max Retries** on connector steps to retry automatically:
-
-| Field | Value |
-|-------|-------|
-| **Do Until Condition** | `{{ vars.steps.Step_Name.data.status_code == 200 }}` |
-| **Delay (seconds)** | `30` |
-| **Max Retries** | `5` |
-
-The step reruns up to `max_retries` times, waiting `delay` seconds between attempts, until the condition evaluates to `true`. If retries are exhausted, the step fails and the playbook continues (or faults, if `ignore_errors` is not set).
 
 {{% notice tip %}}
-Combine `ignore_errors` with `do_until` — if the step fails after exhausting retries, the playbook continues rather than faulting.
+Combine the two: set a `do until` loop **and** turn on **Ignore Error**, so that a step which never succeeds lets the playbook continue instead of faulting.
 {{% /notice %}}
 
-### 3. Workflow-level: manual retry
+---
 
-When a whole playbook run fails from end to end, use the **Retry** action:
+## Hands-on: build an approval playbook
 
-```
-POST /api/wf/api/workflows/{pk}/retry/
-```
+You'll build a playbook that runs from an alert, asks the SOC team whether the alert should be closed, and closes it only if they approve.
 
-This re-runs the entire workflow run from the beginning.
+### Create the playbook
 
-### Step and run status lifecycle
+1. On the left pane select **Orchestration > Playbooks**
+2. Click **+ New Collection**, enter **Name**: `00-Workshop`, and click **Create** (skip this if you already made it in the previous chapter)
+3. Click **+ Add Playbook** and enter
+    - **Name**: `02-Approve Alert Closure`
+4. Click **Create**
 
-| Run Status | Meaning |
-|------------|---------|
-| `executing` | Playbook is actively running |
-| `paused` | Waiting at a manual input / approval step |
-| `finished` | Completed successfully |
-| `failed` | A step failed and `ignore_errors` was not set |
-| `terminated` | Manually stopped or timed-out |
+### Configure the trigger
 
-| Step Status | Meaning |
-|-------------|---------|
-| `incipient` | Created but not yet reached |
-| `active` | Currently executing |
-| `awaiting` | Paused at manual input |
-| `finished` | Completed successfully |
-| `failed` | Execution raised an error |
-| `skipped` | Sibling branch taken (by decision or earlier failure) |
+5. Select the **Manual** trigger and enter
+    - **Trigger Button Label**: `Workshop: Approve Alert Closure`
+    - **Execution Behaviour**: `Requires record input to run`
+    - **Run Mode**: `Run once for all selected records`
+    - **Choose record modules on which the playbook would be available on**: `Alerts`
+      
+      ![Manual trigger configuration](images/approval_manual_trigger.png?height=440px)
+
+{{% notice note %}}
+A Manual trigger **always** requires you to pick at least one module, in both execution behaviours. The field is marked required and the step won't save until you do.
+{{% /notice %}}
+
+6. Click **Save**
+
+### Add the Approval step
+
+7. Click and hold one of the blue connector dots on the **Start** step, drag out, and release to open the step list
+8. Select **Approval** (under **EVALUATE**)
+9. Enter
+    - **Step Name**: `Analyst Approval`
+    - Select the **Specific Team** radio and choose `SOC Team` from the dropdown
+
+10. Expand **Input Prompt Design** and enter
+    - **Title**: `Close this alert?`
+    - **Description**:
+      
+      ```
+      Alert **{{vars.input.records[0].name}}** (severity {{vars.input.records[0].severity.itemValue}}) is proposed for closure. Approve to close it, or reject to leave it open.
+      ```
+      
+      ![Input prompt design](images/approval_input_prompt.png?height=540px)
+
+11. Click **Save**
+
+### Add the two branches
+
+12. Drag out a new step from **Analyst Approval** and select **Update Record**. Enter
+    - **Step Name**: `Close Alert`
+    - **Model**: `Alerts`
+    - **Record IRI**: `{{vars.input.records[0]['@id']}}`
+    - In the **Fields** search box type `status`, then set **Status** to `Closed`
+13. Click **Save**
+14. Drag out a second step from **Analyst Approval** and select **Set Variable**. Enter
+    - **Step Name**: `Log Rejection`
+    - **Variable**: `closure_decision`
+    - **Value**: `Rejected - alert left open`
+15. Click **Save**
+
+### Wire the responses to the branches
+
+16. Double-click **Analyst Approval** to reopen it and expand **Response Mapping**
+17. Set
+    - **Approve** → **Choose step**: `Close Alert`, **Primary** checked
+    - **Reject** → **Choose step**: `Log Rejection`
+      
+      ![Response mapping](images/approval_response_mapping.png?height=300px)
+
+18. Expand **Escalation** and set
+    - **Do you wish to configure time-based escalations?**: `Yes`
+    - **If the decision is not provided within**: `1` `Hour(s)`
+    - **Then the following step will be run**: `Log Rejection`
+      
+      ![Escalation](images/approval_escalation.png?height=280px)
+
+19. Click **Save**, then **Save Playbook** at the top right
+
+Your canvas should now show the **Approve** and **Reject** branch labels on the two connectors:
+
+![Canvas showing the Approve and Reject branch labels](images/img.png)
+### Run it
+
+20. Navigate to **Security Operations > Alerts**
+21. Tick the checkbox next to any open alert
+22. Click **Execute** and select **Workshop: Approve Alert Closure**
+
+### Respond to the approval
+
+23. Click the **Playbook Logs** icon in the top navigation bar
+24. Select the most recent **02-Approve Alert Closure** run. Its status is **AWAITING** and the canvas shows it stopped on **Analyst Approval**
+25. Click the **Analyst Approval** step, then open the **PENDING INPUTS** tab. Your prompt is rendered there with the alert name and severity filled in:
+    
+    ![Pending approval prompt](images/approval_pending_input.png?height=230px)
+
+26. Click **Approve**
+
+> **Verify:** The run status changes to **FINISHED** and the PENDING INPUTS tab shows `Awaiting Playbook resumed successfully.` Go back to **Security Operations > Alerts** -- the alert you selected now has status **Closed**.
+
+{{% notice note %}}
+Because you assigned this approval to **SOC Team**, only members of that team see the prompt. If you can't action it, check your user's team membership under **Settings > Teams**.
+{{% /notice %}}
 
 ---
 
-## Hands-on: build an approval + error handling playbook
+## Run and step statuses
 
-You'll build a playbook that:
+A playbook that is sitting on an Approval step reports **AWAITING**, not "paused". Once a response is submitted it moves to **FINISHED**.
 
-1. Calls a connector (may fail)
-2. If it fails, retries up to 3 times
-3. If retries are exhausted, pauses for approval to decide: retry manually or abort
-4. On approval, proceeds; on rejection, logs the failure
-
-### Step-by-step
-
-1. Navigate to **Automation > Playbooks**.
-2. Create a new collection: `03 - Approvals and Errors`.
-3. Create a playbook: `Approval with Retry`.
-4. Add a **Manual** trigger step.
-
-5. **Connector** step — a call that might fail:
-
-| Field | Value |
-|-------|-------|
-| **Step Name** | `Check API Health` |
-| **Connector** | *(any configured connector — Generic HTTP, FortiGate, etc.)* |
-| **Operation** | *(health check or GET operation)* |
-| **Do Until Condition** | `{{ vars.steps.Check_API_Health.data.status_code == 200 }}` |
-| **Delay** | `5` |
-| **Max Retries** | `3` |
-
-6. **Decision** step — check if it succeeded:
-
-| Field | Value |
-|-------|-------|
-| **Step Name** | `Did It Work?` |
-| **Conditions** | *(see below)* |
-
-| Label | Condition | Next Step |
-|-------|-----------|-----------|
-| **Success** | `{{ vars.steps.Check_API_Health.data.status_code == 200 }}` | `Mark Success` |
-| **Failure** | *(else)* | `Request Approval` |
-
-7. **Manual Input** — the approval gate:
-
-| Field | Value |
-|-------|-------|
-| **Step Name** | `Request Approval` |
-| **Is Approval** | `True` |
-| **Step Title** | `API call failed after retries` |
-| **Description** | `Check API Health failed 3 times. Retry or abort?` |
-| **Options** | `Retry` (primary) → `Check API Health`; `Abort` → `Log Failure` |
-
-8. **Send Email** or **No-Op** step — `Log Failure` branch.
-9. **Set Variable** step — `Mark Success` branch:
-
-| Variable | Value |
-|----------|-------|
-| `health_check` | `Passed` |
-
-10. **End** step.
-
-11. Connect the steps so the approval's `Retry` option loops back to `Check API Health`, and `Abort` goes to `Log Failure`.
-
-### Verify
-
-> **Verify:** Trigger the playbook. If the connector fails, it retries 3 times with 5-second delays, then pauses at the approval gate. Click `Retry` to try again or `Abort` to log the failure. Check the execution history — the run should show `paused` status while waiting at the approval step, and `finished` once a button is clicked.
+| Run status   | Meaning                                                     |
+|--------------|-------------------------------------------------------------|
+| `AWAITING`   | Stopped on an Approval, Manual Input, or Manual Task step   |
+| `FINISHED`   | Completed                                                   |
+| `FAILED`     | A step faulted and **Ignore Error** was not set             |
+| `TERMINATED` | Stopped with the **Terminate** button on the execution view |
 
 ---
 
-## The complete YAML playbook
+## Choosing the right mechanism
 
-{{% expand "Click to view the approval with retry YAML" %}}
+| Situation                                             | What to use                             |
+|-------------------------------------------------------|-----------------------------------------|
+| Formal yes/no gate before a production change         | **Approval** step                       |
+| Need the analyst to supply a value                    | **Manual Input** step                   |
+| Work happens outside FortiSOAR                        | **Manual Task** step                    |
+| Non-critical step that may fail                       | **Ignore Error** = Yes                  |
+| Flaky API, worth retrying                             | **Loop** → `do until` + Retries + Delay |
+| Two different valid outcomes (e.g. found / not found) | **Decision** step -- not error handling  |
+| Nobody responds in time                               | **Escalation** on the Approval step     |
 
-```yaml
-collection: Approvals and Errors
-description: Connector step with retry loop, approval gate, and error branching.
-visible: true
+### Common mistake: error vs. expected outcome
 
-playbooks:
-  - name: Approval with Retry
-    is_active: true
-    parameters: []
-    steps:
-      - name: Start
-        type: start
-        next: Check API Health
-
-      - name: Check API Health
-        type: connector
-        connector: your-connector-name
-        operation: health_check
-        config: "your-config-name"
-        params: {}
-        do_until:
-          condition: "{{ vars.steps.Check_API_Health.status_code == 200 }}"
-          delay: 5
-          retries: 3
-        next: Did It Work?
-
-      - name: Did It Work?
-        type: decision
-        conditions:
-          - label: "Success"
-            condition: "{{ vars.steps.Check_API_Health.status_code == 200 }}"
-            next: "Mark Success"
-          - label: "Failure"
-            condition: "true"
-            next: "Request Approval"
-
-      - name: Request Approval
-        type: manual_input
-        is_approval: true
-        title: "API call failed after retries"
-        description: "Check API Health failed 3 times. Retry or abort?"
-        options:
-          - option: "Retry"
-            primary: true
-            next: "Check API Health"
-          - option: "Abort"
-            next: "Log Failure"
-
-      - name: Mark Success
-        type: set_variable
-        vars:
-          health_check: "Passed"
-        next: Done
-
-      - name: Log Failure
-        type: connector
-        connector: utilities
-        operation: noop
-        next: Done
-
-      - name: Done
-        type: end
-```
-
-{{% /expand %}}
+Don't reach for **Ignore Error** when a step is simply reporting an alternative result. A lookup that returns "no match" isn't a failure -- branch on it with a **Decision** step instead of suppressing it. Save **Ignore Error** for genuine faults you're willing to tolerate.
 
 ---
 
-## Error handling pattern reference
+### Challenges
 
-| Scenario | Mechanism | Example |
-|----------|-----------|---------|
-| Non-critical step might fail | `ignore_errors: true` | Send notification email — don't abort if it fails |
-| API is flaky, retry transient errors | `do_until` + `delay` + `retries` | Poll for a task completion with backoff |
-| Unknown error, need human review | Decision → Manual Input | Connector returned unexpected status; ask if we should retry |
-| Formalized yes/no gate | Manual Input with `is_approval: true` | Change management approval before modifying production |
-| Multi-team review chain | Sequential approval steps | SOC approves → Security approves → execute |
-| Whole playbook needs to be re-run | Workflow-level retry API | Infrastructure was down, rerun the workflow |
+{{% notice tip %}}
+Reach out to the instructor if you need help with the challenges.
+{{% /notice %}}
 
-### Common mistake: error vs. expected path
+#### Challenge 1
 
-Don't use `ignore_errors` for expected alternative outcomes. If a connector returns `status_code: 404` for "device not found," that's not an error — it's a valid response. Use a **Decision** step to branch on the response instead of suppressing it.
+Extend the playbook so the **Reject** branch also adds a comment to the alert explaining that closure was declined.
 
----
+#### Challenge 2
 
-## Summary
+Chain a second **Approval** step after the first, assigned to a different team, so a closure needs two sign-offs before the alert is closed.
 
-| Concept | How it works |
-|---------|-------------|
-| **Manual Input** | Pauses the playbook; click a button to resume a specific branch |
-| **Approval** | Manual Input + `is_approval: true` + team assignment + timeout |
-| **Decision** | Evaluates Jinja conditions and routes to matching branch |
-| **ignore_errors** | Step fails but playbook continues |
-| **Do Until** | Step retries until condition is true or max retries exhausted |
-| **Timeout** | Approval auto-resumes after deadline on a configured path |
-| **Run failed** | Step faulted without `ignore_errors`; retry the whole workflow |
+#### Challenge 3
 
-### Key takeaways
-
-- Manual Input is versatile: basic yes/no, approval gates, analyst prompts, input forms
-- `is_approval: true` unlocks team routing, timeouts, and notifications
-- Always distinguish between expected outcomes (use Decision) and unexpected errors (use ignore_errors/do_until)
-- Build error handling into your playbook design from the start — don't bolt it on after deployment
-
-### Next steps
-
-| What to explore | Where |
-|-----------------|-------|
-| Looping over multiple items | [Jinja: for loops](/chapter-04-jinja/02-jinja-adv) |
-| Calling a child playbook | [Reference a Playbook](/chapter-03-playbooks/03-actions) |
-| FMG provisioning with error handling | [FMG Provisioning Ladder](/chapter-02-ftnt-apis/45-fmg-provisioning-ladder) |
+Add a **Connector** step that calls an endpoint you know is unreachable. Give it a `do until` loop with 2 retries and a 5 second delay, and turn **Ignore Error** on. Run it and confirm in the execution log that the step retried, failed, and the playbook still finished.

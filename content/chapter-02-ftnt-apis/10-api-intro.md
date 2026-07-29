@@ -13,7 +13,7 @@ Think of a REST API like ordering langos over the phone. You call the langos pla
 
 **Key Concept:** REST APIs use standard HTTP methods to perform operations
 
-![img_2.png](langos.png)
+![Langos stand used as the REST API analogy](langos.png)
 
 ## The Four Essential HTTP Methods (langos Edition)
 

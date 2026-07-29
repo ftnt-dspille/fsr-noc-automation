@@ -23,7 +23,7 @@ Do not Authorize Branch1 during this process. We will do that later.
 4. Click **Accept** so that the Fortigate trusts the Fortimanager Serial
 5. Click OK 
 6. Click Close
-   ![img.png](close_fmg_status.png)
+   ![Close button on the FortiManager status dialog](close_fmg_status.png)
 
 ![Authorize FMG](images/authorize_fmg.png)
 

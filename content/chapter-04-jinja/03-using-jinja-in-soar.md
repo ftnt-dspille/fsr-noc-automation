@@ -56,7 +56,7 @@ Learn to create variables and reference them in subsequent steps using Jinja2 te
         - **Name**: `first_name` | **Value**: `[Your First Name]`
         - **Name**: `last_name` | **Value**: `[Your Last Name]`
         - **Name**: `company` | **Value**: `[Your Company Name]`
-          ![img.png](personal_info_input.png)
+          ![Set Variable step with the personal info variables](personal_info_input.png)
 3. Click **Save**
 
 #### 4. Test Your Variables
@@ -66,7 +66,7 @@ Learn to create variables and reference them in subsequent steps using Jinja2 te
 3. Click **Trigger Playbook** to execute
 4. In the execution history, click on the **Set Personal Info** step
 5. Verify you can see all three variables with their values
-   ![img.png](personal_info_output.png)
+   ![Personal info variables in the step output](personal_info_output.png)
 6. Click **Close** to exit execution history
 
 #### 5. Use Variables to Create New Data
@@ -81,7 +81,7 @@ Learn to create variables and reference them in subsequent steps using Jinja2 te
 
 {{% notice tip %}}
 **Using Dynamic Values**: Instead of typing Jinja2 manually, you can see the Dynamic Values page by clicking into any field in SOAR. You'll see your previously created variables at the top of the panel. Clicking these variables will automatically add the jinja to reference that value to your step. This helps prevent typos in variable names.
-![img.png](dynamic_values_page_personal_info.png)
+![Dynamic Values picker listing available variables](dynamic_values_page_personal_info.png)
 {{% /notice %}}
 
 #### 6. Create a Template Message
@@ -89,7 +89,7 @@ Learn to create variables and reference them in subsequent steps using Jinja2 te
 1. Add another variable to the same step:
     - **Name**: `important_note`
     - **Value**: `Hey {{vars.first_name}} {{vars.last_name}}, do you still work at {{vars.company}}?`
-      ![img.png](full_profile_input.png)
+      ![Set Variable step containing the templated message](full_profile_input.png)
 2. Click **Save**
 
 #### 7. Test the Complete Workflow
@@ -100,7 +100,7 @@ Learn to create variables and reference them in subsequent steps using Jinja2 te
 4. Verify that:
     - `full_name` shows your complete name
     - `important_note` shows the templated message with all variables filled in
-      ![img.png](full_profile_output.png)
+      ![Templated message rendered in the step output](full_profile_output.png)
 
 {{% notice warning %}}
 **Common Mistake**: Variable names are case-sensitive and must match exactly. `first_name` ≠ `First_Name`. Use the Dynamic Values panel to avoid typos!
@@ -146,7 +146,7 @@ Learn to create variables and reference them in subsequent steps using Jinja2 te
 2. Check the **Process Name Data** step execution results
 3. Expand the **output** data structure
 4. Note the JSON structure of the output - this shows you the data paths available
-   ![img.png](code_snippet_output.png)
+   ![Code Snippet step output showing its JSON structure](code_snippet_output.png)
 
 {{% notice info %}}
 **Understanding Step Output**: Code snippets return data in the `data` variable. This becomes accessible as `{{vars.steps.Process_Name_Data.data.code_output.processed_name}}` or `{{vars.steps.Process_Name_Data.data.code_output.employee_summary}}` in subsequent steps.
@@ -156,9 +156,9 @@ Learn to create variables and reference them in subsequent steps using Jinja2 te
 
 {{% notice tip %}}
 Use the Dynamic values page to pick the results from the code snippet step. When clicking inside the **Value**, check the box **Show Last Run Result if available**, then expand the arrows showing the previous data. Clicking on the key **employee_summary**, fills in the Jinja for you
-![img.png](dynamic_values.png)
+![Dynamic Values picker for code snippet results](dynamic_values.png)
 
-![img.png](filled_in_jinja.png)
+![Jinja expression filled in from the Dynamic Values picker](filled_in_jinja.png)
 {{% /notice %}}
 
 1. Add another **Set Variable** step after the code snippet
@@ -218,7 +218,7 @@ Learn to access and manipulate data from FortiSOAR records using manual triggers
     - **Trigger Button Label**: `Test Data Access - Jinja`
     - **Requires Record**: True
     - **Module**: `Alerts`
-      ![img.png](trigger_alert_playbook.png)
+      ![Manual trigger configured against the Alerts module](trigger_alert_playbook.png)
 3. Click **Save**
 
 #### 3. Extract Alert Data
@@ -246,24 +246,24 @@ Learn to access and manipulate data from FortiSOAR records using manual triggers
     - **Type**: `Brute Force Attempts`
     - **Source IP**: `192.168.1.100`
 4. Click **Save**
-    ![img.png](alert_sample.png?height=500px)
+    ![Sample alert record used for testing](alert_sample.png?height=500px)
 
 #### 5. Test Playbook from Alert
 
 4. Click **Execute** and select **Test Data Access - Jinja**
-    ![img.png](execute_jinja_playbook.png?height=300px)
+    ![Executing the Jinja test playbook from an alert](execute_jinja_playbook.png?height=300px)
 5. View the execution history at the top right
-    ![img.png](view_execution_history.png?height=70px)
+    ![Opening the execution history](view_execution_history.png?height=70px)
 6. Click on the **Extract Alert Data** step
 7. Verify all variables contain the correct data from your alert
-    ![img.png](view_jinja_step_output.png?height=400px)
+    ![Jinja step output populated from the alert](view_jinja_step_output.png?height=400px)
 
 #### 6. Explore Available Data
 
 1. In the execution history, click **ENV** at the top
-    ![img.png](click_env.png)
+    ![ENV tab in the execution history](click_env.png)
 2. Expand `vars > input > records > [0]`
-    ![img.png](expand_env.png?height=600px)
+    ![Expanded vars > input > records path in ENV](expand_env.png?height=600px)
 3. Scroll through and explore all available fields
 4. Notice how the `name` field matches your alert name
 
@@ -326,11 +326,22 @@ Value: Alert "{{vars.input.records[0].name}}" from {{vars.input.records[0].sourc
 1. Create new step → Select **Decision**
 2. Configure:
     - **Step Name**: `Check Risk Level`
-    - **Condition**: `{{vars.risk_level == "High Risk"}}`
+    - **Condition 1**: `vars.risk_level == "High Risk"`
+    - **Branch Tooltip**: `High Risk`
+
+    ![Decision step configured to branch on risk level](images/decision_check_risk_level.png?height=580px)
+
+{{% notice warning %}}
+**Write the condition without `{{ }}`.** The field says *"Only advanced expression is available"* and FortiSOAR wraps the expression in braces for you when you save, so adding your own produces a doubly-wrapped expression. Every other Jinja field on this page wants the braces -- the Decision, Condition, and Loop boxes do not.
+{{% /notice %}}
+
+{{% notice note %}}
+A Decision step does not have **True** and **False** outputs. It has one or more numbered **Condition** blocks, each pointing at a step via **Select A Step To Execute**, plus a **Default Step** that catches everything else. The **Branch Tooltip** you type is the label drawn on the connector in the canvas.
+{{% /notice %}}
 
 #### 5. High Risk Path
 
-1. From **True** output, add **Set Variable** step:
+1. Set **Condition 1**'s **Select A Step To Execute** to a new **Set Variable** step:
     - **Step Name**: `High Risk Actions`
     - **Variables**:
         - **Name**: `required_actions`
@@ -350,7 +361,7 @@ Value: Alert "{{vars.input.records[0].name}}" from {{vars.input.records[0].sourc
 
 #### 6. Low Risk Path
 
-1. From **False** output, add **Set Variable** step:
+1. Set the **Default Step**'s **Select Default Step To Execute** to a second **Set Variable** step (give it the **Branch Tooltip** `Low Risk`):
     - **Step Name**: `Standard Processing`
     - **Variables**:
         - **Name**: `standard_actions`

@@ -50,7 +50,7 @@ If you do not allow vm's, you will get a certificate error when trying to regist
     - **Password** `fortinet`
     - **Verify SSL**: False
 5. Make sure the health check passes
-   ![img.png](json_rpc_health.png?height=500px)
+   ![Passing health check on the FortiManager JSON RPC connector](json_rpc_health.png?height=500px)
 
 ## Register Enterprise Core to FMG
 
@@ -61,16 +61,17 @@ If you do not allow vm's, you will get a certificate error when trying to regist
 
 ### Get list of device in SOAR
 
-1. Navigate to **Automation > Playbooks**
+1. Navigate to **Orchestration > Playbooks**
 2. Create a new collection called `00 - FMG API`
 3. Create a new playbook called `Get FMG Devices`
 4. Choose the _Referenced_ Trigger step
 5. Drag a new step and pick **Connector**
 6. Search for `JSON RPC` and select the Fortimanager Connector
-   ![img.png](pick_json_rpc_conn.png)
+   ![FortiManager JSON RPC connector in the step picker](pick_json_rpc_conn.png)
 7. Provide the Follow details
     - Step Name: `Get Devices`
-      **Action** : JSON RPC Get
+    - **Configuration**: your FortiManager connector configuration
+    - **Action**: JSON RPC Get
     - **URL**:`/dvmdb/device`
     - **Data**:
     ```json
@@ -91,13 +92,22 @@ If you do not allow vm's, you will get a certificate error when trying to regist
     }
     ```
    Your step should look like this
-   ![img.png](get_devices_editor.png)
+   ![Get Devices connector step configuration](get_devices_editor.png)
 8. Save the Step
 9. Click **Save Playbook**
-10. Click the Play button ![img.png](img.png?height=50px&classes=inline)
-11. Click **Trigger Playbook**
-12. Once the Executed Playbook Logs opens, click the step **Get Devices**. Expand the output data and you will see the json responses from the api call
-    ![img_1.png](get_fmg_devices_output.png)
+10. Click **Running In INFO Mode** in the top bar, set **Select Execution Log Level** to `DEBUG`, and click **Apply**
+11. Click the Play button ![Play button](img.png?height=50px&classes=inline)
+12. Click **Trigger Playbook**
+13. Once the Executed Playbook Logs opens, click the step **Get Devices**. Expand the output data and you will see the json responses from the api call
+    ![Device list returned by FortiManager in the execution log](get_fmg_devices_output.png)
+
+{{% notice warning %}}
+Step 10 is not optional. In the default **INFO** mode the execution log stores only each step's status and duration -- expanding the step shows no input or output at all. Step input/output is recorded only when the playbook runs in **DEBUG** mode. Turn DEBUG back off for production playbooks; it fills storage quickly.
+{{% /notice %}}
+
+{{% notice note %}}
+The API response is nested under a `data` key. To reference it from a later step, use `{{vars.steps.Get_Devices.data.get_response}}` -- `vars.steps.Get_Devices.get_response` resolves to nothing. Spaces in a step name become underscores.
+{{% /notice %}}
 
 {{% notice note %}}
 Important things to see in the API Output are the **name**, **sn**, and **mgmt_mode** values. mgmt_mode is `unreg` because we have not authorized the device yet
@@ -112,6 +122,7 @@ Now that we can see unregistered devices, let's create a playbook to authorize t
 1. Create a new playbook called `Authorize FMG Device`
 2. Add a JSON RPC connector step:
     - **Step Name**: `Authorize Device`
+    - **Configuration**: your FortiManager connector configuration
     - **Action**: JSON RPC Exec
     - **URL**: `/dvm/cmd/add/device`
     - **Data**:
@@ -130,13 +141,13 @@ Now that we can see unregistered devices, let's create a playbook to authorize t
     - **Track Task**: True
    
    Your step should look like this
-   ![img_1.png](auth_device_fmg.png)
+   ![Connector step configured to authorize a device](auth_device_fmg.png)
 3. Save the Playbook
 4. Run/Trigger the playbook
 5. If you switch to the FMG soon enough, you will see the add device task running
-   ![img_1.png](fmg_add_device.png)
+   ![Add device task running in FortiManager](fmg_add_device.png)
 6. If successfully added, you will see this json output in SOAR
-   ![img_1.png](auth_device_output.png)
+   ![JSON output from the device authorization step](auth_device_output.png)
 
 ## Get Configuration from FMG CMDB
 
@@ -145,6 +156,7 @@ Now that we can see unregistered devices, let's create a playbook to authorize t
 1. Create a new playbook called `Get Device Config`
 2. Add JSON RPC connector step:
     - **Step Name**: `Get Device Configuration`
+    - **Configuration**: your FortiManager connector configuration
     - **Action**: JSON RPC Get
     - **URL**: `/pm/config/device/Enterprise_Core/vdom/root/system/global`
     - **Data**:
@@ -156,7 +168,7 @@ Now that we can see unregistered devices, let's create a playbook to authorize t
 3. Save/Trigger the playbook.
    Your step output should look like this
    
-   ![img_1.png](img_1.png)
+   ![Device configuration returned in the step output](img_1.png)
 
 ## Additional use cases
 

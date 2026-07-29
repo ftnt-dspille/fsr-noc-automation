@@ -19,7 +19,7 @@ Before beginning, ensure you have administrative access to both FortiSOAR and Fo
    ![ZTP Search](images/ztp_search.png?height=400px)
    {{% notice warning %}}
    If you already see that FortiManager ZTP is installed, then the steps on this page have already been completed for you. Do not install any ZTP Solution Packs. The rest of this page is more informational on the typical process. Example if already installed: 
-![img.png](ztp_installed_already.png?height=500px)
+![FortiManager ZTP solution pack already installed](ztp_installed_already.png?height=500px)
    {{% /notice %}}
 3. Open the Solution Pack and click the **Install** button
 4. Wait for the installation to complete
