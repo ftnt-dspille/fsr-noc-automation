@@ -8,7 +8,7 @@ tags: hands-on
 
 In this chapter, we learned about Zero Touch Provisioning (ZTP) in FortiSOAR. We installed the ZTP Framework, created a ZTP Profile, and ZTP'd a FortiGate. However, we only touched on a fraction of the features and capabilities of the ZTP Framework. To get a glimpse at the full potential we'll install the ZTP Examples Solution Pack.
 
-### Install the ZTP Framework
+### Install the ZTP Feature Examples Solution Pack
 
 1. Go to the Content Hub by clicking the **Content Hub** tab in the left pane
 2. Search for `FortiManager ZTP Flow - Feature Examples` in the Content Hub
@@ -17,7 +17,7 @@ In this chapter, we learned about Zero Touch Provisioning (ZTP) in FortiSOAR. We
 
 ### Check out the ZTP Examples
 
-1. Navigate to **Managers > ZTP Profiles** in the left pane
+1. Navigate to **FortiManager > ZTP Profiles** in the left pane
 2. Verify that you see the new ZTP Profiles 
 ![ztp_profiles](images/ztp_profiles_examples.png?height=500px)
 {{% notice tip %}}
@@ -47,7 +47,7 @@ This profile will:
 7. Verify that you see the new devices (may take ~30 seconds)
 ![new_devices](images/phase_summary.png)
 8. Watch as the devices get assigned to the different ZTP profiles
-9. You can also see click the **ZTP Profile and Phase Summary** quicklink to see the ZTP phase for each device
+9. You can also click the **ZTP Profile and Phase Summary** quicklink to see the ZTP phase for each device
 ![ztp_profiles](images/phase_summary_2.png)
 {{% notice note %}}
 Model devices in FortiManager cannot have a Policy Package pushed to them, so not everything in the ZTP flow can be demonstrated here. 

@@ -289,7 +289,7 @@ Click **Render** to see the output of the Template
 }
 ```
 
-**Step 2:** Create a Jinja template in the right panel that generates this output:
+**Step 2:** Create a Jinja template in the left panel that generates this output:
 
 ```
 config firewall policy

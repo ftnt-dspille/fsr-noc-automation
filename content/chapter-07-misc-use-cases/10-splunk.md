@@ -82,7 +82,7 @@ The HTTP Event Collector allows external systems to send data directly to Splunk
     - **Save the token**: You'll need this for API log uploads
       ![API Token](api_token.png)
 
-### Step 3: Test HEC Connectivity
+### Step 2: Test HEC Connectivity
 
 Verify your HEC setup with a simple test:
 
@@ -254,7 +254,7 @@ After running the script, lets check that we see logs in Splunk
 2. Click **Create New Schedule** at the top right
     - Name `Trigger Splunk Query`
     - **Start Schedule** : Enabled (True)
-    - **Playbook Reference**: _Search for you playbook name_ `BPDU packet received`
+    - **Playbook Reference**: _Search for your playbook name_ `BPDU Splunk Query`
     - Select **Schedule Frequency**: _Hourly_
 3. Click Save
     ![Playbook schedule settings](schedule_settings.png?height=500px)

@@ -50,7 +50,7 @@ The script initializes the policy table inside the package.
 1. Navigate to **Device Manager → Scripts**
 2. Click **Create New > Script**
    ![Create New > Script menu](nav_to_script.png)
-4. Name it `Create_Automation_Policies`, with _Run script on_ as **Policy Package or ADOM Database**, and with this content:
+3. Name it `Create_Automation_Policies`, with _Run script on_ as **Policy Package or ADOM Database**, and with this content:
 
 ```cli
 config firewall service custom
@@ -383,9 +383,9 @@ end
 3. Click **OK** to save the script.
 4. Fill in a change note if prompted
    ![Change note prompt](change_note.png)
-3. Select the script and click **Run Script**.
+5. Select the script and click **Run Script**.
    ![Selecting the script and clicking Run Script](select_script_and_run.png)
-4. Select the **Automation_Package** and click **Run Now**
+6. Select the **Automation_Package** and click **Run Now**
    ![Selecting the Automation_Package to run against](select_automation_package.png)
 
 **Expected Result:** The script executes successfully and a policy table exists in the package.
@@ -410,14 +410,14 @@ Note these values -- you'll need them when configuring FortiSOAR:
 The ZTP Solution Pack **must be installed before** importing the automation package.
 {{% /notice %}}
 
-1. Login to **FortiSOAR** as **csadmin**
-1. Navigate to **Content Hub → Solution Packs**
-2. Confirm that **FortiManager ZTP Flow** Solution Pack is Installed
+1. Log in to **FortiSOAR**
+2. Navigate to **Content Hub → Solution Packs**
+3. Confirm that **FortiManager ZTP Flow** Solution Pack is Installed
    ![FortiManager ZTP Flow solution pack installed](ZTP_Flow_installed.png?height=500px)
 
 If you do not see the Solution Pack installed, Open the Pack and click **Install**.
 
-### Task 2.3: Enable Custom Connectors
+### Task 2.2: Enable Custom Connectors
 
 1. In the **System Settings** menu, click **Advanced Developer Settings** and enable the **Custom Connectors** feature.
    ![Advanced Developer Settings menu](adv_dev_features_menu.png)
@@ -425,7 +425,7 @@ If you do not see the Solution Pack installed, Open the Pack and click **Install
    ![Build your own connector checkbox](enable_connectors.png)
 3. Click **Submit**
 
-### Task 2.4: Import the Automation Package
+### Task 2.3: Import the Automation Package
 
 1. Download the **FortiSOAR Policy Request Automation Export-202603050614.zip** file from this repository
    {{% resources style="blue" title="Download me" pattern="FortiSOA.*.zip" /%}}
@@ -445,7 +445,7 @@ If you do not see the Solution Pack installed, Open the Pack and click **Install
 9. Wait for the import to complete
    ![Import completed successfully](import_success.png)
 
-### Task 2.5: Configure the Connector
+### Task 2.4: Configure the Connector
 
 1. Download the custom fortimanager connector here
    {{% resources style="blue" title="Download me" pattern="fortinet-fortimanager.*.tgz" /%}}
@@ -461,7 +461,7 @@ If you do not see the Solution Pack installed, Open the Pack and click **Install
    ![Connector uploaded successfully](upload_success.png)
 4. Exit the connector
 
-### Task 2.2: Create a FortiManager Manager Record
+### Task 2.5: Create a FortiManager Manager Record
 
 1. Using the left navigation menu, browse to **FortiManger → Managers**
    ![FortiManager > Managers navigation](fortimanager_module.png?height=500px)
@@ -475,7 +475,7 @@ If you do not see the Solution Pack installed, Open the Pack and click **Install
    ![Filling in the manager name](fill_fmg_record.png)
 3. You should get a prompt to fill in the Device Details and click **Continue**
    ![Device details prompt for address and credentials](fill_in_ip_and_credentials.png?height=500px)
-3. Note the **Manager Name** since it will be referenced by the connector
+4. Note the **Manager Name** since it will be referenced by the connector
 
 ### Create a connector config
 
@@ -510,7 +510,7 @@ If you do not see the Solution Pack installed, Open the Pack and click **Install
 ### Task 3.2: Execute and Monitor the Playbook
 
 1. Click **Execute → Create Policy from Request** and follow any prompts
-2. Navigate to **Automation → Playbook Execution** to monitor progress
+2. Open the **Execution History** panel from the icon in the top navigation bar to monitor progress
     ![Playbook Execution view monitoring progress](policy_requests_creatuib.png)
 3. Once the playbook adds the policy, you will get a popup asking if you want to install the policy to the device based on the installation targets. 
    ![Installation targets prompt after the policy is added](instllation_targets.png)

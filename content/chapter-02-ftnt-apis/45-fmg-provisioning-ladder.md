@@ -80,7 +80,7 @@ Address objects are the named IP entries that firewall policies reference. Inste
 
 ### Create the playbook
 
-1. On the left pane select **Orchestration > Playbooks**
+1. On the left pane select **Automation > Playbooks**
 2. Click **+ New Collection**, enter **Name**: `01 - FMG Provisioning`, and click **Create**
 3. Click **+ Add Playbook**, enter **Name**: `Create Address Object`, and click **Create**
 4. In the trigger list select **Referenced**, then click **Save**

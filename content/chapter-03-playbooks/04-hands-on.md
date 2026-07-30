@@ -16,7 +16,7 @@ Now that we've covered the playbook basics, let's get hands-on with building a c
     - **Description**: `Workshop Playbooks`
 3. Click **Create**
    ![New Collection](images/create_collection.png)
-4. Click the **+ New Playbook** Button and enter
+4. Click the **+ Add Playbook** Button and enter
     - **Name**: `01-Send Email`
     - **Description**: `Send an email to a yourself from an alert`
       ![New Playbook](images/add_new_playbook.png)

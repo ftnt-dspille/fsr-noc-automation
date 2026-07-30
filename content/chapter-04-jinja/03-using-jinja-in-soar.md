@@ -37,7 +37,7 @@ Learn to create variables and reference them in subsequent steps using Jinja2 te
 
 1. Navigate to **Automation > Playbooks**
 2. Create a new collection called `00 - Jinja Practice`
-3. Create a new playbook in your workshop collection:
+3. Create a new playbook in the `00 - Jinja Practice` collection:
     - **Name**: `Testing Variables`
     - **Description**: `Practice creating and using Jinja2 variables`
 4. Click **Create**
@@ -149,7 +149,7 @@ Learn to create variables and reference them in subsequent steps using Jinja2 te
    ![Code Snippet step output showing its JSON structure](code_snippet_output.png)
 
 {{% notice info %}}
-**Understanding Step Output**: Code snippets return data in the `data` variable. This becomes accessible as `{{vars.steps.Process_Name_Data.data.code_output.processed_name}}` or `{{vars.steps.Process_Name_Data.data.code_output.employee_summary}}` in subsequent steps.
+**Understanding Step Output**: Whatever the code snippet **prints** is captured as `code_output`. Printing a single dictionary makes its keys individually addressable, so this step's output is reachable as `{{vars.steps.Process_Name_Data.data.code_output.processed_name}}` or `{{vars.steps.Process_Name_Data.data.code_output.employee_summary}}` in subsequent steps. Print more than once and `code_output` collapses into one concatenated string instead.
 {{% /notice %}}
 
 #### 10. Access Code Snippet Results
@@ -224,11 +224,15 @@ Learn to access and manipulate data from FortiSOAR records using manual triggers
 #### 3. Extract Alert Data
 
 1. Drag from the start step and click **Set Variable**
-2. Use the **Step Name**: `Extract Alert Data``
+2. Use the **Step Name**: `Extract Alert Data`
     - **Name**: `alert_name` | **Value**: `{{vars.input.records[0].name}}`
-    - **Name**: `alert_severity` | **Value**: `{{vars.input.records[0].severity}}`
-    - **Name**: `alert_type` | **Value**: `{{vars.input.records[0].type}}`
+    - **Name**: `alert_severity` | **Value**: `{{vars.input.records[0].severity.itemValue}}`
+    - **Name**: `alert_type` | **Value**: `{{vars.input.records[0].type.itemValue}}`
     - **Name**: `source_ip` | **Value**: `{{vars.input.records[0].sourceIp}}`
+
+   {{% notice note %}}
+   **Severity** and **Type** are picklist fields, so they arrive as objects rather than strings. Add `.itemValue` to get the label you see in the UI (`Medium`, `Brute Force Attempts`). Leave it off and the variable holds the whole picklist object.
+   {{% /notice %}}
 3. Save the Step
 4. Save the playbook
    {{% notice warning %}}
@@ -250,12 +254,13 @@ Learn to access and manipulate data from FortiSOAR records using manual triggers
 
 #### 5. Test Playbook from Alert
 
-4. Click **Execute** and select **Test Data Access - Jinja**
+1. Navigate to **Incident Response > Alerts** and select the checkbox next to `Sample Alert for Playbook Testing`
+2. Click **Execute** and select **Test Data Access - Jinja**
     ![Executing the Jinja test playbook from an alert](execute_jinja_playbook.png?height=300px)
-5. View the execution history at the top right
+3. View the execution history at the top right
     ![Opening the execution history](view_execution_history.png?height=70px)
-6. Click on the **Extract Alert Data** step
-7. Verify all variables contain the correct data from your alert
+4. Click on the **Extract Alert Data** step
+5. Verify all variables contain the correct data from your alert
     ![Jinja step output populated from the alert](view_jinja_step_output.png?height=400px)
 
 #### 6. Explore Available Data
@@ -318,7 +323,7 @@ Value: {% if vars.input.records[0].sourceIp.startswith('10.') %}Internal Network
 
 ```jinja2
 Name: alert_summary
-Value: Alert "{{vars.input.records[0].name}}" from {{vars.input.records[0].sourceIp | default('Unknown IP')}} is classified as {{vars.steps.Analyze_Alert_Data.risk_level}} due to {{vars.input.records[0].severity | lower}} severity.
+Value: Alert "{{vars.input.records[0].name}}" from {{vars.input.records[0].sourceIp | default('Unknown IP')}} is classified as {{vars.risk_level}} due to {{vars.input.records[0].severity.itemValue | lower}} severity.
 ```
 
 #### 4. Add Conditional Processing
@@ -355,7 +360,7 @@ A Decision step does not have **True** and **False** outputs. It has one or more
           
           Alert Details:
           - Name: {{vars.input.records[0].name}}
-          - Time: {{vars.input.records[0].createDate | strftime('%Y-%m-%d %H:%M:%S')}}
+          - Time: {{'%Y-%m-%d %H:%M:%S' | strftime(vars.input.records[0].createDate)}}
           - Classification: {{vars.ip_classification}}
           ```
 

@@ -10,7 +10,7 @@ You already know how to use named connectors like FortiGate and FortiManager. Th
 
 ## The two tools for arbitrary automation
 
-When a named connector doesn't exist for the service you need — GitHub, GitLab, Jenkins, Slack, a custom internal API — you combine these two connectors:
+When a named connector doesn't exist for the service you need -- GitHub, GitLab, Jenkins, Slack, a custom internal API -- you combine these two connectors:
 
 | Connector | Name | What it does |
 |-----------|------|-------------|
@@ -23,7 +23,7 @@ FortiSOAR ships with a `code-snippet` connector. The `code-runner` connector is 
 
 | Feature | Stock `code-snippet` | `code-runner` |
 |---------|---------------------|---------------|
-| `return` statement | SyntaxError (executed at module level) | **Valid** — snippet wrapped in a function body |
+| `return` statement | SyntaxError (executed at module level) | **Valid** -- snippet wrapped in a function body |
 | Builtins | Restricted set | **Full, unrestricted** `__builtins__` |
 | Snippet input | Ad-hoc | Normalized `params` dict from `input` argument |
 | Output | Varies | Consistent `{"code_output": <return value>}` |
@@ -45,7 +45,7 @@ The Generic HTTP connector exposes several operations:
 
 | Operation | HTTP Method | When to use |
 |-----------|------------|-------------|
-| `http_request` | Any (selectable) | Most flexible — pick method per call |
+| `http_request` | Any (selectable) | Most flexible -- pick method per call |
 | `http_get` | GET | Read-only queries |
 | `http_post` | POST | Create resources, send webhooks, trigger pipelines |
 | `http_put` | PUT | Full resource replacement |
@@ -78,8 +78,8 @@ A webhook trigger has no inherent payload schema. The incoming JSON body lands i
 
 For the exercises below, you need two connectors configured:
 
-1. **Generic HTTP** — configured with Basic auth against any test HTTP service
-2. **Code Runner** — no configuration required (zero config fields)
+1. **Generic HTTP** -- configured with Basic auth against any test HTTP service
+2. **Code Runner** -- no configuration required (zero config fields)
 
 To install the Code Runner connector:
 
@@ -103,7 +103,7 @@ You'll configure the Generic HTTP connector and use it to make API calls to an e
 | Field | Value |
 |-------|-------|
 | **Name** | `Generic HTTP Lab` |
-| **Server URL** | *(depends on your target API — a test HTTP echo service, or the GitHub API base `https://api.github.com`)* |
+| **Server URL** | *(depends on your target API -- a test HTTP echo service, or the GitHub API base `https://api.github.com`)* |
 | **Authentication Type** | *(depends on target)* |
 | **Verify SSL** | `True` |
 | **Return On HTTP Error** | `True` |
@@ -117,13 +117,13 @@ You'll configure the Generic HTTP connector and use it to make API calls to an e
 1. Navigate to **Automation > Playbooks**.
 2. Create a new collection called `02 - DevOps`.
 3. Create a new playbook called `HTTP GET Request`.
-4. Add a **Manual** trigger step (module: `Utils`, does not require a record).
+4. Add a **Manual** trigger step (**Select Module**: `Alerts`, **Does not require a record Input**: `Yes`).
 5. Drag a **Connector** step:
 
 | Field | Value |
 |-------|-------|
 | **Step Name** | `Fetch Data` |
-| **Connector** | `Generic HTTP — (your connection)` |
+| **Connector** | `Generic HTTP -- (your connection)` |
 | **Operation** | `HTTP GET` |
 | **URL or Path** | *(endpoint path, e.g. `/repos/<owner>/<repo>/branches` for GitHub)* |
 
@@ -146,7 +146,7 @@ You'll configure the Generic HTTP connector and use it to make API calls to an e
 The response structure is consistent across all Generic HTTP operations: `status_code`, `headers`, and `body`.
 
 {{% notice tip %}}
-Use the **Response Path** parameter to skip manual parsing. For example, setting `response_path: body.items` returns only the items array instead of the full response wrapper.
+Use the **Response Path** parameter to skip manual parsing. The path is resolved **inside the response body**, so for a body of `{"data": {"items": [...]}}` you set `response_path: data.items` and `body` becomes just the items array. `status_code` and `headers` are still returned alongside it.
 {{% /notice %}}
 
 ### Make a POST request with a JSON body
@@ -156,7 +156,7 @@ Add a **Connector** step:
 | Field | Value |
 |-------|-------|
 | **Step Name** | `Send Webhook` |
-| **Connector** | `Generic HTTP — (your connection)` |
+| **Connector** | `Generic HTTP -- (your connection)` |
 | **Operation** | `HTTP POST` |
 | **URL or Path** | *(webhook endpoint URL)* |
 | **Body Type** | `json` |
@@ -184,7 +184,7 @@ The Code Runner connector lets you execute unrestricted Python in a playbook ste
 | Field | Value |
 |-------|-------|
 | **Step Name** | `Transform Data` |
-| **Connector** | `Code Runner` |
+| **Connector** | `Code Runner (Unrestricted)` |
 | **Operation** | `Run Python (Unrestricted)` |
 | **Input** | `{"items": [3, 1, 4, 1, 5, 9, 2, 6]}` |
 | **Python Code** | *(see below)* |
@@ -226,10 +226,10 @@ Code Runner executes as the FortiSOAR integrations user with full filesystem acc
 
 Now combine both connectors into a real DevOps workflow. The pattern:
 
-1. **Webhook trigger** — external CI/CD pipeline or Git push fires the playbook
-2. **HTTP GET** — fetch configuration or data from a remote API
-3. **Code Runner** — transform, validate, or enrich the data
-4. **HTTP POST** — push the processed result back
+1. **Webhook trigger** -- external CI/CD pipeline or Git push fires the playbook
+2. **HTTP GET** -- fetch configuration or data from a remote API
+3. **Code Runner** -- transform, validate, or enrich the data
+4. **HTTP POST** -- push the processed result back
 
 ### Build the playbook
 
@@ -242,14 +242,14 @@ remote_url: <URL to fetch from>
 push_url: <URL to post to>
 ```
 
-4. **Connector** — Generic HTTP, `HTTP GET`:
+4. **Connector** -- Generic HTTP, `HTTP GET`:
 
 | Field | Value |
 |-------|-------|
 | **Step Name** | `Fetch Config` |
 | **URL or Path** | `{{ vars.remote_url }}` |
 
-5. **Connector** — Code Runner, `Run Python`:
+5. **Connector** -- Code Runner (Unrestricted), `Run Python (Unrestricted)`:
 
 | Field | Value |
 |-------|-------|
@@ -274,7 +274,7 @@ enriched = {
 return enriched
 ```
 
-6. **Connector** — Generic HTTP, `HTTP POST`:
+6. **Connector** -- Generic HTTP, `HTTP POST`:
 
 | Field | Value |
 |-------|-------|
@@ -305,7 +305,7 @@ This pattern is the backbone of most GitOps workflows:
 
 ## Scheduled data ingestion
 
-The Generic HTTP connector supports **scheduled data ingestion** — periodically pulling data from an external API and creating FortiSOAR records. This is useful for continuous enrichment: pulling asset inventories, vulnerability lists, or threat intelligence feeds.
+The Generic HTTP connector supports **scheduled data ingestion** -- periodically pulling data from an external API and creating FortiSOAR records. This is useful for continuous enrichment: pulling asset inventories, vulnerability lists, or threat intelligence feeds.
 
 ### Configure scheduled ingestion
 
@@ -381,7 +381,7 @@ All use the configured auth method (Bearer Token or API Key works for GitHub).
 
 ### When to use what
 
-- **Use a named connector** when one exists (FortiGate, FortiManager, ServiceNow, etc) — it has better type safety and documented operations.
+- **Use a named connector** when one exists (FortiGate, FortiManager, ServiceNow, etc) -- it has better type safety and documented operations.
 - **Use Generic HTTP** for any REST API without a dedicated connector. It covers 90% of integration needs.
 - **Use Code Runner** for Python logic that doesn't fit Jinja (complex data structures, date math, external libraries).
 - **Combine them** for full DevOps workflows: webhook trigger → HTTP fetch → Python transform → HTTP push.

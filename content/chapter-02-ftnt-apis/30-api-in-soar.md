@@ -37,7 +37,7 @@ This guide demonstrates how to make generic API calls directly within SOAR playb
 
 ### Step 1: Set Up Collection and Playbook
 
-1. Navigate to **Orchestration > Playbooks**
+1. Navigate to **Automation > Playbooks**
 2. Click **+ New Collection**
     - **Name:** "Jokes"
 3. Click **Create**
@@ -106,7 +106,7 @@ Step input and output are only recorded when the playbook runs in **DEBUG** mode
 
 ### Trigger from Alerts Page
 
-1. Navigate to **Security Operations > Alerts**
+1. Navigate to **Incident Response > Alerts**
 2. Select **Execute** and click the drop down item "Get Dad Joke"
    ![Execute menu on the Alerts page with the Get Dad Joke playbook](images/execute_dad_joke.png?height=400px)
 3. Open the playbook execution history at the top right

@@ -61,7 +61,7 @@ If you do not allow vm's, you will get a certificate error when trying to regist
 
 ### Get list of device in SOAR
 
-1. Navigate to **Orchestration > Playbooks**
+1. Navigate to **Automation > Playbooks**
 2. Create a new collection called `00 - FMG API`
 3. Create a new playbook called `Get FMG Devices`
 4. Choose the _Referenced_ Trigger step

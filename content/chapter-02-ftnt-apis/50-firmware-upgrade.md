@@ -59,7 +59,7 @@ The `target` field uses the ADOM-scoped device path: `adom/<adom>/device/<device
 
 ## 2. Create the playbook
 
-1. On the left pane select **Orchestration > Playbooks**
+1. On the left pane select **Automation > Playbooks**
 2. Click **+ New Collection**, enter **Name**: `00 - FMG Firmware`, and click **Create**
 3. Click **+ Add Playbook**, enter **Name**: `Upgrade FortiGate Firmware`, and click **Create**
 4. In the trigger list select **Referenced**

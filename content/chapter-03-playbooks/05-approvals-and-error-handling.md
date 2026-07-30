@@ -121,7 +121,7 @@ You'll build a playbook that runs from an alert, asks the SOC team whether the a
 
 ### Create the playbook
 
-1. On the left pane select **Orchestration > Playbooks**
+1. On the left pane select **Automation > Playbooks**
 2. Click **+ New Collection**, enter **Name**: `00-Workshop`, and click **Create** (skip this if you already made it in the previous chapter)
 3. Click **+ Add Playbook** and enter
     - **Name**: `02-Approve Alert Closure`
@@ -200,7 +200,7 @@ Your canvas should now show the **Approve** and **Reject** branch labels on the 
 ![Canvas showing the Approve and Reject branch labels](images/img.png)
 ### Run it
 
-20. Navigate to **Security Operations > Alerts**
+20. Navigate to **Incident Response > Alerts**
 21. Tick the checkbox next to any open alert
 22. Click **Execute** and select **Workshop: Approve Alert Closure**
 
@@ -214,7 +214,7 @@ Your canvas should now show the **Approve** and **Reject** branch labels on the 
 
 26. Click **Approve**
 
-> **Verify:** The run status changes to **FINISHED** and the PENDING INPUTS tab shows `Awaiting Playbook resumed successfully.` Go back to **Security Operations > Alerts** -- the alert you selected now has status **Closed**.
+> **Verify:** The run status changes to **FINISHED** and the PENDING INPUTS tab shows `Awaiting Playbook resumed successfully.` Go back to **Incident Response > Alerts** -- the alert you selected now has status **Closed**.
 
 {{% notice note %}}
 Because you assigned this approval to **SOC Team**, only members of that team see the prompt. If you can't action it, check your user's team membership under **Settings > Teams**.
