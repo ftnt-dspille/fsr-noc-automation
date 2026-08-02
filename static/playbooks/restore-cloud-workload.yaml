@@ -1,0 +1,940 @@
+# Chapter 09, part 8 -- put a contained cloud workload back on the network,
+# using the only surviving record of what its network posture used to be.
+#
+# This playbook is provided already built. Parts 1 to 7 of the chapter had you
+# build the containment playbook by hand; this is its other half, and building
+# two playbooks of this size in one session is not a good use of the time. Read
+# it, import it, run it against the case your containment playbook produced,
+# and break it deliberately -- the chapter lists the five ways.
+#
+# Containment is the half that demos well. Restore is the half that decides
+# whether anybody will let the containment run unattended, and it is harder for
+# a reason specific to the cloud: **AWS keeps no history of
+# `ModifyInstanceAttribute`.** There is no "previous security groups" field, no
+# undo, and nothing in CloudTrail's event that tells you what the group list was
+# *before* the call. The containment playbook wrote the pre-containment group
+# list into a case comment precisely so this playbook would have something to
+# read. That comment is the backup. This playbook is the restore.
+#
+# Which means the interesting failure here is not "the API call failed". It is
+# "the record we are restoring from is missing, ambiguous, or no longer true".
+# Four of the steps below exist only to establish that, and all four run BEFORE
+# the approval, so a human is never asked to authorise something that was going
+# to be refused anyway.
+#
+# Connectors: the stock `aws` connector does everything here except two steps.
+# `Check Groups` needs a describe filtered by group-id (the stock connector has
+# no filter form, and the GroupIds form raises on the first unknown ID and tells
+# you nothing about the rest), and `Restore` needs an operation that FAILS on a
+# stale group rather than dropping it. Both use `aws-extended`, installed in
+# part 0.
+#
+#   Start (manual, on the case)
+#     -> Restore Config     (set_variable -- quarantine group, status tag)
+#     -> Find Evidence      (find_record comments on this case)
+#     -> Parse Evidence     (code-runner -- instance id + the recorded group
+#                            IDs, or a reason there are none)
+#     -> Evidence Gate      (decision)
+#          nothing to restore from -> No Evidence Comment -> end
+#     -> Read Instance      (aws Get Instance Details, ignore_errors)
+#     -> Read State         (code-runner -- exists? still quarantined?)
+#     -> State Gate         (decision)
+#          gone            -> Instance Gone Comment      -> end
+#          already restored-> Already Restored Comment   -> end
+#          some third state-> Unexpected State Comment   -> end
+#     -> Check Groups       (aws-extended generic_action -- do the recorded
+#                            groups still exist, and in this instance's VPC?)
+#     -> Read Groups        (code-runner -- all present? which are missing?)
+#     -> Groups Gate        (decision)
+#          any missing -> Groups Missing Comment -> end
+#     -> Restore Approval   (manual_input -- ALWAYS, see below)
+#          Keep Contained -> Kept Contained Comment -> end
+#     -> Restore            (aws-extended generic_action --
+#                            modify_instance_attribute by group ID)
+#     -> Tag Instance       (aws add_tag_to_instance -- 'Restored')
+#     -> Read Back          (aws Get Instance Details)
+#     -> Verify Restore     (code-runner -- compare to what was recorded)
+#     -> Verify Gate        (decision)
+#          not restored -> Restore Failed Comment -> Update Case -> end
+#     -> Restored Comment -> Update Case -> end
+#
+# Five decisions worth defending.
+#
+# 1. **The approval gate is unconditional here, and it is conditional in the
+#    containment playbook.** That asymmetry is the point. Containment asks a
+#    human only for production-tagged workloads, because containing a dev box
+#    costs an afternoon. Restore asks every time, because restore re-connects a
+#    machine that was beaconing to a command-and-control server, and the person
+#    who has to be satisfied is not "is this workload important" but "is this
+#    workload clean". No tag answers that question, so no tag is consulted.
+#    The risk direction is reversed, so the gate is too.
+#
+# 2. **Restore acts on security-group IDs, not names.** The evidence comment
+#    records both. Names are what a human reads; IDs are what AWS actually
+#    attaches, are unique account-wide rather than per-VPC, and survive a group
+#    being renamed. The sharper reason is the one the containment playbook
+#    documents: the vendor operation that takes *names* drops a name it cannot
+#    resolve, reports it only inside the response body, and still returns a
+#    green step. Restoring from names would therefore turn "one of the three
+#    original groups was deleted last week" into a partial restore reported as a
+#    complete one. Measured caveat: that operation behaves identically when
+#    handed unknown *IDs*, so restoring by ID is not on its own enough -- the
+#    Restore step also switches to `modify_instance_attribute`, which raises
+#    InvalidGroup.NotFound and attaches nothing. Having first asked AWS whether
+#    every ID still exists, the failure becomes a refusal that names the
+#    missing group.
+#
+# 3. **The instance ID has to be agreed by everything that mentions it.** It is
+#    read from the case name, the case description and every comment on the
+#    case, and if those disagree the playbook refuses. A case that has
+#    accumulated a second workload's comments -- through a merge, or an analyst
+#    pasting from another investigation -- is exactly the case where restoring
+#    "the instance" means restoring the wrong one, and the alternative to
+#    refusing is a playbook that quietly picks whichever it saw first.
+#
+# 4. **The playbook refuses to restore an instance that is not currently
+#    quarantined.** If the group list is neither the quarantine group nor the
+#    recorded original, something else has been done to this instance since --
+#    another tool, another responder, a manual change -- and overwriting that
+#    with a list from an old comment destroys whatever it was. "Already
+#    restored" is reported as a success and is separated from that case, because
+#    re-running a restore is a normal thing for a responder to do and should not
+#    read as an error.
+#
+# 5. **The tag is written to `Restored`, not deleted.** Deleting it would leave
+#    the instance looking like one that was never contained. The point of the
+#    tag is that inventory tooling can tell the difference between a workload
+#    that has been through a containment and one that has not, and that
+#    difference outlives the incident. As in the containment playbook, the tag
+#    is written *before* the read-back so the verification is checking AWS's
+#    account of the network posture rather than this playbook's own bookkeeping.
+#    The tag is never the evidence.
+#
+# BEFORE YOU RUN IT: check `Restore Approval`'s `Assign To`. It ships pointing
+# at the built-in **SOC Team**, whose UUID is seeded at install and is the same
+# on every appliance. If your workshop approves as a different team, pick yours
+# from the field's own selector -- never by typing a name. A manual_input
+# assigned to a team FortiSOAR cannot resolve is created UNOWNED: it renders
+# nowhere, nobody can answer it, and the run waits until it times out.
+#
+collection: 03 - AWS Cloud Ops
+description: >
+  Restore a contained EC2 instance to the security groups recorded in its case,
+  after confirming those groups still exist and that the instance is still in
+  the state containment left it in -- gated behind a human approval every time,
+  and verified by reading the group list back off AWS.
+visible: true
+
+playbooks:
+  - name: Restore Cloud Workload
+    description: >
+      Read the pre-containment security-group list out of the case, confirm it
+      is still restorable, and put the workload back on it -- with the result
+      verified against AWS rather than inferred from the API call.
+    is_active: true
+    steps:
+      - name: Start
+        type: start
+        module: incidents
+        button_label: "Restore Cloud Workload"
+        next: Restore Config
+
+      - name: Restore Config
+        type: set_variable
+        comment: >
+          `quarantine_group` must match the containment playbook's. It is not
+          used to change anything here -- it is how this playbook recognises an
+          instance that is still contained, and therefore how it distinguishes
+          "ready to restore" from "somebody else has been here".
+
+          `evidence_marker` is the phrase the containment playbook's evidence
+          comment opens with. Matching on it rather than on comment order means
+          an analyst's own comments can sit anywhere in the case without
+          shifting what this reads.
+        vars:
+          aws_config: "AWS Lab Extended"
+          quarantine_group: "workshop-quarantine"
+          status_tag_key: "SecurityStatus"
+          status_tag_value: "Restored"
+          evidence_marker: "Pre-containment network posture"
+        next: Find Evidence
+
+      - name: Find Evidence
+        type: find_record
+        module: comments
+        comment: >
+          Every comment on this case, read through the relationship rather than
+          by fetching the case again -- `incidents.uuid` on the comments module
+          dot-walks the join.
+
+          All of them, not just the evidence comment: the instance ID is
+          cross-checked across everything the case says, and a comment that
+          names a second instance is the signal this playbook most needs to see.
+        filters:
+          - field: incidents.uuid
+            operator: eq
+            value: "{{ vars.input.records[0].uuid }}"
+        limit: 100
+        next: Parse Evidence
+
+      - name: Parse Evidence
+        type: connector
+        connector: code-runner
+        operation: run_python
+        config: Default
+        comment: >
+          Recovers the restore target from prose. That is worth being honest
+          about rather than dressing up: the pre-containment group list lives in
+          an HTML comment because that is the only place AWS's own API left room
+          for it, and reading it back means parsing what was written for a
+          human.
+
+          Two things make that safe enough to act on. The security-group IDs are
+          matched on their own format (`sg-` plus hex), which no surrounding
+          markup can imitate, and the instance ID is required to be unanimous
+          across every text on the case. Anything the parse is unsure about ends
+          the run with a comment rather than a guess -- the failure mode of a
+          restore that acts on a misread record is attaching a stranger's
+          security groups to a compromised host.
+
+          The group *names* are extracted best-effort and used only in the
+          comments. They are the human-legible half; the IDs are what gets
+          attached.
+        params:
+          code: |
+            import json
+            import re
+
+            comments = {{ vars.steps.Find_Evidence | default([]) }}
+            marker = "{{ vars.evidence_marker }}"
+            case_name = """{{ vars.input.records[0].name | default('', true) }}"""
+            case_description = """{{ vars.input.records[0].description | default('', true) }}"""
+
+            def plain(html):
+                return re.sub(r"\s+", " ", re.sub(r"<[^>]+>", " ", html or "")).strip()
+
+            texts = []
+            evidence = ""
+            for comment in comments:
+                text = plain(comment.get("content") or "")
+                if not text:
+                    continue
+                texts.append(text)
+                # The most recent evidence comment wins if a workload has been
+                # contained more than once: the last containment is the one this
+                # restore is undoing.
+                if marker in text:
+                    evidence = text
+
+            all_text = " ".join([plain(case_name), plain(case_description)] + texts)
+
+            # An EC2 instance ID is i- plus 8 or 17 hex characters. Requiring
+            # agreement across the whole case is the guard against restoring the
+            # wrong workload from a case that has collected two of them.
+            instance_ids = sorted(set(re.findall(r"i-[0-9a-f]{8,17}", all_text)))
+
+            if not evidence:
+                return {
+                    "ok": "no",
+                    "instance_id": "",
+                    "group_ids": "",
+                    "group_ids_json": "[]",
+                    "group_names": "",
+                    "group_count": 0,
+                    "reason": (
+                        "no comment on this case records a pre-containment network "
+                        "posture, so there is no group list to restore to"
+                    ),
+                }
+
+            if not instance_ids:
+                return {
+                    "ok": "no",
+                    "instance_id": "",
+                    "group_ids": "",
+                    "group_ids_json": "[]",
+                    "group_names": "",
+                    "group_count": 0,
+                    "reason": (
+                        "the case records a pre-containment posture but names no EC2 "
+                        "instance, so there is nothing to restore it to"
+                    ),
+                }
+
+            if len(instance_ids) > 1:
+                return {
+                    "ok": "no",
+                    "instance_id": "",
+                    "group_ids": "",
+                    "group_ids_json": "[]",
+                    "group_names": "",
+                    "group_count": 0,
+                    "reason": (
+                        "this case names {0} different EC2 instances ({1}) and the "
+                        "playbook will not guess which one to restore".format(
+                            len(instance_ids), ", ".join(instance_ids))
+                    ),
+                }
+
+            # Only the posture paragraph is scanned for group IDs. The rest of
+            # the case can mention a security group without it becoming a
+            # restore target.
+            posture = evidence[evidence.index(marker):]
+            group_ids = []
+            for group_id in re.findall(r"sg-[0-9a-f]{8,17}", posture):
+                if group_id not in group_ids:
+                    group_ids.append(group_id)
+
+            if not group_ids:
+                return {
+                    "ok": "no",
+                    "instance_id": instance_ids[0],
+                    "group_ids": "",
+                    "group_ids_json": "[]",
+                    "group_names": "",
+                    "group_count": 0,
+                    "reason": (
+                        "the evidence comment records the pre-containment posture but "
+                        "no security-group IDs, so restore has only names to work from "
+                        "and names are not safe to restore by"
+                    ),
+                }
+
+            names = re.search(r"security groups (.+?) \(", posture)
+            group_names = names.group(1).strip() if names else "not recorded"
+
+            return {
+                "ok": "yes",
+                "instance_id": instance_ids[0],
+                "group_ids": ", ".join(group_ids),
+                "group_ids_json": json.dumps(group_ids),
+                "group_names": group_names,
+                "group_count": len(group_ids),
+                "reason": "",
+            }
+        next: Evidence Gate
+
+      - name: Evidence Gate
+        type: decision
+        conditions:
+          - condition: "{{ vars.steps.Parse_Evidence.data.code_output.ok == 'yes' }}"
+            next: Read Instance
+        default: No Evidence Comment
+
+      - name: No Evidence Comment
+        type: create_record
+        module: comments
+        comment: >
+          The refusal that says the backup is missing. It is worth stating the
+          cause in full, because the remedy is not to re-run this playbook: the
+          group list has to come from somewhere else -- a CloudTrail
+          `ModifyInstanceAttribute` event from before the containment, an
+          infrastructure-as-code definition, or a human who remembers.
+        fields:
+          content: >
+            <p><b>Nothing restored -- this case does not contain a restorable
+            record of the pre-containment state.</b></p>
+            <p>{{ vars.steps.Parse_Evidence.data.code_output.reason }}.</p>
+            <p>No security group was changed. AWS keeps no history of
+            <code>ModifyInstanceAttribute</code>, so the case comment written at
+            containment time is the only copy of the original group list this
+            playbook can read. If it is absent, the list has to be recovered
+            from a CloudTrail event predating the containment, from the
+            infrastructure definition that created the instance, or from the
+            responder who contained it -- and re-attached by hand.</p>
+          incidents: ["{{ vars.input.records[0]['@id'] }}"]
+        next: Done
+
+      - name: Read Instance
+        type: connector
+        connector: aws
+        operation: describe_instance
+        config: AWS Lab
+        ignore_errors: true
+        comment: >
+          `ignore_errors`, for the same reason the containment playbook sets it:
+          an instance terminated since the incident is an ordinary outcome for a
+          restore -- arguably the most likely one after a genuine compromise --
+          and it should produce a comment, not a red step. `Get Instance Details`
+          raises `InvalidInstanceID.NotFound` rather than returning an empty
+          list, so without this the run dies before it can say so.
+
+          A step that raised leaves a result with NO `data` key, holding
+          `{"Error message": ...}` instead. That is why `Read State` below asks
+          for `.data | default({})` and not for the step itself: the default is
+          what turns the exception into the `gone` branch. Note also that the
+          run's final status will read `finished with error` even though it
+          completed correctly -- `ignore_errors` governs control flow, not the
+          verdict.
+        params:
+          instance_id: "{{ vars.steps.Parse_Evidence.data.code_output.instance_id }}"
+        next: Read State
+
+      - name: Read State
+        type: connector
+        connector: code-runner
+        operation: run_python
+        config: Default
+        comment: >
+          Establishes which of four situations this is, and names it, so the
+          gate below branches on a value that can be written into the case
+          rather than on a condition nobody can read afterwards.
+
+          `restorable` is deliberately narrow: the instance's group list must be
+          exactly the quarantine group. Not "includes it" -- an instance sitting
+          on the quarantine group *and* something permissive was never fully
+          contained, and restoring it would paper over that.
+        params:
+          code: |
+            response = {{ vars.steps.Read_Instance.data | default({}) }}
+            quarantine = "{{ vars.quarantine_group }}"
+            recorded = [g.strip() for g in
+                        "{{ vars.steps.Parse_Evidence.data.code_output.group_ids }}".split(",")
+                        if g.strip()]
+
+            instance = {}
+            for reservation in (response.get("Reservations") or []):
+                for candidate in (reservation.get("Instances") or []):
+                    instance = candidate
+                    break
+                if instance:
+                    break
+
+            if not instance:
+                return {
+                    "state": "gone",
+                    "groups_now": "none",
+                    "group_ids_now": "none",
+                    "vpc_id": "",
+                    "power_state": "unknown",
+                    "reason": (
+                        "no EC2 instance with that identifier exists in this account "
+                        "and region -- it has most likely been terminated since the "
+                        "incident"
+                    ),
+                }
+
+            names = []
+            ids = []
+            for group in (instance.get("SecurityGroups") or []):
+                names.append(str(group.get("GroupName") or ""))
+                ids.append(str(group.get("GroupId") or ""))
+
+            power_state = str((instance.get("State") or {}).get("Name") or "unknown")
+
+            if sorted(ids) == sorted(recorded):
+                state = "already_restored"
+                reason = ("the instance is already on the recorded security groups, so "
+                          "there is nothing to put back")
+            elif names == [quarantine]:
+                state = "restorable"
+                reason = "the instance is contained on {0} and nothing else".format(quarantine)
+            else:
+                state = "unexpected"
+                reason = (
+                    "the instance is on {0}, which is neither the quarantine group "
+                    "({1}) nor the groups recorded at containment time ({2}) -- "
+                    "something has changed this instance since".format(
+                        ", ".join(names) or "no groups", quarantine, ", ".join(recorded))
+                )
+
+            return {
+                "state": state,
+                "groups_now": ", ".join(names) or "none",
+                "group_ids_now": ", ".join(ids) or "none",
+                "vpc_id": str(instance.get("VpcId") or ""),
+                "power_state": power_state,
+                "reason": reason,
+            }
+        next: State Gate
+
+      - name: State Gate
+        type: decision
+        comment: >
+          Four outcomes, three of which end the run. Only an instance that is
+          still exactly as containment left it gets restored, and the other two
+          refusals are kept apart from each other because they mean different
+          things to the responder: "already restored" needs no action, while
+          "unexpected" needs somebody to find out who else touched the instance
+          before anything else is done to it.
+        conditions:
+          - condition: "{{ vars.steps.Read_State.data.code_output.state == 'restorable' }}"
+            next: Check Groups
+          - condition: "{{ vars.steps.Read_State.data.code_output.state == 'already_restored' }}"
+            next: Already Restored Comment
+          - condition: "{{ vars.steps.Read_State.data.code_output.state == 'gone' }}"
+            next: Instance Gone Comment
+        default: Unexpected State Comment
+
+      - name: Instance Gone Comment
+        type: create_record
+        module: comments
+        fields:
+          content: >
+            <p><b>Nothing to restore -- the instance no longer exists.</b></p>
+            <p>{{ vars.steps.Parse_Evidence.data.code_output.instance_id }}:
+            {{ vars.steps.Read_State.data.code_output.reason }}.</p>
+            <p>The forensic snapshot taken before containment is unaffected by
+            the instance being terminated -- an EBS snapshot outlives the volume
+            it was taken from, which is the reason it is taken. Recovery from
+            here means launching a replacement from that snapshot rather than
+            re-attaching security groups to something that is gone.</p>
+          incidents: ["{{ vars.input.records[0]['@id'] }}"]
+        next: Done
+
+      - name: Already Restored Comment
+        type: create_record
+        module: comments
+        comment: >
+          A success, not an error, and separated from the refusals for that
+          reason. Re-running a restore is a normal thing for a responder to do
+          when they are not sure whether the first run completed.
+        fields:
+          content: >
+            <p><b>No change needed -- this workload is already on its
+            pre-containment security groups.</b></p>
+            <p>Instance
+            <code>{{ vars.steps.Parse_Evidence.data.code_output.instance_id }}</code>
+            reports
+            <code>{{ vars.steps.Read_State.data.code_output.groups_now }}</code>
+            (<code>{{ vars.steps.Read_State.data.code_output.group_ids_now }}</code>),
+            which matches the list recorded at containment time. Read off AWS
+            just now, not assumed from an earlier run of this playbook.</p>
+          incidents: ["{{ vars.input.records[0]['@id'] }}"]
+        next: Done
+
+      - name: Unexpected State Comment
+        type: create_record
+        module: comments
+        comment: >
+          The refusal that protects somebody else's work. A restore is a
+          wholesale replacement of the group list, so applying one to an
+          instance in an unrecognised state overwrites whatever put it there --
+          possibly a tighter containment applied by another tool while this case
+          was open.
+        fields:
+          content: >
+            <p><b>Restore refused -- this instance is not in the state
+            containment left it in.</b></p>
+            <p>{{ vars.steps.Read_State.data.code_output.reason }}.</p>
+            <p>Nothing was changed. Restoring means replacing the instance's
+            entire security-group list, so running it now would discard whatever
+            produced the current state rather than undo the containment. Find
+            out what changed the instance -- CloudTrail's
+            <code>ModifyInstanceAttribute</code> events name the caller -- and
+            re-run this playbook once the instance is back on
+            <code>{{ vars.quarantine_group }}</code>, or attach the recorded
+            groups
+            <code>{{ vars.steps.Parse_Evidence.data.code_output.group_ids }}</code>
+            by hand having understood why.</p>
+          incidents: ["{{ vars.input.records[0]['@id'] }}"]
+        next: Done
+
+      - name: Check Groups
+        type: connector
+        connector: aws-extended
+        operation: generic_action
+        config: AWS Lab Extended
+        comment: >
+          Ask AWS whether the groups this case recorded still exist, before
+          asking a human to approve attaching them. A security group deleted
+          during the incident -- plausible, since deleting the group the
+          intruder came in through is a common piece of remediation -- makes the
+          restore impossible, and finding that out after the approval wastes the
+          approver's time and leaves the run looking like it failed at the last
+          step.
+        params:
+          service: ec2
+          api_action: describe_security_groups
+          payload: >-
+            {"Filters": [{"Name": "group-id",
+             "Values": {{ vars.steps.Parse_Evidence.data.code_output.group_ids_json }}}]}
+          read_only: true
+        next: Read Groups
+
+      - name: Read Groups
+        type: connector
+        connector: code-runner
+        operation: run_python
+        config: Default
+        comment: >
+          A describe filtered by group-id returns only the groups that exist, so
+          the missing ones are the difference rather than an error -- which is
+          why the filter form is used here instead of `GroupIds`, which raises
+          on the first unknown ID and tells you nothing about the rest.
+
+          The VPC check is the second half. A security group only attaches to an
+          instance in its own VPC, so a recorded group that has been recreated
+          in a different VPC exists, resolves, and still cannot be restored. AWS
+          rejects that at a layer whose error is easy to swallow.
+        params:
+          code: |
+            response = {{ vars.steps.Check_Groups.data | default({}) }}
+            recorded = [g.strip() for g in
+                        "{{ vars.steps.Parse_Evidence.data.code_output.group_ids }}".split(",")
+                        if g.strip()]
+            vpc_id = "{{ vars.steps.Read_State.data.code_output.vpc_id }}"
+
+            found = {}
+            for group in (response.get("SecurityGroups") or []):
+                found[str(group.get("GroupId") or "")] = group
+
+            missing = [g for g in recorded if g not in found]
+            wrong_vpc = [
+                g for g in recorded
+                if g in found and str(found[g].get("VpcId") or "") != vpc_id
+            ]
+
+            names = ", ".join(
+                str(found[g].get("GroupName") or g) for g in recorded if g in found
+            ) or "none"
+
+            if missing and wrong_vpc:
+                verdict = ("{0} no longer exist and {1} are in a different VPC".format(
+                    ", ".join(missing), ", ".join(wrong_vpc)))
+            elif missing:
+                verdict = ("{0} no longer exist in this account and region".format(
+                    ", ".join(missing)))
+            elif wrong_vpc:
+                verdict = ("{0} exist but are in a different VPC to the instance "
+                           "({1}), and AWS will not attach them".format(
+                               ", ".join(wrong_vpc), vpc_id))
+            else:
+                verdict = "all {0} recorded group(s) still exist in {1}".format(
+                    len(recorded), vpc_id)
+
+            return {
+                "restorable": "yes" if not missing and not wrong_vpc else "no",
+                "present_names": names,
+                "missing": ", ".join(missing) or "none",
+                "wrong_vpc": ", ".join(wrong_vpc) or "none",
+                "verdict": verdict,
+            }
+        next: Groups Gate
+
+      - name: Groups Gate
+        type: decision
+        conditions:
+          - condition: "{{ vars.steps.Read_Groups.data.code_output.restorable == 'yes' }}"
+            next: Restore Approval
+        default: Groups Missing Comment
+
+      - name: Groups Missing Comment
+        type: create_record
+        module: comments
+        fields:
+          content: >
+            <p><b>Restore refused -- the recorded security groups cannot be
+            re-attached.</b></p>
+            <p>{{ vars.steps.Read_Groups.data.code_output.verdict }}.</p>
+            <p>Recorded at containment time:
+            <code>{{ vars.steps.Parse_Evidence.data.code_output.group_ids }}</code>
+            (<code>{{ vars.steps.Parse_Evidence.data.code_output.group_names }}</code>).
+            Missing:
+            <code>{{ vars.steps.Read_Groups.data.code_output.missing }}</code>.
+            In the wrong VPC:
+            <code>{{ vars.steps.Read_Groups.data.code_output.wrong_vpc }}</code>.</p>
+            <p>The instance is still contained and nothing was changed. A
+            partial restore is not offered: attaching the subset that survives
+            would produce a workload whose network posture matches neither its
+            original nor its quarantine, and would report as a success. Recreate
+            the missing group from the infrastructure definition that owns it,
+            or decide deliberately which groups this workload should come back
+            on.</p>
+          incidents: ["{{ vars.input.records[0]['@id'] }}"]
+        next: Done
+
+      - name: Restore Approval
+        type: manual_input
+        comment: >
+          Unconditional, unlike the containment playbook's gate. Containment
+          asks only about production workloads; restore asks every time, because
+          the question a restore poses is "is this host clean", which no tag on
+          the instance can answer.
+
+          Everything the approver needs to decide is in the description, and it
+          is all read from AWS in this run rather than quoted from the case: the
+          groups are the ones that were just confirmed to exist, and the state
+          is the one the instance is in now.
+
+          WARN: assign_to.team must be a team IRI, not a name -- a bare name is
+          emitted as a string FortiSOAR cannot resolve and the gate is created
+          unowned and invisible to the run. The IRI below is the built-in **SOC
+          Team**, whose UUID is seeded at install and is therefore the same on
+          every appliance -- verified identical across two independent boxes,
+          which is why it is safe to ship in an export. If your workshop uses a
+          different team, open this step and pick yours from the field's own
+          selector; do not type a name.
+        title: "Approve restoring a contained cloud workload to the network"
+        description: >
+            Instance
+            `{{ vars.steps.Parse_Evidence.data.code_output.instance_id }}` is
+            currently contained on
+            **{{ vars.steps.Read_State.data.code_output.groups_now }}** and is
+            **{{ vars.steps.Read_State.data.code_output.power_state }}**.
+
+            Approving replaces its security groups with the list recorded when it
+            was contained:
+            **{{ vars.steps.Read_Groups.data.code_output.present_names }}**
+            (`{{ vars.steps.Parse_Evidence.data.code_output.group_ids }}`).
+            All of them have just been confirmed to still exist in VPC
+            `{{ vars.steps.Read_State.data.code_output.vpc_id }}`.
+
+            This puts the workload back on the network with the connectivity it
+            had **before** the incident, including whatever the intruder was
+            using. Approve only if the host has been established as clean or is
+            being deliberately reconnected under observation. Declining leaves it
+            contained and changes nothing.
+        is_approval: true
+        assign_to:
+          team: "/api/3/teams/6e569c09-3bd4-40f1-98b0-cc994464c3c5"
+        options:
+          - {option: "Restore", primary: true, next: Restore}
+          - {option: "Keep Contained", next: Kept Contained Comment}
+
+      - name: Kept Contained Comment
+        type: create_record
+        module: comments
+        fields:
+          content: >
+            <p><b>Restore declined -- the workload stays contained.</b></p>
+            <p>Instance
+            <code>{{ vars.steps.Parse_Evidence.data.code_output.instance_id }}</code>
+            remains on
+            <code>{{ vars.steps.Read_State.data.code_output.groups_now }}</code>
+            with no ingress and no egress. Nothing was changed.</p>
+            <p>The pre-containment group list
+            (<code>{{ vars.steps.Parse_Evidence.data.code_output.group_ids }}</code>)
+            was confirmed to still exist at the moment this was asked, so this
+            playbook can be re-run whenever the host is established as clean.
+            That confirmation ages, though -- a group deleted in the meantime
+            makes the restore impossible, which is why the check runs again on
+            every run rather than being taken from here.</p>
+          incidents: ["{{ vars.input.records[0]['@id'] }}"]
+        next: Done
+
+      - name: Restore
+        type: connector
+        connector: aws-extended
+        operation: generic_action
+        config: AWS Lab Extended
+        comment: >
+          `modify_instance_attribute` with the recorded group IDs, rather than
+          the connector's `add_security_group_to_instance`. Both call the same
+          AWS API and both replace the whole list. The difference is measured,
+          not assumed -- given a security group that no longer exists:
+
+            add_security_group_to_instance -> HTTP 200, the missing group is
+              reported only as a per-name verdict inside the response body, the
+              step goes GREEN, and the instance is left on the subset that
+              resolved.
+            modify_instance_attribute     -> raises InvalidGroup.NotFound and
+              attaches NOTHING.
+
+          Note this holds even when `add_security_group_to_instance` is given
+          IDs rather than names: it treats an unknown `sg-` ID exactly as it
+          treats an unknown name. "Restore by ID" is necessary but not
+          sufficient; the operation has to be the one that fails.
+
+          Restore is where an incomplete result reported as a complete one does
+          the most damage -- a workload everyone believes is back in service,
+          silently short of the connectivity it needs -- so it takes the form
+          that refuses. This is the one mutating call in the playbook, hence
+          `read_only: false`.
+
+          `read_only: false` -- this is the one mutating call in the playbook.
+        params:
+          service: ec2
+          api_action: modify_instance_attribute
+          payload: >-
+            {"InstanceId": "{{ vars.steps.Parse_Evidence.data.code_output.instance_id }}",
+             "Groups": {{ vars.steps.Parse_Evidence.data.code_output.group_ids_json }}}
+          read_only: false
+        next: Tag Instance
+
+      - name: Tag Instance
+        type: connector
+        connector: aws
+        operation: add_tag_to_instance
+        config: AWS Lab
+        comment: >
+          `Restored` rather than removing the tag. An instance with no
+          `SecurityStatus` tag is indistinguishable from one that was never
+          contained, and the fact that this workload has been through a
+          containment is worth keeping after the case closes -- it is what lets
+          inventory tooling and the next responder see the history.
+
+          Written before the read-back, as in the containment playbook, so the
+          verification below is checking AWS's account of the network rather
+          than this playbook's own bookkeeping.
+        params:
+          instance_id: "{{ vars.steps.Parse_Evidence.data.code_output.instance_id }}"
+          tag_key: "{{ vars.status_tag_key }}"
+          tag_value: "{{ vars.status_tag_value }}"
+        next: Read Back
+
+      - name: Read Back
+        type: connector
+        connector: aws
+        operation: describe_instance
+        config: AWS Lab
+        comment: >
+          Ask AWS what the group list actually became. The same step, for the
+          same reason, as the one the containment playbook turns on -- and it
+          matters at least as much here, because a restore that did nothing
+          leaves a workload everyone now believes is back in service unable to
+          reach anything.
+
+          The stock operation is safe here where it was not above: `Read State`
+          has already established this instance exists, so there is no
+          not-found case left for it to raise on.
+        params:
+          instance_id: "{{ vars.steps.Parse_Evidence.data.code_output.instance_id }}"
+        next: Verify Restore
+
+      - name: Verify Restore
+        type: connector
+        connector: code-runner
+        operation: run_python
+        config: Default
+        comment: >
+          Restored means the group ID list is *exactly* what the case recorded.
+          Compared as a set, because AWS does not promise to return the groups
+          in the order they were sent and an ordering difference is not a
+          restore failure -- unlike a membership difference, which is.
+        params:
+          code: |
+            response = {{ vars.steps.Read_Back.data | default({}) }}
+            recorded = [g.strip() for g in
+                        "{{ vars.steps.Parse_Evidence.data.code_output.group_ids }}".split(",")
+                        if g.strip()]
+
+            instance = {}
+            for reservation in (response.get("Reservations") or []):
+                for candidate in (reservation.get("Instances") or []):
+                    instance = candidate
+                    break
+                if instance:
+                    break
+
+            names = []
+            ids = []
+            for group in (instance.get("SecurityGroups") or []):
+                names.append(str(group.get("GroupName") or ""))
+                ids.append(str(group.get("GroupId") or ""))
+
+            tags = {}
+            for tag in (instance.get("Tags") or []):
+                tags[str(tag.get("Key") or "")] = str(tag.get("Value") or "")
+
+            restored = sorted(ids) == sorted(recorded)
+            missing = [g for g in recorded if g not in ids]
+            extra = [g for g in ids if g not in recorded]
+
+            if restored:
+                verdict = ("the instance is on exactly the {0} group(s) recorded at "
+                           "containment time".format(len(recorded)))
+            elif not ids:
+                verdict = "the instance reports no security groups at all"
+            elif missing and extra:
+                verdict = ("{0} was not re-attached and {1} is attached but was never "
+                           "recorded".format(", ".join(missing), ", ".join(extra)))
+            elif missing:
+                verdict = ("{0} was not re-attached, so the workload is back on the "
+                           "network with less connectivity than it had".format(
+                               ", ".join(missing)))
+            else:
+                verdict = ("{0} is attached but was not in the recorded list".format(
+                    ", ".join(extra)))
+
+            return {
+                "restored": "yes" if restored else "no",
+                "groups_after": ", ".join(names) or "none",
+                "group_ids_after": ", ".join(ids) or "none",
+                "verdict": verdict,
+                "status_tag": tags.get("{{ vars.status_tag_key }}", "not written"),
+            }
+        next: Verify Gate
+
+      - name: Verify Gate
+        type: decision
+        conditions:
+          - condition: "{{ vars.steps.Verify_Restore.data.code_output.restored == 'yes' }}"
+            next: Restored Comment
+        default: Restore Failed Comment
+
+      - name: Restore Failed Comment
+        type: create_record
+        module: comments
+        comment: >
+          The failure path that matters more than the success one. A restore
+          that half-worked leaves a workload that everybody has been told is
+          back in service and that cannot reach its dependencies -- and the
+          symptom surfaces hours later as an application fault nobody connects
+          to the incident.
+        fields:
+          content: >
+            <p><b>Restore did NOT take effect as recorded -- treat this workload
+            as neither contained nor restored.</b></p>
+            <p>{{ vars.steps.Verify_Restore.data.code_output.verdict }}.</p>
+            <p>Asked for
+            <code>{{ vars.steps.Parse_Evidence.data.code_output.group_ids }}</code>;
+            AWS now reports
+            <code>{{ vars.steps.Verify_Restore.data.code_output.group_ids_after }}</code>
+            (<code>{{ vars.steps.Verify_Restore.data.code_output.groups_after }}</code>).</p>
+            <p>The API call returned success, which is why this comment exists.
+            Resolve it by hand now rather than re-running: the instance is in a
+            state this playbook will refuse to act on a second time, deliberately,
+            because it can no longer tell what put it there.</p>
+          incidents: ["{{ vars.input.records[0]['@id'] }}"]
+        next: Update Case
+
+      - name: Restored Comment
+        type: create_record
+        module: comments
+        fields:
+          content: >
+            <p><b>Workload restored to the network, verified against AWS.</b></p>
+            <p>Instance
+            <code>{{ vars.steps.Parse_Evidence.data.code_output.instance_id }}</code>
+            moved from
+            <code>{{ vars.steps.Read_State.data.code_output.groups_now }}</code>
+            back to
+            <code>{{ vars.steps.Verify_Restore.data.code_output.groups_after }}</code>
+            (<code>{{ vars.steps.Verify_Restore.data.code_output.group_ids_after }}</code>)
+            -- {{ vars.steps.Verify_Restore.data.code_output.verdict }}.</p>
+            <p>That list came from the evidence comment written before the
+            containment, and was matched by security-group ID rather than by
+            name. The group list above was read back off AWS after the change
+            rather than inferred from the restore call's return value.</p>
+            <p>The <code>{{ vars.status_tag_key }}</code> tag now reads
+            <code>{{ vars.steps.Verify_Restore.data.code_output.status_tag }}</code>
+            -- kept rather than removed, so that this workload remains
+            distinguishable from one that was never contained. The forensic
+            snapshot taken before containment is untouched and outlives the
+            incident; restoring the network does not retire the evidence.</p>
+          incidents: ["{{ vars.input.records[0]['@id'] }}"]
+        next: Update Case
+
+      - name: Update Case
+        type: update_record
+        module: incidents
+        comment: >
+          Both terminal branches converge here, so this step may reference only
+          what both produced -- and the phase it writes is the same either way,
+          on purpose. `Recovery` describes where the incident is once a restore
+          has been attempted, not whether it succeeded; a failed restore is
+          still past containment and is emphatically not back in it. The outcome
+          lives in the branch comments, each of which states it unambiguously.
+
+          The case is left Open. Closing it is a judgement about the whole
+          incident -- the host, the initial access, the blast radius -- and a
+          playbook that has done one network change is not the thing that should
+          be making it.
+        record: "{{ vars.input.records[0]['@id'] }}"
+        fields:
+          phase: '{{ "IncidentPhase" | picklist("Recovery", "@id") }}'
+        next: Done
+
+      - name: Done
+        type: end

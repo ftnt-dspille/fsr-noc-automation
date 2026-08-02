@@ -43,8 +43,8 @@ account with a throwaway instance -- never against anything you would miss.
 ## Prerequisites
 
 - The **AWS EC2** connector installed and configured (part 0 below)
-- The **AWS EC2 (Extended)** connector, also configured in part 0 -- one step here needs an
-  operation the shipped connector does not have
+- The **AWS EC2 (Extended)** connector, also configured in part 0 -- two steps need behaviour the
+  shipped connector does not have
 - The **Code Runner** connector, introduced in
   [DevOps Automation](/chapter-08-gitops-devops) -- two steps here flatten AWS responses in Python
 - One throwaway EC2 instance you are willing to isolate, tagged `Environment=dev`
@@ -69,7 +69,9 @@ Part 5: Contain             -> AWS EC2  Add Security Group To Instance -> Add In
 Part 6: Verify              -> AWS EC2  Get Instance Details -> Code Runner (compare)
                                         -> Decision: contained, or say so plainly
 Part 7: Chain it            -> all of the above, one playbook
-Part 8: Restore             -> parse the case comment -> approve -> re-attach -> verify
+Part 8: Restore             -> parse the case comment -> approve
+                                        -> AWS EC2 (Extended)  modify_instance_attribute
+                                        -> verify   [provided, not built]
 ```
 
 {{% notice info %}}
@@ -144,10 +146,15 @@ name `AWS Lab Extended` -- connector configurations are encrypted per connector 
 so the stock connector's credentials cannot be shared across to it.
 
 {{% notice note %}}
-Two connectors against one AWS account looks redundant, and mostly it is. Every step in this
-chapter uses the stock connector except one. Keeping the split visible is the point: you should be
-able to say precisely which capability is missing from the shipped connector and why you reached
-past it, rather than replacing the vendor's connector wholesale because one operation was absent.
+Two connectors against one AWS account looks redundant, and mostly it is. Everything you build in
+parts 1 to 7 uses the stock connector except a single step, and the restore playbook in part 8
+reaches past it twice more. Keeping the split visible is the point: you should be able to say
+precisely which capability is missing from the shipped connector and why you reached past it,
+rather than replacing the vendor's connector wholesale because one operation was absent.
+
+The two gaps, both measured rather than assumed: the shipped connector cannot **describe a
+snapshot** at all, and its `Add Security Group To Instance` **silently completes** when a group it
+was given does not exist. Part 2 needs the first; part 8 needs the second.
 {{% /notice %}}
 
 ### Least-privilege IAM policy
@@ -815,23 +822,46 @@ group list off AWS after a declined run and finding it unchanged.
 Containment is the half that demos well. Restore is the half that decides whether a customer lets
 the containment run unattended.
 
-Build it as a second playbook, triggered from the **incident** rather than the alert. It reads the
-pre-containment posture out of the case comment part 3 wrote -- because, as part 3 said, that is
-the only copy that exists.
+This one is **provided already built**. Two playbooks of this size will not fit in the session, and
+of the two, restore is the one better learned by reading than by clicking:
+
+{{% notice tip %}}
+**Download: [`restore-cloud-workload.zip`](/playbooks/restore-cloud-workload.zip)** -- a FortiSOAR
+configuration export containing the `Restore Cloud Workload` playbook. Import it from
+**Settings → Application Editor → Import Wizard**, and it lands in the same `03 - AWS Cloud Ops`
+collection you have been building in.
+
+The [commented source](/playbooks/restore-cloud-workload.yaml) is the same playbook in a readable
+form. Read that; import the zip.
+{{% /notice %}}
+
+It triggers from the **incident** rather than the alert, and reads the pre-containment posture out
+of the case comment part 3 wrote -- because, as part 3 said, that is the only copy that exists.
+
+### Before you run it
+
+**Check `Restore Approval`'s Assign To.** It ships pointing at the built-in **SOC Team**, whose
+UUID is seeded at install and is therefore the same on every appliance. If your workshop approves
+as a different team, open the step and pick yours *from the field's own selector*. A `manual_input`
+assigned to a team FortiSOAR cannot resolve is created **unowned** -- it renders nowhere, nobody
+can answer it, and the run waits until it times out.
+
+The playbook expects the same `AWS Lab` and `AWS Lab Extended` configurations part 0 created, and
+the `workshop-quarantine` group name from your `Cloud Config` step.
+
+### What to read in it
 
 The interesting failure here is not "the API call failed". It is "the record we are restoring from
 is missing, ambiguous, or no longer true". Four checks exist only to establish that, and all four
-run **before** the approval:
+run **before** the approval -- so a human is never asked to authorise something that was going to
+be refused anyway:
 
 | Check | What it refuses |
 |---|---|
 | Parse the evidence comment | A case with no recorded posture, or one naming two different instances. It will not pick. |
-| Read the instance | An instance that has been terminated since the incident -- the most likely outcome after a real compromise. |
+| Read the instance | An instance terminated since the incident -- the most likely outcome after a real compromise. |
 | Compare its current state | An instance on neither the quarantine group nor the recorded list. Something else changed it, and a restore would overwrite that. |
-| Check the groups still exist | A recorded group that has been deleted, or recreated in a different VPC. Partial restore is not offered. |
-
-Then: approve, re-attach the recorded groups with `Add Security Group To Instance`, set the tag,
-read back, and verify exact equality against the recorded list.
+| Check the groups still exist | A recorded group deleted, or recreated in a different VPC. Partial restore is not offered. |
 
 Three design choices are worth saying out loud, because each is the opposite of the obvious one.
 
@@ -840,13 +870,22 @@ human only about production-tagged workloads. Restore asks every time, because t
 poses is "is this host clean", and no tag on an instance answers that. The risk direction is
 reversed, so the gate is.
 
-**Match security groups by ID, not by name.** Names are for the human reading the case; IDs are
-what AWS attaches. The sharp reason is the one part 5 already gave -- the operation that takes
-names drops a name it cannot resolve, reports it only inside the response body, and still
-returns success. Restoring from names turns
-"one of the three original groups was deleted last week" into a partial restore reported as a
-complete one. Restoring by ID, having first asked AWS whether every ID still exists, turns it into
-a refusal that names the missing group.
+**Restore uses `modify_instance_attribute`, not `Add Security Group To Instance`.** Both call the
+same AWS API and both replace the whole list. The difference only shows up when a recorded group
+has been deleted since the containment:
+
+| Given a security group that no longer exists | Result |
+|---|---|
+| `Add Security Group To Instance` | HTTP 200, step goes **green**, the missing group is reported only as a per-name verdict inside the response body, and the instance is left on whichever groups did resolve |
+| `modify_instance_attribute` (extended connector) | raises `InvalidGroup.NotFound` and attaches **nothing** |
+
+{{% notice warning %}}
+**Matching by ID rather than name is necessary but not sufficient.** `Add Security Group To
+Instance` treats an unknown `sg-` **ID** exactly as it treats an unknown name -- drops it, returns
+200. So "restore by ID" alone still turns *one of the three original groups was deleted last week*
+into a partial restore reported as a complete one. The operation has to be the one that fails, which
+is why this is the second step in the chapter reaching for the extended connector.
+{{% /notice %}}
 
 **Set the tag to `Restored`; do not remove it.** An instance with no tag is indistinguishable from
 one that was never contained, and the fact that this workload went through a containment outlives
@@ -859,12 +898,21 @@ phase describes where the incident is, not whether the last step worked. And lea
 network change is not the thing that should be making it.
 {{% /notice %}}
 
-Test restore the same way you tested containment: approved, declined, run twice (the second run
-must report "no change" as a **success** -- re-running a restore is a normal thing for a responder
-unsure whether the first one finished), against an instance a third party has since modified, and
-against a case with no evidence comment.
+### Break it on purpose
 
----
+Reading a playbook teaches you what it does; breaking it teaches you why each check is there. Run
+it five ways:
+
+1. **Approved** -- the happy path. The instance ends on exactly its recorded groups, verified by
+   read-back.
+2. **Declined** -- nothing changes, and the comment says the recorded groups were confirmed to
+   still exist *at the moment you were asked*, so it can be re-run later.
+3. **Twice** -- the second run must report "no change needed" as a **success**. Re-running a
+   restore is a normal thing for a responder unsure whether the first one finished.
+4. **After a third party moves it** -- attach some other group by hand first. The playbook must
+   refuse rather than overwrite whatever put it there.
+5. **Against a case with no evidence comment** -- it must say the backup is missing and name where
+   else the group list could come from.
 
 ## Sidebar: if you have a CNAPP
 
