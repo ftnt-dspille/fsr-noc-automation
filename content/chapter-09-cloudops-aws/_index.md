@@ -2,35 +2,40 @@
 title: "Cloud Ops: AWS"
 linkTitle: "Cloud Ops (AWS)"
 weight: 90
-description: "Respond to a cloud security alert end to end -- pivot from a compromised identity to the resources it touched, contain reversibly, preserve evidence, and only then consider destroying anything."
+description: "Contain a compromised cloud workload end to end -- preserve the evidence first, gate production behind a human, isolate reversibly, and prove the containment happened on AWS rather than in the case."
 tags: ["hands-on", "knowledge"]
 ---
 
 ## Why this use case?
 
 Every other chapter in this workshop acts on infrastructure you own outright -- a FortiGate, a
-FortiManager, a switch. Cloud incident response is different in one important way: **the alert
-usually does not tell you what to fix.**
+FortiManager, a switch. When you push a policy to a FortiGate and the step goes green, the policy
+is on the FortiGate.
 
-A FortiGate alert names a device. A cloud alert names an *identity* -- an IAM user, an access key,
-a role -- and leaves you to work out which instances, volumes, and security groups that identity
-touched. Getting from "these credentials are compromised" to "this is the instance to quarantine"
-is the actual work, and it is where this chapter spends most of its time.
+Cloud is different in one specific way, and it is the way cloud containment demos usually go
+wrong: **the API call can return success having done less than you asked.** The step goes green,
+the case says "instance contained", and nobody ever asks AWS what the instance's network posture
+actually became. You will build the step that asks.
+
+The other difference is that AWS does not remember what you changed. There is no previous-value
+field on a security-group swap and no undo. If the responder does not write the original
+configuration down before the change, the workload can never be put back -- so recording it is a
+step in the playbook, not a nicety.
 
 We'll build the response one part at a time:
 
-1. **Read** -- pull the current state of an instance before changing anything
-2. **Pivot** -- walk from the alert's identity to the resources it affected
-3. **Quarantine** -- tag and isolate, reversibly
-4. **Preserve** -- snapshot the volume before anything destructive
-5. **Decide** -- stop is recoverable, terminate is not; gate the irreversible one behind a human
-6. **Close the loop** -- comment back to the detection platform and close the alert
-7. **Chain** -- assemble the parts into one playbook
+1. **Read** -- pull the current state of the instance before changing anything
+2. **Preserve** -- snapshot the disk, and *refuse to continue* if that failed
+3. **Record** -- write the pre-containment posture into the case while it is still true
+4. **Gate** -- production workloads ask a human; everything else contains immediately
+5. **Contain** -- replace the security groups with a quarantine group
+6. **Verify** -- read the group list back off AWS and compare
+7. **Chain** -- assemble the parts into one playbook, with its failure branches
+8. **Restore** -- put the workload back from the only surviving copy of its old state
 
 {{% notice warning %}}
-Parts 3 through 5 change real cloud infrastructure. Part 5 can **permanently destroy** an
-instance. Run this chapter against a disposable AWS account with throwaway instances -- never
-against anything you would miss.
+Parts 2 through 5 change real cloud infrastructure. Run this chapter against a disposable AWS
+account with a throwaway instance -- never against anything you would miss.
 {{% /notice %}}
 
 ---
@@ -38,10 +43,13 @@ against anything you would miss.
 ## Prerequisites
 
 - The **AWS EC2** connector installed and configured (part 0 below)
-- The **Lacework FortiCNAPP** connector installed and configured, for parts 2 and 6
-- At least one throwaway EC2 instance you are willing to stop, isolate, and terminate
+- The **Code Runner** connector, introduced in
+  [DevOps Automation](/chapter-08-gitops-devops) -- two steps here flatten AWS responses in Python
+- One throwaway EC2 instance you are willing to isolate, tagged `Environment=dev`
+- Two security groups in **the same VPC as that instance**: a normal one the instance currently
+  uses, and a quarantine group (part 0 covers building it, and why you build it by hand)
 - Completed [Playbooks](/chapter-03-playbooks) and
-  [Approvals and Error Handling](/chapter-03-playbooks/05-approvals-and-error-handling) -- part 5
+  [Approvals and Error Handling](/chapter-03-playbooks/05-approvals-and-error-handling) -- part 4
   reuses the approval gate from that chapter
 
 ---
@@ -49,14 +57,16 @@ against anything you would miss.
 ## The workflow at a glance
 
 ```
-Part 1: Read current state    -> AWS EC2  Get Instance Details / Get Security Groups
-Part 2: Pivot to resources    -> FortiCNAPP  Get Alert Entities -> Get Alert Entity Details
-Part 3: Quarantine            -> AWS EC2  Add Instance Tag -> Create Security Groups
-                                          -> Authorize Ingress -> Add Security Group To Instance
-Part 4: Preserve evidence     -> AWS EC2  Capture Volume Snapshot
-Part 5: Stop or terminate     -> AWS EC2  Stop Instance / Terminate Instance (behind approval)
-Part 6: Close the loop        -> FortiCNAPP  Add Comment to Alert -> Close Alert
-Part 7: Chain it              -> all of the above, one playbook
+Part 1: Read state          -> AWS EC2  Get Instance Details -> Code Runner (flatten)
+Part 2: Preserve evidence   -> AWS EC2  Capture Volume Snapshot -> read it back
+                                        -> Decision: no snapshot, no containment
+Part 3: Record the posture  -> Create Record (incident) -> Create Record (comment)
+Part 4: Gate                -> Decision on the Environment tag -> Manual Input (approval)
+Part 5: Contain             -> AWS EC2  Add Security Group To Instance -> Add Instance Tag
+Part 6: Verify              -> AWS EC2  Get Instance Details -> Code Runner (compare)
+                                        -> Decision: contained, or say so plainly
+Part 7: Chain it            -> all of the above, one playbook
+Part 8: Restore             -> parse the case comment -> approve -> re-attach -> verify
 ```
 
 {{% notice info %}}
@@ -80,8 +90,8 @@ The connector's first field, **Configuration Type**, decides everything else on 
 
 `IAM Role` is the right answer when FortiSOAR itself runs on EC2: the instance profile supplies
 short-lived credentials that rotate automatically, and there is no secret to leak. `Access
-Credentials` means a long-lived key pair sitting in the connector configuration, which is exactly
-the kind of credential the alert in this chapter is about.
+Credentials` means a long-lived key pair sitting in the connector configuration -- exactly the kind
+of credential that gets stolen and generates the alert you are responding to.
 
 {{% notice note %}}
 There is a third option that is better than both, and it is not on this form. **Every action in
@@ -107,10 +117,16 @@ touching more than a single account.
 4. Click **Save**
 5. Run the health check and confirm it passes
 
+{{% notice warning %}}
+**An EC2 instance ID is only unique within its region**, and this configuration pins one region. A
+finding from another region resolves to nothing -- which is the correct outcome, but you want to
+recognise it as a region mismatch rather than a deleted instance.
+{{% /notice %}}
+
 ### Least-privilege IAM policy
 
 The connector will happily accept an administrator key. Don't give it one. This policy covers
-exactly the actions parts 1 through 5 use and nothing else:
+exactly the actions parts 1 through 8 use and nothing else:
 
 ```json
 {
@@ -122,20 +138,8 @@ exactly the actions parts 1 through 5 use and nothing else:
       "Action": [
         "ec2:DescribeInstances",
         "ec2:DescribeSecurityGroups",
-        "ec2:DescribeNetworkAcls",
         "ec2:DescribeVolumes",
-        "iam:GetUser"
-      ],
-      "Resource": "*"
-    },
-    {
-      "Sid": "Quarantine",
-      "Effect": "Allow",
-      "Action": [
-        "ec2:CreateTags",
-        "ec2:CreateSecurityGroup",
-        "ec2:AuthorizeSecurityGroupIngress",
-        "ec2:ModifyInstanceAttribute"
+        "ec2:DescribeSnapshots"
       ],
       "Resource": "*"
     },
@@ -148,11 +152,11 @@ exactly the actions parts 1 through 5 use and nothing else:
       "Resource": "*"
     },
     {
-      "Sid": "StopAndTerminate",
+      "Sid": "ContainAndRestore",
       "Effect": "Allow",
       "Action": [
-        "ec2:StopInstances",
-        "ec2:TerminateInstances"
+        "ec2:ModifyInstanceAttribute",
+        "ec2:CreateTags"
       ],
       "Resource": "*"
     }
@@ -160,12 +164,71 @@ exactly the actions parts 1 through 5 use and nothing else:
 }
 ```
 
+Three things are worth noticing about that policy.
+
+**`ec2:CreateSnapshot` and `ec2:ModifyInstanceAttribute` are separate actions from the describes.**
+An identity that can do everything else in this chapter can still be denied both, and the symptom
+is `UnauthorizedOperation` on part 2 or part 5 after parts 1 and 6 worked perfectly. If you are
+debugging a containment that reads fine and changes nothing, check IAM before you check the
+playbook.
+
+**`ec2:ModifyInstanceAttribute` covers containment *and* restore.** AWS models both as the same
+attribute write -- which is the same fact that makes restore hard: there is no separate "revert"
+call, and therefore no stored previous value to revert to.
+
+**`ec2:DeleteSnapshot` is deliberately absent.** Granting it would mean the identity behind your
+containment automation can destroy the evidence that automation just took. Clean up snapshots as a
+different identity.
+
 {{% notice tip %}}
-Split this into two policies and attach them to two roles -- one read-and-contain, one
-stop-and-terminate. Then use `Assume A Role` so the destructive part has to assume a different
-identity than the investigative ones. A playbook bug in part 1 then cannot terminate anything,
+Split this into two policies and attach them to two roles -- one read-and-preserve, one
+contain-and-restore. Then use `Assume A Role` so the state-changing part has to assume a different
+identity than the investigative ones. A playbook bug in part 1 then cannot change anything,
 because the credentials it runs under simply cannot.
 {{% /notice %}}
+
+### Build the quarantine group by hand
+
+You need a security group in the instance's VPC with **no ingress rules and no egress rules**.
+Create it in the AWS console or with the CLI before you start, and delete the default outbound
+rule that AWS adds for you:
+
+```bash
+aws ec2 create-security-group --group-name workshop-quarantine \
+    --description "FortiSOAR isolation group" --vpc-id vpc-xxxxxxxx
+aws ec2 revoke-security-group-egress --group-id sg-xxxxxxxx \
+    --ip-permissions '[{"IpProtocol":"-1","IpRanges":[{"CidrIp":"0.0.0.0/0"}]}]'
+```
+
+Both halves of that matter, and both are the point of the exercise.
+
+**Zero egress is what actually contains anything.** A new security group has no inbound rules,
+which is already isolation from the outside. But AWS adds an **allow-all outbound rule** by
+default, so an instance in a group cloned from `default` stops *serving* traffic and carries on
+*beaconing* to whatever prompted the alert. That looks like a successful containment from every
+angle except the one that matters.
+
+**The connector cannot do either half of this reliably,** which is why you are at a shell:
+
+- **`Create Security Groups` takes no VPC ID** -- only a name and a description -- so it creates
+  the group in the region's *default* VPC. A group in the wrong VPC cannot be attached to your
+  instance, and part 5 will fail on it.
+- **`Revoke Egress` cannot send `IpProtocol: "-1"`.** Removing an all-protocols rule requires the
+  string `"-1"`, and FortiSOAR's parameter layer retypes numeric-looking strings to integers before
+  the connector sees them. boto3 then rejects the integer:
+
+    ```
+    Invalid type for parameter IpPermissions[0].IpProtocol, value: -1,
+    type: <class 'int'>, valid types: <class 'str'>
+    ```
+
+    `"tcp"` works and `"6"` fails identically to `"-1"`, which puts the fault in the platform
+    rather than the connector -- and the connector's own placeholder text documents
+    `"IpProtocol": "-1"`, so the shipped example is the case that cannot work.
+
+This is not a reason to avoid the connector. It is a reason to know where its edges are, and the
+"When the shipped connector can't" sidebar at the end of this chapter covers what to do when you
+hit one in production rather than in a lab you can fix by hand.
 
 ---
 
@@ -178,31 +241,63 @@ deliberately read-only.
 
 1. On the left pane select **Automation > Playbooks**
 2. Click **+ New Collection**, enter **Name**: `03 - AWS Cloud Ops`, and click **Create**
-3. Click **+ Add Playbook**, enter **Name**: `Read Instance State`, and click **Create**
-4. In the trigger list select **Referenced**, then click **Save**
-5. Drag from one of the **Start** step's blue connector dots onto empty canvas and select
-   **Connector > AWS EC2**
-6. Configure the step:
+3. Click **+ Add Playbook**, enter **Name**: `Contain Cloud Workload`, and click **Create**
+4. In the trigger list select **Manual**, **Select Module** `Alerts`, **Requires Record** `Yes`,
+   and set the button label to `Contain Cloud Workload`
+5. Add a **Set Variables** step named `Cloud Config`:
+
+    | Variable              | Value                  |
+    |-----------------------|------------------------|
+    | `quarantine_group`    | `workshop-quarantine`  |
+    | `approval_tag`        | `Environment`          |
+    | `approval_values`     | `production,prod`      |
+    | `status_tag_key`      | `SecurityStatus`       |
+    | `status_tag_value`    | `Quarantined`          |
+    | `containment_enabled` | `yes`                  |
+
+Everything environment-specific lives in that one step. A customer whose tagging scheme is
+`env=prod` or `tier=1` changes a string here rather than editing the playbook.
+
+6. Add a second **Set Variables** step named `Read Alert`:
+
+```jinja2
+Name: instance_id
+Value: {{vars.input.records[0].deviceUID | default('', true) or '__no_instance__'}}
+```
+
+{{% notice warning %}}
+**Put the instance ID in `deviceUID`, not `sourceId`.** The Alerts module carries a module-level
+uniqueness constraint on `sourceId`, so the *second* finding naming the same instance fails
+ingestion with "a record already exists with the specified values" -- and a deleted alert sitting
+in the recycle bin keeps failing it. The constraint does not appear in the per-field metadata, only
+in the module's `uniqueConstraints`, so the first sign of it is a 409 you did not expect.
+
+It is the more accurate model anyway. `sourceId` is the *finding's* identifier, which is what
+deduplicates repeat deliveries of one finding. `deviceUID` is the resource the finding implicates,
+and many findings can legitimately name one instance.
+{{% /notice %}}
+
+The `'__no_instance__'` sentinel is there because a blank instance ID is not safely "match
+nothing" everywhere in the AWS API, and a playbook that resolves the *wrong* instance is worse than
+one that resolves none.
+
+### Read the instance
+
+7. Add a **Connector** step:
 
     | Field             | Value                              |
     |-------------------|------------------------------------|
-    | **Step Name**     | `Get Instance Details`             |
+    | **Step Name**     | `Resolve Instance`                 |
     | **Configuration** | `AWS Lab`                          |
     | **Action**        | `Get Instance Details`             |
-    | **Instance ID**   | your throwaway instance's ID       |
+    | **Instance ID**   | `{{vars.instance_id}}`             |
 
-7. Click **Save**, then **Save Playbook**, then run it
+8. On the step's **Advanced** tab, tick **Ignore Errors** and set the step to continue
 
-### What to look for
-
-The response mirrors the AWS `DescribeInstances` shape, so the instance itself is nested a couple
-of levels down. In the execution log, expand `Reservations[0].Instances[0]` and find three things
-you will need later:
-
-- **`State.Name`** -- so you know whether part 5 has anything to do
-- **`SecurityGroups[]`** -- the instance's *current* groups, which is what you are about to change
-- **`BlockDeviceMappings[].Ebs.VolumeId`** -- part 4 snapshots this volume, and this is the only
-  place the volume ID appears
+That second click is the whole lesson of this step. `Get Instance Details` raises
+`InvalidInstanceID.NotFound` when the ID does not exist -- which turns "the alert named an instance
+that has already been terminated", an ordinary and expected outcome, into a red run with no case
+and no explanation. Ignoring the error lets the next step decide what to do about it.
 
 {{% notice note %}}
 To see step input and output at all, the playbook must run in **DEBUG** mode. Click **Running In
@@ -211,348 +306,585 @@ INFO Mode** in the designer's top bar, set **Select Execution Log Level** to `DE
 never stored.
 {{% /notice %}}
 
-### Add the surrounding context
+### Flatten it
 
-Two more steps, both read-only, both useful before you touch anything:
+The response mirrors the AWS `DescribeInstances` shape, so everything useful is two levels down
+inside `Reservations[0].Instances[0]`. Rather than dot-walk that from a dozen later steps, flatten
+it once.
 
-| Step Name              | Action                        | Fields                                    |
-|------------------------|-------------------------------|-------------------------------------------|
-| `List Security Groups` | `Get Security Groups`         | none -- it takes no parameters            |
-| `List Network ACLs`    | `Get Details of Network ACLs` | leave **Network ACL IDs** empty for all   |
+9. Add a **Connector** step, **Code Runner** > **Run Python**, named `Read Instance`:
 
-`Get Security Groups` deliberately has no filter arguments: it returns every group in the region.
-That is a lot of output, and it is the point -- you are looking for whether a quarantine group
-already exists before part 3 creates a second one.
+```python
+response = {{vars.steps.Resolve_Instance.data | default({})}}
+approval_tag = "{{vars.approval_tag}}"
+approval_values = [v.strip().lower()
+                   for v in "{{vars.approval_values}}".split(",") if v.strip()]
 
----
+instance = {}
+for reservation in (response.get("Reservations") or []):
+    for candidate in (reservation.get("Instances") or []):
+        instance = candidate
+        break
+    if instance:
+        break
 
-## Part 2: Pivot from the alert to the resource
+if not instance:
+    return {"found": "no",
+            "instance_id": "{{vars.instance_id}}",
+            "reason": "no EC2 instance matched that identifier in this account and region"}
 
-This is the part that makes cloud IR different.
+tags = {str(t.get("Key") or ""): str(t.get("Value") or "")
+        for t in (instance.get("Tags") or [])}
+groups     = [str(g.get("GroupName") or "") for g in (instance.get("SecurityGroups") or [])]
+group_ids  = [str(g.get("GroupId") or "")   for g in (instance.get("SecurityGroups") or [])]
+volumes    = [str((m.get("Ebs") or {}).get("VolumeId") or "")
+              for m in (instance.get("BlockDeviceMappings") or [])
+              if (m.get("Ebs") or {}).get("VolumeId")]
 
-Our alert is a FortiCNAPP **Potentially Compromised AWS Keys** detection. Read its `sourcedata`
-and you get an IAM principal, a source IP, and a MITRE chain -- Initial Access via valid cloud
-accounts, then Persistence via account manipulation. What you do **not** get is an instance ID.
-The `instanceIds` and `machines` arrays are empty, because a stolen access key is not a machine.
+environment = tags.get(approval_tag, "")
 
-So the playbook has to ask the detection platform what the alert actually touched.
-
-### Enumerate the alert's entities
-
-1. Create a new playbook, **Name**: `Pivot Alert To Resources`
-2. Trigger: **Manual**, **Select Module** `Alerts`, **Requires Record** `Yes`
-3. Add a **Connector** step:
-
-    | Field             | Value                                        |
-    |-------------------|----------------------------------------------|
-    | **Step Name**     | `Get Alert Entities`                         |
-    | **Connector**     | `Lacework FortiCNAPP`                        |
-    | **Action**        | `Get Alert Entities`                         |
-    | **Alert ID**      | the FortiCNAPP alert ID from the record      |
-
-The alert ID lives in the ingested record's `sourcedata` as `alertId`. Pull it with a **Set
-Variable** step first so the rest of the playbook can reference one clean variable:
-
-```jinja2
-Name: cnapp_alert_id
-Value: {{vars.input.records[0].sourcedata | from_json | json_query('alertId')}}
+return {
+    "found": "yes",
+    "instance_id": str(instance.get("InstanceId") or ""),
+    "instance_type": str(instance.get("InstanceType") or ""),
+    "state": str((instance.get("State") or {}).get("Name") or "unknown"),
+    "private_ip": str(instance.get("PrivateIpAddress") or "none"),
+    "public_ip": str(instance.get("PublicIpAddress") or "none"),
+    "vpc_id": str(instance.get("VpcId") or ""),
+    "subnet_id": str(instance.get("SubnetId") or ""),
+    "groups_before": ", ".join(groups) or "none",
+    "group_ids_before": ", ".join(group_ids) or "none",
+    "root_volume": volumes[0] if volumes else "",
+    "other_volumes": ", ".join(volumes[1:]) or "none",
+    "environment": environment or "untagged",
+    "approval_required": "yes" if environment.strip().lower() in approval_values else "no",
+    "approval_reason": "{0}={1}".format(approval_tag, environment or "(unset)"),
+}
 ```
 
-### Resolve an entity to something actionable
+Note where the approval decision is made: **here, in Python, not in the gate.** Deciding it in a
+step means the *reason* is a value you can write into the case, instead of a condition nobody can
+read afterwards.
 
-`Get Alert Entities` returns the entities the alert touched. To get detail on one, use **Get Alert
-Entity Details**, which takes three fields:
+10. Add a **Decision** step:
 
-| Field                   | Value                                              |
-|-------------------------|----------------------------------------------------|
-| **Alert ID**            | `{{vars.cnapp_alert_id}}`                          |
-| **Context Entity Type** | `IpAddress` or `Machine`                           |
-| **Entity Value**        | the IP address, or the Machine identifier (MID)    |
+    | Field           | Value                                                              |
+    |-----------------|--------------------------------------------------------------------|
+    | **Step Name**   | `Resolve Gate`                                                     |
+    | **Condition 1** | `vars.steps.Read_Instance.data.code_output.found == 'yes'`         |
+    | **Branch Tooltip** | `Instance found`                                                |
 
-{{% notice warning %}}
-**Context Entity Type offers only `IpAddress` and `Machine`.** There is no `User` or `Identity`
-option. This is the crux of the compromised-credentials case: the alert's primary entity is an IAM
-principal, and the connector cannot look one up. If the alert carries no machine entity, this part
-**cannot** produce an instance ID, and no amount of retrying will change that.
-{{% /notice %}}
-
-That constraint is not a gap in the workshop -- it is the lesson. A containment playbook must
-branch on whether it found something to contain:
-
-4. Add a **Decision** step:
-
-    | Field           | Value                                     |
-    |-----------------|-------------------------------------------|
-    | **Step Name**   | `Did We Find An Instance`                 |
-    | **Condition 1** | `vars.target_instance_id != None`          |
-    | **Branch Tooltip** | `Instance found`                        |
-
-5. Point **Condition 1** at part 3's quarantine chain
-6. Point the **Default Step** at a **Manual Input** step that escalates to a human, with a
-   **Branch Tooltip** of `Identity only -- needs an analyst`
+11. Point the **Default Step** at a **Create Record** step on the **Comments** module that says
+    what happened and links back to the alert -- the instance was not found, nothing was
+    snapshotted, nothing was changed, and the usual causes are a terminated instance, a different
+    AWS account, or a region mismatch
 
 {{% notice note %}}
-Write the Decision condition **without** `{{ }}`. The field accepts only an advanced expression and
+Write Decision conditions **without** `{{ }}`. The field accepts only an advanced expression and
 FortiSOAR wraps it for you on save; adding your own braces produces a doubly-wrapped expression.
 Every other Jinja field in this chapter wants the braces -- Decision, Condition, and Loop boxes do
 not.
 {{% /notice %}}
 
-The escalation path is the correct outcome for a stolen-key alert. Rotating an access key and
-reviewing CloudTrail is judgement work, and a playbook that quietly did nothing here would be far
-worse than one that puts a task in an analyst's queue.
-
-{{% notice tip %}}
-For a run that exercises the full workflow, seed a **host-based** FortiCNAPP detection instead --
-those carry a machine entity, so part 2 resolves to a real instance. Keep the compromised-keys
-alert as the case that proves your escalation branch works. Two alerts, two paths, one playbook.
-{{% /notice %}}
-
-### Fallback: ask the platform directly
-
-When the alert has no machine entity but you have an IP address, **Run LQL Query** queries
-FortiCNAPP's own data model for resources associated with it. This is also how you answer
-"what else did this identity do?" -- which is the question the escalated analyst is about to ask.
+An alert naming an instance nobody can find is common and is not a failure. Recording it plainly
+beats a red run.
 
 ---
 
-## Part 3: Quarantine, reversibly
+## Part 2: Preserve the evidence -- and refuse to continue without it
 
-You have an instance ID. Resist stopping it. A running instance you have isolated keeps its memory
-state, keeps serving whatever forensics you need, and can be handed back intact if the alert turns
-out to be a false positive. Isolation is reversible; a stop is disruptive and a terminate is final.
+Containment is a live change to a running instance, and a not-uncommon response to losing network
+access is to wipe the disk. A snapshot taken *after* containment records the aftermath.
 
-Four steps, in this order.
+| Field             | Value                                                                |
+|-------------------|----------------------------------------------------------------------|
+| **Step Name**     | `Preserve Evidence`                                                  |
+| **Action**        | `Capture Volume Snapshot`                                            |
+| **Volume ID**     | `{{vars.steps.Read_Instance.data.code_output.root_volume}}`          |
+| **Description**   | `Forensic snapshot before containment of {{vars.steps.Read_Instance.data.code_output.instance_id}} (alert {{vars.input.records[0].uuid}})` |
 
-### 1. Tag it first
+**Description** is required here, not optional. Put the instance and alert in it -- a snapshot with
+a meaningless description is an unattributable cost line item three months from now.
 
-| Field              | Value                                          |
-|--------------------|------------------------------------------------|
-| **Step Name**      | `Tag Instance Under Investigation`             |
-| **Action**         | `Add Instance Tag`                             |
-| **Instance ID**    | `{{vars.target_instance_id}}`                  |
-| **Tag Key**        | `SecurityStatus`                               |
-| **Tag Value**      | `Quarantined-{{vars.cnapp_alert_id}}`          |
+### Read the snapshot back
 
-Tag before you isolate, not after. The moment you change the security group, someone's monitoring
-will page someone else, and the tag is what tells them this was deliberate and which alert caused
-it.
+The create call's return value says a snapshot was *requested*. Ask AWS whether it holds one:
 
-### 2. Create the quarantine group
+| Field                | Value                                                                        |
+|----------------------|------------------------------------------------------------------------------|
+| **Step Name**        | `Verify Snapshot`                                                            |
+| **Action**           | `Get Details of Snapshots`                                                   |
+| **Snapshot IDs**     | `{{vars.steps.Preserve_Evidence.data.SnapshotId}}`                           |
 
-| Field             | Value                                                     |
-|-------------------|-----------------------------------------------------------|
-| **Step Name**     | `Create Quarantine SG`                                    |
-| **Action**        | `Create Security Groups`                                  |
-| **Group Name**    | `quarantine-{{vars.cnapp_alert_id}}`                      |
-| **Description**   | `Isolation group created by FortiSOAR for alert {{vars.cnapp_alert_id}}` |
+### Gate on it
 
-{{% notice warning %}}
-**This action takes no VPC ID** -- only a name and a description. It therefore creates the group in
-the region's **default VPC**. If your instance lives in a non-default VPC, a group created here
-cannot be attached to it, and part 3's final step will fail. Either pre-create the quarantine group
-in the right VPC and skip this step, or use the connector's **Assume A Role** in an account whose
-default VPC is the one you want.
-{{% /notice %}}
-
-### 3. Allow exactly one way in
-
-A brand new security group has no inbound rules at all, which is already isolation. Add back only
-the forensic access you need:
-
-| Field                   | Value                                    |
-|-------------------------|------------------------------------------|
-| **Step Name**           | `Allow Forensic Access`                  |
-| **Action**              | `Authorize Ingress`                      |
-| **Security Group ID**   | the group ID from the previous step      |
-| **IP Permissions**      | the JSON below                           |
-
-```json
-[
-  {
-    "IpProtocol": "tcp",
-    "FromPort": 22,
-    "ToPort": 22,
-    "IpRanges": [
-      {
-        "CidrIp": "203.0.113.10/32",
-        "Description": "Forensic jump host"
-      }
-    ]
-  }
-]
-```
-
-Replace the CIDR with your jump host's address. **IP Permissions** is a free-text field holding
-raw JSON in the AWS `IpPermissions` shape -- the editor will not validate it for you, so a typo
-here surfaces as a connector error rather than a form warning.
-
-{{% notice note %}}
-Outbound is the half people forget. A new group's *egress* rules default to allow-all, so a
-quarantined instance can still reach the internet -- including whatever command-and-control
-prompted the alert. Use **Revoke Egress** to strip that default, then **Authorize Egress** for only
-what your tooling needs.
-{{% /notice %}}
-
-### 4. Swap the instance onto it
-
-| Field              | Value                                    |
-|--------------------|------------------------------------------|
-| **Step Name**      | `Isolate Instance`                       |
-| **Action**         | `Add Security Group To Instance`         |
-| **Instance ID**    | `{{vars.target_instance_id}}`            |
-| **Group List**     | the quarantine group ID                  |
-
-{{% notice warning %}}
-Despite the name "Add", this maps onto the AWS call that **sets** an instance's security group
-list. Passing only the quarantine group is what achieves isolation -- it replaces the instance's
-existing groups rather than adding to them. That also means it is destructive of the original
-configuration: record the `SecurityGroups[]` you read in part 1 into a variable first, or you will
-have nothing to restore from.
-{{% /notice %}}
-
----
-
-## Part 4: Preserve evidence before you destroy any
-
-If part 5 might terminate the instance, the volume snapshot has to happen first. Once an instance
-is terminated with `DeleteOnTermination` set -- the default for root volumes -- the disk is gone.
-
-| Field             | Value                                                       |
-|-------------------|-------------------------------------------------------------|
-| **Step Name**     | `Snapshot Volume`                                           |
-| **Action**        | `Capture Volume Snapshot`                                   |
-| **Volume ID**     | the `BlockDeviceMappings[].Ebs.VolumeId` you read in part 1  |
-| **Description**   | `Forensic snapshot for FortiCNAPP alert {{vars.cnapp_alert_id}}` |
-
-**Description** is required here, not optional. Put the alert ID in it -- a snapshot with a
-meaningless description is an unattributable cost line item three months from now.
-
-{{% notice tip %}}
-The snapshot returns immediately with a `pending` state; it does not wait for the copy to finish.
-If a later part depends on a completed snapshot, use a **do-until** loop from the
-[error handling chapter](/chapter-03-playbooks/05-approvals-and-error-handling) to poll until the
-state is `completed`, rather than assuming the snapshot is usable the moment the step goes green.
-{{% /notice %}}
-
----
-
-## Part 5: Stop or terminate -- and who gets to decide
-
-Two actions, and the difference between them is what this part is about:
-
-| Action               | Reversible?          | What survives                              |
-|----------------------|----------------------|--------------------------------------------|
-| **Stop Instance**    | Yes -- start it again | EBS volumes, instance ID, private IP       |
-| **Terminate Instance**| **No**               | Nothing, unless you snapshotted in part 4  |
-
-Automating **Stop Instance** is defensible. Automating **Terminate Instance** is not.
-
-### Gate the irreversible action
-
-1. Add a **Manual Input** step before the terminate step:
-
-    | Field             | Value                                                        |
-    |-------------------|--------------------------------------------------------------|
-    | **Step Name**     | `Approve Termination`                                        |
-    | **Title**         | `Approve termination of {{vars.target_instance_id}}?`         |
-
-2. Configure it in **approval mode**, routed to your security team with a timeout
-3. Wire the approve path to **Terminate Instance** and the reject path to **Stop Instance**
-
-The pattern -- and the timeout behaviour, which matters when nobody is on shift -- is covered in
-[Approvals and Error Handling](/chapter-03-playbooks/05-approvals-and-error-handling). Reuse it
-rather than rebuilding it.
-
-{{% notice tip %}}
-**Instance API Termination** is a quieter safety net worth knowing. Set it to `Disable` and the
-instance cannot be terminated through the API at all, by your playbook or anyone else's, until it
-is explicitly re-enabled. Applying it to production instances turns "a playbook bug terminated
-prod" from an incident into a failed step.
-{{% /notice %}}
-
----
-
-## Part 6: Close the loop
-
-An automated response that leaves no trace in the detection platform is invisible to the next
-analyst who opens the alert.
-
-### Comment what you did
-
-| Field             | Value                                    |
-|-------------------|------------------------------------------|
-| **Step Name**     | `Comment On CNAPP Alert`                 |
-| **Connector**     | `Lacework FortiCNAPP`                    |
-| **Action**        | `Add Comment to Alert`                   |
-| **Alert ID**      | `{{vars.cnapp_alert_id}}`                |
-| **Comment**       | the summary below                        |
-| **Format**        | `Markdown`                               |
+Add a **Decision** step named `Preservation Gate`, with **Condition 1**:
 
 ```jinja2
-**FortiSOAR automated containment**
-
-- Instance: `{{vars.target_instance_id}}`
-- Quarantine SG: `quarantine-{{vars.cnapp_alert_id}}`
-- Forensic snapshot: `{{vars.snapshot_id}}`
-- Final action: {{vars.final_action}}
+vars.steps.Verify_Snapshot.data.Snapshots | default([]) | length > 0
 ```
 
-**Format** accepts `Plaintext` or `Markdown`. Choose `Markdown` -- a table of what changed is worth
-far more than a paragraph.
+Condition 1 goes on to part 3. The **Default Step** goes to a comment that says containment was
+**refused** because evidence could not be preserved, that no security group was changed, and that
+the most common cause is a missing `ec2:CreateSnapshot` permission.
 
-### Close it
-
-| Field         | Value                                                       |
-|---------------|-------------------------------------------------------------|
-| **Step Name** | `Close CNAPP Alert`                                         |
-| **Action**    | `Close Alert`                                               |
-| **Alert ID**  | `{{vars.cnapp_alert_id}}`                                   |
-| **Reason**    | `Malicious and have resolution in place`                    |
-
-**Reason** is a fixed list, not free text: `Other`, `False positive`, `Not enough information`,
-`Malicious and have resolution in place`, `Expected because of routine testing`, and
-`Expected behavior`. Pick honestly -- these become the numbers someone reports on next quarter.
+{{% notice tip %}}
+This gate is what makes "preserve first" a control rather than a claim. Without it, the ordering is
+a comment in your playbook, and a snapshot step that silently failed leaves you with an incident
+and no evidence. Containing without evidence is a choice a human can still make by hand -- it is
+not one the playbook should make silently.
+{{% /notice %}}
 
 {{% notice warning %}}
-Close the FortiCNAPP alert only on the path where containment actually succeeded. If part 2 escalated
-to an analyst, or part 3 failed on the VPC mismatch, the alert must stay open. Wiring **Close
-Alert** as an unconditional final step is how automation quietly hides incidents.
+**Do not wait for the snapshot to reach `completed`.** An EBS snapshot is point-in-time as of the
+moment `CreateSnapshot` returns; the block copy that follows is durability, not capture. A
+`pending` snapshot is a complete capture that is still copying, and blocking containment until
+`completed` keeps a compromised instance online for minutes for no forensic gain. What the gate
+requires is that the snapshot *exists on AWS*, read back by ID -- not that it has finished copying.
 {{% /notice %}}
+
+---
+
+## Part 3: Record the posture while it is still true
+
+Create the case now -- after preservation, before containment -- so the record exists to hold the
+"before" state at the moment that state is still the current state.
+
+1. **Create Record** on **Incidents**, named
+   `Cloud workload containment -- {{vars.steps.Read_Instance.data.code_output.instance_id}}`,
+   type `Compromised System`, severity `High`, phase `Containment`, linked to the alert
+2. **Create Record** on **Comments**, linked to that incident:
+
+```html
+<p><b>Evidence preserved before containment.</b></p>
+<p>Snapshot <code>{{vars.steps.Preserve_Evidence.data.SnapshotId}}</code> of root volume
+<code>{{vars.steps.Read_Instance.data.code_output.root_volume}}</code>, state
+<b>{{vars.steps.Verify_Snapshot.data.Snapshots[0].State | default('unknown', true)}}</b>,
+read back from AWS by ID rather than taken from the create call's return value.</p>
+
+<p>Other volumes on this instance:
+<code>{{vars.steps.Read_Instance.data.code_output.other_volumes}}</code> -- these are
+<b>not</b> snapshotted by this playbook and must be captured separately if they are in scope.</p>
+
+<p><b>Pre-containment network posture</b> (record this -- AWS keeps no history of it):<br/>
+security groups <code>{{vars.steps.Read_Instance.data.code_output.groups_before}}</code>
+(<code>{{vars.steps.Read_Instance.data.code_output.group_ids_before}}</code>)<br/>
+private <code>{{vars.steps.Read_Instance.data.code_output.private_ip}}</code>,
+public <code>{{vars.steps.Read_Instance.data.code_output.public_ip}}</code>,
+subnet <code>{{vars.steps.Read_Instance.data.code_output.subnet_id}}</code></p>
+```
+
+{{% notice warning %}}
+**This comment is a backup, not documentation.** After the next two parts run, it is the only place
+the instance's original security-group membership exists. AWS keeps no history of
+`ModifyInstanceAttribute` -- no previous-value field, no undo, and nothing in the CloudTrail event
+that says what the group list used to be. Part 8 restores the workload by reading this comment,
+because there is nothing else to read.
+
+That is also why it records both **names and IDs**. Names are for the human reading the case; IDs
+are what AWS attaches, and part 8 matches on them.
+{{% /notice %}}
+
+Only the root volume is snapshotted, and the comment says so out loud rather than leaving the
+reader to assume otherwise. A multi-volume workload needs a snapshot per volume -- a loop worth
+building deliberately rather than hiding inside one step.
+
+---
+
+## Part 4: Gate the workloads a human has to authorise
+
+| Field           | Value                                                                        |
+|-----------------|------------------------------------------------------------------------------|
+| **Step Name**   | `Approval Gate`                                                              |
+| **Condition 1** | `vars.containment_enabled != 'yes'`  -> `Containment Disabled Comment`        |
+| **Condition 2** | `vars.steps.Read_Instance.data.code_output.approval_required == 'yes'` -> `Production Approval` |
+| **Default**     | `Contain`                                                                    |
+
+Two independent conditions, and it is worth being explicit about why both are there.
+`containment_enabled` is the change-window switch and applies to every workload. The approval tag
+applies only to the workloads a customer has called production.
+
+{{% notice tip %}}
+A run with containment disabled must **not** raise an approval. Asking a human to authorise an
+action the playbook has already been told not to take is how approval fatigue starts -- and how
+approvals stop being read.
+{{% /notice %}}
+
+### The approval itself
+
+Add a **Manual Input** step in approval mode, assigned to your security team with a timeout:
+
+| Field         | Value                                                        |
+|---------------|--------------------------------------------------------------|
+| **Step Name** | `Production Approval`                                        |
+| **Title**     | `Approve containment of a production cloud workload`          |
+| **Options**   | `Contain` (primary) -> `Contain`; `Decline` -> `Declined Comment` |
+
+```markdown
+Containment will replace **all** security groups on
+`{{vars.steps.Read_Instance.data.code_output.instance_id}}`
+({{vars.steps.Read_Instance.data.code_output.instance_type}},
+{{vars.steps.Read_Instance.data.code_output.private_ip}}) with
+**{{vars.quarantine_group}}**, which has no ingress and no egress rules. The workload will stop
+serving traffic and stop reaching anything, including its own dependencies and any agent that
+reports its health.
+
+Currently attached: `{{vars.steps.Read_Instance.data.code_output.groups_before}}`.
+**Record this** -- AWS keeps no history of the change, and it is what restore puts back.
+
+Tagged **{{vars.approval_tag}}={{vars.steps.Read_Instance.data.code_output.environment}}**, which
+is why this is being asked. Forensic snapshot
+`{{vars.steps.Preserve_Evidence.data.SnapshotId}}` has already been taken, so declining does not
+lose the evidence.
+```
+
+That is more prose than an approval usually carries, and every paragraph is doing a job: what will
+break, what is being replaced, why *this* workload triggered the question, and that saying no does
+not cost the evidence. An approver who has to open the AWS console to answer will start
+rubber-stamping.
+
+{{% notice warning %}}
+**Assign the approval to a team by IRI, not by name.** A `manual_input` step given a bare team name
+emits a string FortiSOAR cannot resolve, and the gate is created *unowned* -- it renders nowhere,
+nobody can answer it, and the run waits forever. Pick the team from the field's own selector rather
+than typing it.
+{{% /notice %}}
+
+Wire **Decline** to a comment stating that the workload is still online, still on its original
+security groups, and that the snapshot is unaffected. A declined approval is an outcome, not an
+error, and it deserves the same write-up a containment gets.
+
+{{% notice note %}}
+The approval gate keys off a **tag**, not an OS family or an instance type. A tag is what a
+customer actually controls and already maintains -- `Environment=production` is the one nearly
+everybody has. Gating on something intrinsic to the instance means the customer has to go populate
+data your playbook invented.
+{{% /notice %}}
+
+---
+
+## Part 5: Contain
+
+| Field              | Value                                                          |
+|--------------------|----------------------------------------------------------------|
+| **Step Name**      | `Contain`                                                      |
+| **Action**         | `Add Security Group To Instance`                               |
+| **Instance ID**    | `{{vars.steps.Read_Instance.data.code_output.instance_id}}`    |
+| **Group List**     | `{{vars.quarantine_group}}`                                    |
+
+{{% notice warning %}}
+**Despite the name, this operation replaces the instance's security-group list. It does not add.**
+It resolves the names it was given to IDs and calls `ModifyInstanceAttribute(Groups=<those ids>)`.
+
+For containment that is exactly the behaviour you want -- quarantine is only quarantine if the
+permissive groups are *gone*, and a quarantine group added alongside an allow-all group contains
+nothing. Anywhere else in your automation it is a footgun.
+{{% /notice %}}
+
+It has a sharper edge that reading the documentation will not surface: **a group name the operation
+cannot resolve is dropped from the list rather than raising.** Ask for `["quarantine",
+"typo-group"]` and you get a successful call that applied one group. Ask for a group in a different
+VPC and AWS rejects it at a layer whose error is easy to swallow.
+
+In every one of those cases the step returns success. Hold that thought for part 6.
+
+### Tag it
+
+| Field              | Value                                                          |
+|--------------------|----------------------------------------------------------------|
+| **Step Name**      | `Tag Instance`                                                 |
+| **Action**         | `Add Instance Tag`                                             |
+| **Instance ID**    | `{{vars.steps.Read_Instance.data.code_output.instance_id}}`    |
+| **Tag Key**        | `{{vars.status_tag_key}}`                                      |
+| **Tag Value**      | `{{vars.status_tag_value}}`                                    |
+
+The tag is for humans, cost tooling and the CMDB. It runs **before** the read-back deliberately, so
+that the verification below is checking AWS's account of the network posture rather than the
+playbook's own bookkeeping -- and so that a tag reading `Quarantined` on an instance whose group
+list says otherwise becomes visible as the contradiction it is.
+
+{{% notice tip %}}
+If you take one habit from this chapter, take this one: **the tag is never the evidence.** The lab
+instance this use case was built against was found tagged `Quarantined` and sitting on its fully
+permissive security group. Every dashboard said contained. Nothing was.
+{{% /notice %}}
+
+---
+
+## Part 6: Verify against AWS
+
+This is the step most cloud-containment demos leave out, and the one the whole chapter turns on.
+
+1. Add a **Connector** step, `Read Back`, **Get Instance Details** on the same instance ID
+2. Add a **Code Runner** step, `Verify Containment`:
+
+```python
+response = {{vars.steps.Read_Back.data | default({})}}
+expected = "{{vars.quarantine_group}}"
+before   = "{{vars.steps.Read_Instance.data.code_output.groups_before}}"
+
+instance = {}
+for reservation in (response.get("Reservations") or []):
+    for candidate in (reservation.get("Instances") or []):
+        instance = candidate
+        break
+    if instance:
+        break
+
+groups = [str(g.get("GroupName") or "") for g in (instance.get("SecurityGroups") or [])]
+tags   = {str(t.get("Key") or ""): str(t.get("Value") or "")
+          for t in (instance.get("Tags") or [])}
+
+contained = groups == [expected]
+
+if contained:
+    verdict = "the instance is on {0} and nothing else".format(expected)
+elif expected in groups:
+    verdict = ("{0} was attached but {1} other group(s) survived alongside it, "
+               "so permissive rules may still apply".format(expected, len(groups) - 1))
+elif not groups:
+    verdict = "the instance reports no security groups at all"
+else:
+    verdict = ("the group list is {0}, which does not include {1} -- "
+               "the change did not take effect".format(", ".join(groups), expected))
+
+return {
+    "contained": "yes" if contained else "no",
+    "groups_before": before,
+    "groups_after": ", ".join(groups) or "none",
+    "verdict": verdict,
+    "status_tag": tags.get("{{vars.status_tag_key}}", "not written"),
+}
+```
+
+3. Add a **Decision** step, `Verify Gate`, on
+   `vars.steps.Verify_Containment.data.code_output.contained == 'yes'`
+
+{{% notice warning %}}
+Note the comparison: `groups == [expected]`. **Exact equality, not membership.** "Contains the
+quarantine group" is a different and much weaker claim, and it is the one that lets a still
+permissive group survive alongside the quarantine group while every status field reads green.
+{{% /notice %}}
+
+The failure branch is the interesting one, and it deserves a real comment rather than a red step:
+
+```html
+<p><b>Containment did NOT take effect -- treat this workload as still reachable.</b></p>
+<p>{{vars.steps.Verify_Containment.data.code_output.verdict}}.</p>
+<p>Requested <code>{{vars.quarantine_group}}</code>; AWS now reports
+<code>{{vars.steps.Verify_Containment.data.code_output.groups_after}}</code> (was
+<code>{{vars.steps.Verify_Containment.data.code_output.groups_before}}</code>).</p>
+<p>The API call returned success, which is why this comment exists. The usual causes are a
+quarantine group name that does not resolve -- silently dropped rather than raising -- or a group
+in a different VPC to the instance. Contain by hand now; do not re-run and hope.</p>
+```
+
+*"The API call returned success, which is why this comment exists"* is the sentence that separates
+this playbook from one that would have carried on.
+
+The success branch says the same things in the other direction, and adds one worth saying to a
+customer out loud: **the instance is still running.** Containment cut the network and left memory,
+processes and disk intact for investigation. Stopping the instance is the more common reflex and it
+destroys the memory.
 
 ---
 
 ## Part 7: Chain it
 
-Now assemble it. Trigger **On Create** against the **Alerts** module, filtered to your FortiCNAPP
-source, and wire the parts in order: pivot, decide, tag, isolate, snapshot, approve, act, comment,
-close.
+Wire the parts in order: read, preserve, gate on preservation, create the case, record the posture,
+gate on the tag, contain, tag, read back, verify, comment, and update the alert.
 
-Three things to get right in the chained version that do not matter when you build each part alone:
+Three things to get right in the chained version that do not matter when you build each part alone.
 
-- **Order is not negotiable.** Snapshot before terminate; tag before isolate; read before write.
-- **`ignore_errors` belongs on the reporting steps, not the containment ones.** A failed comment
-  should not abandon a half-quarantined instance. A failed isolation absolutely should stop the
-  playbook.
-- **Record what you changed.** Save the original security group list, the new group ID, and the
-  snapshot ID into variables. Without them there is no rollback, and a false positive becomes an
-  outage you cannot undo.
+**Order is not negotiable, and two orderings are load-bearing.**
 
-### Challenges
+- *Snapshot before the approval gate*, not after. Preservation is a read of the disk and costs
+  nothing. If the approval is declined an hour later, the evidence from the moment of detection
+  still exists -- putting the snapshot after the gate would mean a declined approval also declines
+  the evidence.
+- *Tag before the read-back*, for the reason part 5 gives.
+
+**`ignore_errors` belongs on the reporting steps, not the containment ones.** A failed comment
+should not abandon a half-quarantined instance. A failed isolation absolutely should stop the
+playbook.
+
+**A converging final step may reference only what every branch produced.** Four branches reach the
+end here -- contained, not contained, declined, and containment disabled. The alert-update step
+therefore records the snapshot and the instance, which all four have, and deliberately does *not*
+interpolate the containment verdict, which only one branch produced. A summary field that renders
+blank on three of four paths is how a case ends up implying an outcome nobody asserted. The verdict
+lives in the branch comments, each of which states it unambiguously.
+
+### Test it four ways
+
+A containment playbook is only as good as its failure branches, so run it against four situations:
+
+| Scenario | What it proves |
+|---|---|
+| `Environment=dev` | No approval. Snapshot exists, group list on AWS becomes exactly the quarantine group, tag written, case holds the pre-containment posture. |
+| `Environment=production`, approved | The run **pauses** on the gate, and the instance ends up contained after you answer. |
+| `Environment=production`, declined | The instance must **still be on its original group**, must **not** carry the quarantine tag, and the snapshot must exist anyway. |
+| An instance ID that does not exist | No case, no snapshot, nothing touched, and a comment saying why. |
+
+{{% notice tip %}}
+The declined case is the one worth caring about. A gate that renders, is assigned to a team, and is
+answerable -- but whose Decline branch still falls through into the containment step -- passes
+every other scenario in that table. The only assertion that catches it is reading the instance's
+group list off AWS after a declined run and finding it unchanged.
+{{% /notice %}}
+
+---
+
+## Part 8: Restore
+
+Containment is the half that demos well. Restore is the half that decides whether a customer lets
+the containment run unattended.
+
+Build it as a second playbook, triggered from the **incident** rather than the alert. It reads the
+pre-containment posture out of the case comment part 3 wrote -- because, as part 3 said, that is
+the only copy that exists.
+
+The interesting failure here is not "the API call failed". It is "the record we are restoring from
+is missing, ambiguous, or no longer true". Four checks exist only to establish that, and all four
+run **before** the approval:
+
+| Check | What it refuses |
+|---|---|
+| Parse the evidence comment | A case with no recorded posture, or one naming two different instances. It will not pick. |
+| Read the instance | An instance that has been terminated since the incident -- the most likely outcome after a real compromise. |
+| Compare its current state | An instance on neither the quarantine group nor the recorded list. Something else changed it, and a restore would overwrite that. |
+| Check the groups still exist | A recorded group that has been deleted, or recreated in a different VPC. Partial restore is not offered. |
+
+Then: approve, re-attach the recorded groups with `Add Security Group To Instance`, set the tag,
+read back, and verify exact equality against the recorded list.
+
+Three design choices are worth saying out loud, because each is the opposite of the obvious one.
+
+**The approval gate is unconditional, where containment's is conditional.** Containment asks a
+human only about production-tagged workloads. Restore asks every time, because the question it
+poses is "is this host clean", and no tag on an instance answers that. The risk direction is
+reversed, so the gate is.
+
+**Match security groups by ID, not by name.** Names are for the human reading the case; IDs are
+what AWS attaches. The sharp reason is the one part 5 already gave -- the operation that takes
+names silently drops a name it cannot resolve and still returns success. Restoring from names turns
+"one of the three original groups was deleted last week" into a partial restore reported as a
+complete one. Restoring by ID, having first asked AWS whether every ID still exists, turns it into
+a refusal that names the missing group.
+
+**Set the tag to `Restored`; do not remove it.** An instance with no tag is indistinguishable from
+one that was never contained, and the fact that this workload went through a containment outlives
+the incident.
+
+{{% notice tip %}}
+Move the case to the **Recovery** phase on both terminal branches, including a failed restore. The
+phase describes where the incident is, not whether the last step worked. And leave the case
+**Open** -- closing it is a judgement about the whole incident, and a playbook that has made one
+network change is not the thing that should be making it.
+{{% /notice %}}
+
+Test restore the same way you tested containment: approved, declined, run twice (the second run
+must report "no change" as a **success** -- re-running a restore is a normal thing for a responder
+unsure whether the first one finished), against an instance a third party has since modified, and
+against a case with no evidence comment.
+
+---
+
+## Sidebar: if you have a CNAPP
+
+Everything above starts from an alert that already names an instance. A CNAPP finding often does
+not: it names an *identity* -- an IAM user, an access key, a role -- and leaves you to work out
+which instances that identity touched.
+
+With the **Lacework FortiCNAPP** connector configured, that pivot goes in front of part 1:
+
+| Step | Action | Notes |
+|---|---|---|
+| `Get Alert Entities` | `Get Alert Entities` | Alert ID from the ingested record's `sourcedata` |
+| `Get Alert Entity Details` | `Get Alert Entity Details` | Takes **Context Entity Type** and **Entity Value** |
+
+and the close-out goes after part 7: `Add Comment to Alert` (choose `Markdown` format -- a table of
+what changed is worth more than a paragraph) and `Close Alert` with a **Reason** picked from a
+fixed list, of which `Malicious and have resolution in place` is the honest one here.
+
+{{% notice warning %}}
+**Context Entity Type offers only `IpAddress` and `Machine`.** There is no `User` or `Identity`
+option -- so for a compromised-credentials alert, whose primary entity is an IAM principal, this
+pivot **cannot** produce an instance ID. That is not a gap in the workshop; it is the lesson. Branch
+on whether you found something to contain, and route the identity-only case to a **Manual Input**
+step that escalates to an analyst. Rotating a key and reviewing CloudTrail is judgement work, and a
+playbook that quietly did nothing there would be far worse than one that files a task.
+
+`Run LQL Query` is the fallback when you have an IP but no machine entity -- and it is also how the
+escalated analyst answers "what else did this identity do?".
+{{% /notice %}}
+
+{{% notice warning %}}
+Close the CNAPP alert **only** on the path where containment actually succeeded. If the pivot
+escalated to an analyst, or part 6 found the containment did not take, the alert must stay open.
+Wiring `Close Alert` as an unconditional final step is how automation quietly hides incidents.
+{{% /notice %}}
+
+---
+
+## Sidebar: when the shipped connector can't
+
+Part 0 sent you to a shell twice: the security-group create takes no VPC ID, and `Revoke Egress`
+cannot send `IpProtocol: "-1"`. In a lab you fix that by hand. In a customer environment where the
+quarantine group has to be created per-VPC on demand, you cannot.
+
+The general answer is that a FortiSOAR connector is a Python package you can read, and therefore
+one you can extend. Clone the vendor connector, add a **generic passthrough** operation that takes
+a service name, an API action, and a **payload as a JSON string**, and install it alongside the
+stock connector under a new name.
+
+The JSON-string payload is the fix, not an implementation detail: the platform's parameter layer
+retypes values it parses, and it cannot retype a string it never parsed. `"-1"` stays `"-1"`, and
+an all-digit resource identifier stays a string rather than becoming an integer.
+
+Two things that generic operation buys you beyond the egress fix:
+
+- **Resolve instances by filter rather than by ID.** A filtered `describe_instances` returns an
+  empty list for an unknown instance instead of raising `InvalidInstanceID.NotFound` -- which is
+  the clean version of the **Ignore Errors** trick part 1 used.
+- **Reach the operations the curated list does not cover.** There are around thirty curated
+  operations on the AWS connector; there are thousands of boto3 calls. Tagging arbitrary resource
+  types, invoking a Lambda, describing subnets, deactivating an IAM access key -- all reachable,
+  none shipped.
+
+{{% notice warning %}}
+Give that operation a `read_only` flag that refuses anything which is not a
+`describe_`/`get_`/`list_`, and set it on every step that is only meant to read. A passthrough is
+by definition an unaudited API surface inside your automation; a step that *cannot* mutate the
+account even if someone edits it later is worth the one extra checkbox.
+{{% /notice %}}
+
+The trade is real: a cloned connector is yours to maintain across vendor releases, and it needs its
+own configuration because credentials are encrypted per-connector on the appliance and cannot be
+copied across. Reach for it when a shipped connector's edge is blocking a control you actually
+need -- not to avoid learning the curated operations.
+
+---
+
+## Challenges
 
 #### Challenge 1
 
-Write the rollback playbook: given the alert ID, restore the instance's original security groups
-and remove the quarantine tag. Decide where the original group list has to be stored for this to be
-possible at all.
+Part 3's evidence comment is prose, and part 8 recovers the group list by parsing it. Write the
+parser so it refuses rather than guesses: require the instance ID to be unanimous across every
+comment on the case, match security group IDs on their format, and fail loudly when the case
+contains two different recorded postures. Then change one word of the containment playbook's
+comment wording and confirm your restore playbook notices.
 
 #### Challenge 2
 
-Part 3's group creation fails for instances in a non-default VPC. Rework it so the playbook detects
-the instance's VPC and either reuses a per-VPC quarantine group or fails loudly with a useful
-message.
+The playbook snapshots only the root volume and says so in the comment. Rework part 2 into a loop
+over `BlockDeviceMappings` that snapshots every attached volume, and decide what the preservation
+gate should require when three volumes were requested and two snapshots came back.
 
 #### Challenge 3
 
-Extend part 2 so that when only an IP address is available, a **Run LQL Query** step finds the
-resources associated with it -- turning the escalation path into a second automated attempt.
+Part 0 creates the quarantine group by hand because `Create Security Groups` takes no VPC ID.
+Build the per-VPC version: given an instance, find or create a quarantine group in *that
+instance's* VPC, strip its default egress rule, and cache the group ID so the second incident in
+the same VPC does not create a second group.
