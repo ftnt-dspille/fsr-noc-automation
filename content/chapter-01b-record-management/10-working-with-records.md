@@ -95,6 +95,35 @@ alert gets tied to the incident it belongs to, the indicators extracted from it,
 opened against it -- the relationships that make FortiSOAR a case-management tool rather than a
 list of alerts.
 
+### Make a relationship
+
+One alert is rarely the whole story. When a NOC event needs tracking beyond the single alert that
+reported it, you promote it to an **incident** -- and the two stay linked.
+
+Click **Escalate** in the bottom action bar. That button is not a field edit; it runs the playbook
+`Alert - Escalate To Incident`, which asks you for the incident's details before it creates
+anything:
+
+| Field | Value |
+|---|---|
+| **Incident Name** | `Unplanned WAN instability - edge-fw-01` |
+| **Severity** | leave on `Medium` |
+| **Incident Lead** | yourself |
+| **Escalation Reason** | leave the pre-filled text |
+| **Incident Type** | pick any -- `Explained Anomaly` fits a link flap |
+| **Close Alerts** | leave unticked, so your alert stays open |
+
+Click **Escalate**. The playbook creates the incident and links it back to your alert.
+
+{{% notice note %}}
+**Verify:** your alert's **Escalated** field flips to **Yes**, and the new incident appears under
+the **Correlations** tab and as a second node on the relationship graph. Open it and the alert is
+listed on its side of the link too -- the relationship reads from both directions.
+{{% /notice %}}
+
+This is the shape of nearly every use case in the rest of the workshop: a record arrives, a playbook
+decides what it means, and the result is another record joined to the first.
+
 {{% notice tip %}}
 **The template selection does not stick.** Reload the record and it reverts to the appliance
 default. If your fields disappear, you haven't lost data -- you're back on the other template.
@@ -135,7 +164,8 @@ A single alert record -- and, more usefully, the vocabulary for the rest of the 
 - **only `Name`** is required on an alert; validation is the automation's job
 - **view templates** change how a record is drawn, not what it holds -- and the lab appliance does
   not default to the plain one
-- **relationships** hang off the record's tab strip, not off its fields
+- **relationships** hang off the record's tab strip, not off its fields, and read from both ends
+- **escalation is a playbook**, not a field edit -- it creates the incident and the link
 - the **audit trail** attributes every change to a user or a playbook
 
 Day 2 picks this up from the automation side: the playbook that fired in Step 4 is the same kind of
