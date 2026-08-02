@@ -14,7 +14,7 @@ Do not Authorize Branch1 during this process. We will do that later.
 {{% /notice %}}
 
 ## Onboard a FortiGate
-1. Login to Branch1 using admin/```$3curityFabric```
+1. Login to Branch1 using admin/```<password from your instructor>```
 2. Navigate to **Security Fabric > Fabric Connectors**.
 3. Click **Central Management**
     - Click **Enabled**
@@ -29,7 +29,7 @@ Do not Authorize Branch1 during this process. We will do that later.
 
 
 ## Confirm FortiGate is unauthorized in FortiManager
-1. Login to FortiManager using admin/```$3curityFabric```
+1. Login to FortiManager using admin/```<password from your instructor>```
 2. Navigate to **Device Manager > Unauthorized Devices**
 3. Confirm that the Branch1 FortiGate is listed
 

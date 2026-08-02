@@ -15,7 +15,7 @@ weight: 20
 4. Update the following fields
     - **Name**: `Branch1`
     - **IP**: `10.100.88.8`
-    - **Device Password**: `$3curityFabric`
+    - **Device Password**: `<password from your instructor>`
       ![Target record with device credentials filled in](Images/img_1.png)
 5. Click **Save** at the bottom left
 

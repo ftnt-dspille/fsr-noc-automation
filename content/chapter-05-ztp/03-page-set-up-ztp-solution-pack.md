@@ -100,7 +100,7 @@ The configuration steps vary depending on your FSR version:
 
 2. Log back into FortiSOAR using the CS Admin credentials:
     - **Username:** `csadmin`
-    - **Password:** `$3curityFabric`
+    - **Password:** `<password from your instructor>`
 
 3. Verify the setup by confirming you can see the **FortiManager** section in the bottom left navigation pane
    
@@ -113,7 +113,7 @@ The configuration steps vary depending on your FSR version:
 1. Access the FortiManager UI using the IP address from your Evoke instance
 2. Log in with the following credentials:
     - **Username:** `admin`
-    - **Password:** `$3curityFabric`
+    - **Password:** `<password from your instructor>`
 3. Open the integrated SSH terminal to proceed with API account configuration
    
    ![ssh_terminal](images/fmg_ssh.png?height=50px)

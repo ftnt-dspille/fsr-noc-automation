@@ -22,10 +22,15 @@ tags: ["hands-on"]
 
 3. Login to FortiSOAR using the credentials below:
    
-   | **Key**        | **Value**         |
-   |----------------|-------------------|
-   | **Username**   | `csadmin`         |
-   | **Password**   | `$3curityFabric`  |
+   | **Key**        | **Value**                        |
+   |----------------|----------------------------------|
+   | **Username**   | `csadmin`                        |
+   | **Password**   | *provided by your instructor*    |
+   
+   {{% notice note %}}
+   Your instructor will give you the password for your training instance at the
+   start of the session. It is not published here.
+   {{% /notice %}}
    
    ![FortiSOAR login screen](images/login_2_fsr.png?height=500px)
 
