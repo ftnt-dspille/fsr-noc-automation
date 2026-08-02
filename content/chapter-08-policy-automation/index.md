@@ -1,7 +1,7 @@
 ---
 title: "Lab: Policy Request Automation"
 linkTitle: "Policy Request Automation"
-weight: 100
+weight: 85
 ---
 
 ## Lab Overview
