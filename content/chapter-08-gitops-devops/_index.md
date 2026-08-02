@@ -309,8 +309,13 @@ the playbook cheerfully continues past a failed call.
 
 ### Code Runner
 
-`code-runner` executes unrestricted Python inside a playbook step. It differs from the stock
-`code-snippet` connector in ways that matter:
+`code-runner` executes unrestricted Python inside a playbook step. It does not ship with
+FortiSOAR -- download the `.tgz` from
+[its releases page](https://github.com/ftnt-dspille/connector-code-runner/releases/latest) and
+import it from **Content Hub → Manage → Add Connector**. It is a community connector, so the
+appliance needs the custom-connector gate on first.
+
+It differs from the stock `code-snippet` connector in ways that matter:
 
 | | Stock `code-snippet` | `code-runner` |
 |---|---|---|

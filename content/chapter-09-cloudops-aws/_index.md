@@ -43,6 +43,8 @@ account with a throwaway instance -- never against anything you would miss.
 ## Prerequisites
 
 - The **AWS EC2** connector installed and configured (part 0 below)
+- The **AWS EC2 (Extended)** connector, also configured in part 0 -- one step here needs an
+  operation the shipped connector does not have
 - The **Code Runner** connector, introduced in
   [DevOps Automation](/chapter-08-gitops-devops) -- two steps here flatten AWS responses in Python
 - One throwaway EC2 instance you are willing to isolate, tagged `Environment=dev`
@@ -58,7 +60,8 @@ account with a throwaway instance -- never against anything you would miss.
 
 ```
 Part 1: Read state          -> AWS EC2  Get Instance Details -> Code Runner (flatten)
-Part 2: Preserve evidence   -> AWS EC2  Capture Volume Snapshot -> read it back
+Part 2: Preserve evidence   -> AWS EC2  Capture Volume Snapshot
+                                        -> AWS EC2 (Extended)  describe_snapshots
                                         -> Decision: no snapshot, no containment
 Part 3: Record the posture  -> Create Record (incident) -> Create Record (comment)
 Part 4: Gate                -> Decision on the Environment tag -> Manual Input (approval)
@@ -121,6 +124,30 @@ touching more than a single account.
 **An EC2 instance ID is only unique within its region**, and this configuration pins one region. A
 finding from another region resolves to nothing -- which is the correct outcome, but you want to
 recognise it as a region mismatch rather than a deleted instance.
+{{% /notice %}}
+
+### Add the extended connector
+
+The shipped AWS EC2 connector has 32 operations, and one thing this chapter needs is not among
+them: **there is no way to describe a snapshot.** You can create one, but you cannot ask AWS
+whether it exists -- which is exactly what part 2's gate has to do.
+
+Install
+[**AWS EC2 (Extended)**](https://github.com/ftnt-dspille/connector-aws-extended/releases/latest)
+alongside the stock connector. It is a clone of the vendor connector that adds a boto3
+passthrough, so any AWS API call is reachable without waiting for a curated operation. Download
+the `.tgz` from that page and import it from **Content Hub → Manage → Add Connector**.
+
+It is a community connector, so the appliance needs the custom-connector gate on before it will
+import. Configure it exactly like the stock one, with the **same credentials** and configuration
+name `AWS Lab Extended` -- connector configurations are encrypted per connector on the appliance,
+so the stock connector's credentials cannot be shared across to it.
+
+{{% notice note %}}
+Two connectors against one AWS account looks redundant, and mostly it is. Every step in this
+chapter uses the stock connector except one. Keeping the split visible is the point: you should be
+able to say precisely which capability is missing from the shipped connector and why you reached
+past it, rather than replacing the vendor's connector wholesale because one operation was absent.
 {{% /notice %}}
 
 ### Least-privilege IAM policy
@@ -299,6 +326,29 @@ That second click is the whole lesson of this step. `Get Instance Details` raise
 that has already been terminated", an ordinary and expected outcome, into a red run with no case
 and no explanation. Ignoring the error lets the next step decide what to do about it.
 
+{{% notice warning %}}
+**Ignoring an error does not make the run green, and the `| default({})` in the next step is not
+decoration.** Both are worth seeing for yourself in DEBUG mode.
+
+A step that raised does not produce an empty result. It produces a result with no `data` key at
+all, holding the error instead:
+
+```json
+{"Error message": "An error occurred (InvalidInstanceID.NotFound) when calling the
+ DescribeInstances operation: The instance ID 'i-01234567890abcdef' does not exist"}
+```
+
+So `{{vars.steps.Resolve_Instance.data | default({})}}` renders as `{}` and the flatten reports
+`found: no`, exactly as intended -- but only because it asks for `.data` and defaults it. Reach
+for `vars.steps.Resolve_Instance` directly, or drop the `| default`, and the next step gets the
+error dict or a template failure instead.
+
+And the run still finishes with the status **`finished with error`**, even though every step after
+the ignored one ran to completion. `Ignore Errors` governs *control flow*, not the run's verdict.
+Anything that judges the run by its terminal status -- a parent playbook, a monitoring query, a
+test harness -- will call this run failed while the case it produced is perfectly correct.
+{{% /notice %}}
+
 {{% notice note %}}
 To see step input and output at all, the playbook must run in **DEBUG** mode. Click **Running In
 INFO Mode** in the designer's top bar, set **Select Execution Log Level** to `DEBUG`, and click
@@ -408,13 +458,27 @@ a meaningless description is an unattributable cost line item three months from 
 
 ### Read the snapshot back
 
-The create call's return value says a snapshot was *requested*. Ask AWS whether it holds one:
+The create call's return value says a snapshot was *requested*. Ask AWS whether it holds one.
 
-| Field                | Value                                                                        |
-|----------------------|------------------------------------------------------------------------------|
-| **Step Name**        | `Verify Snapshot`                                                            |
-| **Action**           | `Get Details of Snapshots`                                                   |
-| **Snapshot IDs**     | `{{vars.steps.Preserve_Evidence.data.SnapshotId}}`                           |
+This is the one step in the chapter that uses the **extended** connector, because the shipped one
+has no describe-snapshot operation at all. `Generic AWS API Action` takes an AWS API call by name
+and a JSON payload, so anything boto3 can do is reachable:
+
+| Field             | Value                                                                          |
+|-------------------|--------------------------------------------------------------------------------|
+| **Step Name**     | `Verify Snapshot`                                                              |
+| **Connector**     | `AWS EC2 (Extended)`, configuration `AWS Lab Extended`                         |
+| **Action**        | `Generic AWS API Action`                                                       |
+| **AWS Service**   | `ec2`                                                                          |
+| **API Action**    | `describe_snapshots`                                                           |
+| **Payload**       | `{"SnapshotIds": ["{{vars.steps.Preserve_Evidence.data.SnapshotId}}"]}`        |
+| **Read Only**     | checked                                                                        |
+
+**Read Only** is worth checking even though `describe_snapshots` is obviously a read. The operation
+takes an API action as a *string*, which means a templating mistake upstream can turn a read into
+something else; the flag refuses anything that is not a `describe_`/`get_`/`list_`/`search_`. A
+passthrough operation is powerful precisely because it is not curated, so the guard rail is the
+one you set.
 
 ### Gate on it
 
@@ -582,11 +646,22 @@ nothing. Anywhere else in your automation it is a footgun.
 {{% /notice %}}
 
 It has a sharper edge that reading the documentation will not surface: **a group name the operation
-cannot resolve is dropped from the list rather than raising.** Ask for `["quarantine",
-"typo-group"]` and you get a successful call that applied one group. Ask for a group in a different
-VPC and AWS rejects it at a layer whose error is easy to swallow.
+cannot resolve is dropped from the list rather than raising.** Ask for `quarantine,typo-group` and
+you get a successful call that applied one group:
 
-In every one of those cases the step returns success. Hold that thought for part 6.
+```json
+{"quarantine":  "Security Group Name/ID Added Successfully",
+ "typo-group":  "Security Group Name/ID Not Found in List of Security Groups",
+ "Response":    {"ResponseMetadata": {"HTTPStatusCode": 200, "...": "..."}}}
+```
+
+Read that carefully, because it is the more interesting version of the lesson. The connector *did*
+tell you. It put the failure in the response body, next to the success, under a 200 -- and the
+**step still goes green**, because a per-item verdict inside a payload is not something the engine
+can turn into a step status. Nothing downstream looks at it unless you write the step that does.
+
+Ask for a group in a different VPC and it is the same shape: a call that succeeded having done
+less than you asked. Hold that thought for part 6.
 
 ### Tag it
 
@@ -675,8 +750,8 @@ The failure branch is the interesting one, and it deserves a real comment rather
 <code>{{vars.steps.Verify_Containment.data.code_output.groups_after}}</code> (was
 <code>{{vars.steps.Verify_Containment.data.code_output.groups_before}}</code>).</p>
 <p>The API call returned success, which is why this comment exists. The usual causes are a
-quarantine group name that does not resolve -- silently dropped rather than raising -- or a group
-in a different VPC to the instance. Contain by hand now; do not re-run and hope.</p>
+quarantine group name that does not resolve -- dropped from the list, reported only inside the
+response body, and still a 200 -- or a group in a different VPC to the instance. Contain by hand now; do not re-run and hope.</p>
 ```
 
 *"The API call returned success, which is why this comment exists"* is the sentence that separates
@@ -767,7 +842,8 @@ reversed, so the gate is.
 
 **Match security groups by ID, not by name.** Names are for the human reading the case; IDs are
 what AWS attaches. The sharp reason is the one part 5 already gave -- the operation that takes
-names silently drops a name it cannot resolve and still returns success. Restoring from names turns
+names drops a name it cannot resolve, reports it only inside the response body, and still
+returns success. Restoring from names turns
 "one of the three original groups was deleted last week" into a partial restore reported as a
 complete one. Restoring by ID, having first asked AWS whether every ID still exists, turns it into
 a refusal that names the missing group.
@@ -838,6 +914,13 @@ one you can extend. Clone the vendor connector, add a **generic passthrough** op
 a service name, an API action, and a **payload as a JSON string**, and install it alongside the
 stock connector under a new name.
 
+That is exactly what **AWS EC2 (Extended)** is -- the connector part 0 had you install and part 2
+used once. It is worth opening
+[its source](https://github.com/ftnt-dspille/connector-aws-extended) rather than treating it as a
+black box: the whole extension is one module plus a short footer appended to `operations.py`, and
+no vendor function body is edited. That constraint is what makes it re-cloneable against a newer
+vendor release instead of a patch you have to reapply by hand.
+
 The JSON-string payload is the fix, not an implementation detail: the platform's parameter layer
 retypes values it parses, and it cannot retype a string it never parsed. `"-1"` stays `"-1"`, and
 an all-digit resource identifier stays a string rather than becoming an integer.
@@ -847,10 +930,10 @@ Two things that generic operation buys you beyond the egress fix:
 - **Resolve instances by filter rather than by ID.** A filtered `describe_instances` returns an
   empty list for an unknown instance instead of raising `InvalidInstanceID.NotFound` -- which is
   the clean version of the **Ignore Errors** trick part 1 used.
-- **Reach the operations the curated list does not cover.** There are around thirty curated
-  operations on the AWS connector; there are thousands of boto3 calls. Tagging arbitrary resource
-  types, invoking a Lambda, describing subnets, deactivating an IAM access key -- all reachable,
-  none shipped.
+- **Reach the operations the curated list does not cover.** There are exactly thirty-two curated
+  operations on the AWS connector; there are thousands of boto3 calls. Describing a snapshot --
+  which part 2 could not do without this -- tagging arbitrary resource types, invoking a Lambda,
+  describing subnets, deactivating an IAM access key: all reachable, none shipped.
 
 {{% notice warning %}}
 Give that operation a `read_only` flag that refuses anything which is not a
