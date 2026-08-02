@@ -8,13 +8,13 @@ archetype: home
 
 ![waste_management plus fortinet](fortinet.svg?height=100px)
 
-## **Automation with FortiSOAR – Workshop Agenda**
+## **Automation with FortiSOAR - Workshop Agenda**
 
 ---
 
-## **Day 1 – Foundations & Core Automation Concepts**
+## **Day 1 - Foundations & Core Automation Concepts**
 
-### 1. **SOAR Fundamentals Overview** (\~1.5 hours – Presentation)
+### 1. **SOAR Fundamentals Overview** (\~1.5 hours - Presentation)
 
 Understand the platform’s foundational structure:
 
@@ -26,11 +26,11 @@ Understand the platform’s foundational structure:
 * Data Transfer: **Import/Export Wizard**
 
 > **Automation Design Pattern Introduced:**
-> *System Object Awareness* – Understand the building blocks you'll manipulate in automation.
+> *System Object Awareness* - Understand the building blocks you'll manipulate in automation.
 
 ---
 
-### 2. **SOAR GUI Workshop** (\~1.5 hours – Hands-on)
+### 2. **SOAR GUI Workshop** (\~1.5 hours - Hands-on)
 
 Hands-on introduction to working in FortiSOAR:
 
@@ -44,7 +44,7 @@ Hands-on introduction to working in FortiSOAR:
 ### **Lunch Break**
 ---
 
-### 3. **Automation Basics** (\~1.5 hours – Mixed Presentation + Hands-on)
+### 3. **Automation Basics** (\~1.5 hours - Mixed Presentation + Hands-on)
 
 Introduces the building blocks of automation logic:
 
@@ -73,7 +73,7 @@ Introduces the building blocks of automation logic:
 
 ---
 
-### 4. **Workshop: Build a Simple Automation Flow** (\~1.5 hours – Hands-on)
+### 4. **Workshop: Build a Simple Automation Flow** (\~1.5 hours - Hands-on)
 
 Put theory into practice:
 
@@ -86,9 +86,9 @@ Put theory into practice:
 
 ---
 
-## **Day 2 – Real Use Cases & Scenario-Based Learning**
+## **Day 2 - Real Use Cases & Scenario-Based Learning**
 
-### 5. **Use Case Implementation Workshop** (\~4 hours – Hands-on Labs)
+### 5. **Use Case Implementation Workshop** (\~4 hours - Hands-on Labs)
 
 Work through real-world automation examples with extensible architecture in mind:
 
@@ -117,7 +117,7 @@ Work through real-world automation examples with extensible architecture in mind
 
 ---
 
-### 6. **Ad Hoc Playbook Building Session** (\~3 hours – Live Co-Creation)
+### 6. **Ad Hoc Playbook Building Session** (\~3 hours - Live Co-Creation)
 
 Build new playbooks live based on requested scenarios:
 
