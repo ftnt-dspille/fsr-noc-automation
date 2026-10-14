@@ -448,7 +448,7 @@ now listed.
 
 The `.meta` edit changes what *new* VMs inherit; an existing installed VM still
 needs a sync to pick it up and open the port forward - the same
-`runtime vm synchronize <VM_ID>` as [Step 8](#step-8--apply-the-change-to-the-fabric).
+`runtime vm synchronize <VM_ID>` as [Step 8](#step-8---apply-the-change-to-the-fabric).
 
 ![Syncing the device so the new SSH forward is created](images/device_sync_access_shh.png)
 
