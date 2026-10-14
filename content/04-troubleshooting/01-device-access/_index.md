@@ -8,6 +8,11 @@ description: "SSH/HTTPS to a device fails from outside the Fabric Studio console
 
 If you cannot SSH to a device from outside the Fabric Studio native console, SSH access may be disabled at either the global or device level.
 
+If the connection opens but the login is refused, check the username and
+password first: `admin` with the fabric password, unless the device has its
+own password set. See
+[Logins and passwords]({{% relref "/02-building-fabrics/02-first-fabric#logins-and-passwords" %}}).
+
 ## Understanding SSH Access Levels
 
 **Global Settings Impact:**
