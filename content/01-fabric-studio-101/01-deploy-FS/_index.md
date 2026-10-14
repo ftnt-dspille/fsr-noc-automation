@@ -7,7 +7,7 @@ description: "Deploying Fabric Studio in your own environment, and Fabric Studio
 
 ## Overview
 
-This guide covers the steps for deploying Fabric Studio (FS) in your own lab environment. This page is for those that want to host Fabric studio themselves. If you're looking for an easy way to test Fabric Studio, you can do that via FNDN. Check out the page [here](/03-migrate-fpoc/_index.md#spin-up-fabric-studio-in-fndn)
+This guide covers the steps for deploying Fabric Studio (FS) in your own lab environment. This page is for those that want to host Fabric studio themselves. If you're looking for an easy way to test Fabric Studio, you can do that via FNDN. See [Spin up Fabric Studio in FNDN]({{% relref "/03-migrate-fpoc/1-export-import-directly#spin-up-fabric-studio-in-fndn" %}}).
 
 ## Download Fabric Studio
 
