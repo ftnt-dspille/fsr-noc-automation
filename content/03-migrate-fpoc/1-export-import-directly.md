@@ -288,7 +288,7 @@ Note the **Type** column that indicates the firmware classification (e.g., "SOAR
    ![Add Device](images/img_3.png?height=300px)
 
 3. Select the type of device you want (by default, Fabric Studio searches the remote repository)
-   ![Device Type Selection](img_5.png?height=300px)
+   ![Device Type Selection](images/img_5.png?height=300px)
 
 4. Click **Browse**, select your custom firmware, then click **OK**
    ![Select Custom Firmware](images/img_6.png?height=300px)
