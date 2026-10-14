@@ -5,6 +5,11 @@ weight: 10
 description: "Upgrade Fabric Studio, reach its shell, and export or download a fabric"
 ---
 
+CLI equivalents of GUI tasks. For the GUI side, see
+[Saving State]({{% relref "/02-building-fabrics/05-saving-state" %}}) (config
+backups) and [Fabrics from Templates]({{% relref "/02-building-fabrics/06-templates" %}})
+(Export Fabric and Import).
+
 ## Upgrade Fabric Studio to latest interim build
 
 `system execute upgrade --channel interim`
