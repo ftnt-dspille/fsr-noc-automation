@@ -28,6 +28,36 @@ The fabric opens in the topology view with the default devices: OOB Mgmt,
 Internet Access, ISP Router, and the System Host. See
 [What's in a New Fabric]({{% relref "../01-anatomy" %}}) for what each one does.
 
+### Logins and passwords
+
+Set the password **before you install**. It's the login for every device you
+add.
+
+**Username:** `admin` by default, the same for every device (the username
+comes with the device's firmware; Linux LXC images such as the Debian toolbox
+use `root`).
+
+**Password:** two levels, and the device level wins:
+
+1. **Fabric password**: the fabric's ✏️ **Edit** button (the pencil next to
+   the fabric name), **Advanced > Password**. Every device uses it unless it
+   has its own.
+
+   ![Fabric Edit > Advanced: Password and Display Password](images/fabric-password.png)
+
+2. **Device password**: a device's **Edit > Advanced > Password**. Leave it
+   empty to use the fabric password, or fill it in to override the fabric
+   password for that device only.
+
+   ![Device Edit > Advanced: empty Password means the fabric password applies](images/device-password.png)
+
+**Display Password**, at both levels, is the separate password for the VNC /
+SPICE console view.
+
+Passwords must pass Fabric Studio's password policy (at least 8 characters,
+not a common word, mixed character types). Fabrics created from a template
+skip that check. See [Fabrics from Templates]({{% relref "../06-templates" %}}).
+
 ## 2. Add a FortiGate
 
 Hover over **+** at the top left of the topology. Four buttons appear:
