@@ -76,8 +76,9 @@ Before exporting:
 
 ## Download our example fabric
 
-[**fsoc-agent-test.zip**](fsoc-agent-test.zip) (413 KB) is the fabric used
-throughout this chapter, exported from Fabric Studio 2.2.35:
+The fabric used throughout this chapter, exported from Fabric Studio 2.2.35:
+
+{{% resources title="Example fabric export" style="info" pattern=".*\.zip" /%}}
 
 ![The example fabric after import](images/imported-fabric.png)
 
