@@ -94,7 +94,10 @@ change a running device:
 - **Gateway / DNS** from a device's **Network Parameters**: Fabric Studio
   writes them into the guest during install. Changing them, or the network's
   gateway or DNS, does not update an already-running guest; reinstall the
-  device (back up its configuration first). Exception: on a FortiGate with a
+  device (back up its configuration first). **Apply changes offers Sync for
+  this, and Sync is a trap:** it finishes without error and clears the pending
+  item, so nothing looks outstanding, but the guest is untouched (tested on an
+  LXC: same default route, same `resolv.conf`). Exception: on a FortiGate with a
   saved configuration the configuration file wins and Network Parameters are
   never applied. LXC devices always take them from Network Parameters.
   [Details]({{% relref "../05-saving-state#lxc-devices-are-different-the-backup-is-only-fabric" %}}).
