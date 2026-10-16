@@ -2,12 +2,61 @@
 title: "Fabric Studio"
 linkTitle: "Fabric Studio"
 weight: 40
-description: "Documentation and resources for Fortinet's Fabric Studio"
+description: "Build, run and share Fortinet lab topologies on Fabric Studio, the FortiPOC successor: setup, licensing, building fabrics, keeping device state, troubleshooting and automation. Every step verified on a live Fabric Studio."
 ---
 
 ## Overview
 
-Fabric Studio is an internal Fortinet tool designed to create simple or complex network topologies using different Fortinet products. It allows you to build, test, and demonstrate Fortinet solutions in a virtualized environment.
+**Fabric Studio** is Fortinet's internal lab platform, and the successor to
+FortiPOC. On one Fabric Studio (a VM or a lab pod) you build a **fabric**: a set
+of virtual devices (FortiGate, FortiManager, FortiAnalyzer, FortiSOAR and other
+Fortinet VMs, Linux containers, or any qcow2/KVM image), cabled together through
+virtual switches. Fabric Studio deploys and licenses the devices, addresses
+them, gets them on the internet, and gives you SSH, HTTPS and VNC access to each
+one from your browser. A finished fabric can be exported as a **template** and
+shared, so anyone can reproduce the same lab.
+
+Use it to build demos, proofs of concept, workshops and test labs, from a single
+FortiGate up to a full Security Fabric.
+
+**This site** is the practical guide: how to set Fabric Studio up, build and
+change a fabric without losing work, and fix what goes wrong. Every procedure
+and behaviour described here was checked on a running Fabric Studio (2.2.35),
+with screenshots from the real UI.
+
+### Where to start
+
+| You want to... | Start with |
+|---|---|
+| Get a Fabric Studio running and licensed | [Setup]({{% relref "01-fabric-studio-101" %}}) |
+| Build your first lab | [Your First Fabric]({{% relref "02-building-fabrics/02-first-fabric" %}}) |
+| Change a running lab without breaking it | [Install vs Apply vs Sync]({{% relref "02-building-fabrics/04-apply-install-sync" %}}) |
+| Run a Linux box or third-party appliance | [Generic VMs]({{% relref "02-building-fabrics/07-generic-vm" %}}) |
+| Move from FortiPOC | [Migration Options]({{% relref "03-migrate-fpoc" %}}) |
+| Fix "can't reach my device" or "no internet" | [Troubleshooting]({{% relref "04-troubleshooting" %}}) |
+| Script or automate it | [Fabric Studio API]({{% relref "07-python-api" %}}) |
+
+### Five things that catch everyone
+
+1. **A reinstall wipes what you changed inside a device.** ▶ Install, Runtime >
+   Install, or an Apply changes row left on Install redeploys from firmware.
+   [Back up first]({{% relref "02-building-fabrics/05-saving-state" %}}).
+2. **On a running fabric, use ⚡ Apply changes, not ▶ Install**, and check every
+   row: rows often default to Install.
+3. **Sync doesn't apply everything.** Gateway/DNS, passwords and new port
+   addresses only reach a running device on install, and a Sync can clear the
+   pending change without applying it.
+   [The list]({{% relref "02-building-fabrics/04-apply-install-sync#changes-that-need-more-than-sync" %}}).
+4. **One fabric runs at a time.** Installing another fabric shuts down the one
+   that's running.
+5. **A refused login is rarely a wrong password.** It's usually the wrong user,
+   the wrong route, or a lockout.
+   [Device access]({{% relref "04-troubleshooting/01-device-access" %}}).
+
+{{% notice tip %}}
+Every Fabric Studio has its own built-in documentation for its version at
+`https://<fabric-studio>/help/`. See [Resources](#resources).
+{{% /notice %}}
 
 ### Why Fabric Studio
 
@@ -39,19 +88,6 @@ Fabric Studio is the successor to FortiPOC, which is reaching End of Life (EOL).
 ## Documentation
 
 {{% children description="true" %}}
-
-## Getting Started
-
-Fabric Studio allows you to:
-
-1. Create new network topologies from scratch
-2. Import existing FortiPOC environments
-3. Use pre-built templates from the repository
-4. Share your custom environments with others
-
-{{% notice tip %}}
-If you're migrating from FortiPOC, see the [Migration Guide](/03-migrate-fpoc) for step-by-step instructions.
-{{% /notice %}}
 
 ## Resources
 
