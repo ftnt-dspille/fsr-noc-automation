@@ -187,3 +187,50 @@ model.
 For Linux guests where state lives in packages and files, not one config file,
 **Disk > Backup as Firmware** saves the VM's disk as a new firmware image. New
 devices (or this one, by changing its Firmware) can then be deployed from it.
+It's the only way to keep state on a
+[generic VM]({{% relref "../07-generic-vm" %}}), which has no Backup Config.
+
+1. **Power > Shutdown** the device and wait until it's off. The dialog only
+   reminds you; the export itself refuses a running VM.
+2. **Disk > Backup as Firmware**:
+
+   ![Backup Disk: Save as, Overwrite, Update device settings, Backup mode](images/backup-disk-diff.png)
+
+   | Field | Meaning |
+   |---|---|
+   | **Save as** | The new firmware's name in the **home** repository. Must be unique unless **Overwrite** is on. |
+   | **Overwrite** | Replace an existing disk backup with the same name. |
+   | **Update device settings** | Point this device's **Firmware** at the new image, so its next install boots from it. Leave it off to save a copy without changing the device. |
+   | **Backup mode** | **Standalone**: a full copy of the disk. **Diff**: only what changed since the original firmware. |
+
+3. Click **OK**, then power the device back on (or Install it, to boot from the
+   new image).
+
+### Standalone vs Diff
+
+A **Diff** is far smaller: on a 703 MiB CentOS image, adding 50 MB of files
+gave a **68 MiB** diff, written in about 35 seconds. The trade-off is that it
+**depends on its original**. Installing from a diff downloads the original
+firmware first, and the diff is useless on a Fabric Studio that can't get it.
+Use **Standalone** for an image you'll move to another Fabric Studio or keep
+long term.
+
+**Diffs never chain.** A diff taken from a VM that is already running from a
+diff is rebased onto the original standalone firmware ("Export ... as rebased
+firmware" in the log), not onto the earlier diff. Verified:
+
+| | Taken from | Diff from | Size | Contents after install |
+|---|---|---|---|---|
+| `basic-vm-diff1` | the original image | original | 68 MiB | marker 1 |
+| `basic-vm-diff2` | a VM running `basic-vm-diff1` | **original** (not diff1) | 89 MiB | markers 1 and 2 |
+
+So every diff holds everything since the original, and no diff depends on
+another: installing `basic-vm-diff2` stacked it directly on the original and
+never touched `basic-vm-diff1`. Only the original must stay. Details: **Snapshot** in
+your Fabric Studio's built-in help, `https://<fabric-studio>/help/expert/snapshot.html`.
+
+From the Fabric Studio CLI:
+
+```bash
+runtime vm export --diff <VM_ID_OR_NAMEID> <FIRMWARE_NAME>
+```

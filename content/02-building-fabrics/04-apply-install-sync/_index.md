@@ -35,8 +35,9 @@ device in the fabric.
 ## Apply changes: check every row
 
 Apply changes lists each touched item with four choices: **Install**, **Sync**,
-**Uninstall**, **Skip**. **Every row defaults to Install**, including switches
-you only plugged a new cable into.
+**Uninstall**, **Skip**. **Rows often default to Install**, including switches
+you only plugged a new cable into. Some edits to an existing device default to
+Sync. Check every row either way.
 
 ![Apply changes defaults every row to Install](images/apply-changes-defaults.png)
 
@@ -101,6 +102,13 @@ change a running device:
   applied when the device is installed. A new Display Password is not applied
   by Sync (confirmed); reinstall the device. See
   [Logins and passwords]({{% relref "../02-first-fabric#logins-and-passwords" %}}).
+- **DHCP served by Fabric Studio** (a port set to **Addressing mode: DHCP**
+  with a **Native DHCP Server**): the lease lives on the **System Host** (or
+  router), and only an **Install of the System Host** rewrites it. Sync of the
+  System Host or the device leaves the old lease. You don't need to reinstall
+  the device; reboot it or renew its lease. When Apply changes offers Install
+  on the System Host, keep it. Proven step by step on
+  [a generic VM]({{% relref "../07-generic-vm#getting-it-an-address-use-the-native-dhcp-server" %}}).
 - **VLAN mode / tags on a switch port**: Sync updates the switch's settings, but
   traffic keeps flowing on the old VLANs until the switch itself is reinstalled
   (Runtime > Install on the switch). Reinstalling a switch does not reinstall the

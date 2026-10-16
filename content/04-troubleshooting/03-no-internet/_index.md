@@ -116,5 +116,9 @@ for what an install does with and without a saved configuration.
 
   and reinstall the device. Step by step:
   [License "ip doesn't match"]({{% relref "/04-troubleshooting/05-license-ip-mismatch" %}}).
+- **A generic VM (Custom VM / BASIC)** gets no address, gateway or DNS from
+  Fabric Studio unless its port is set to DHCP from a native device, and DHCP
+  changes need the **System Host Installed**, not synced. See
+  [Generic VMs]({{% relref "/02-building-fabrics/07-generic-vm#getting-it-an-address-use-the-native-dhcp-server" %}}).
 - **Is the device actually powered on?** A powered-off device looks exactly like
   one with no network.
