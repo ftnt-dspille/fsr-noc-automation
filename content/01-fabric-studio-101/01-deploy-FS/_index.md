@@ -16,12 +16,12 @@ Download your Fabric Studio image from [Sharepoint](https://fortinet-my.sharepoi
 ![Fabric Studio download page](images/img.png)
 
 {{% notice note %}}
-Only GCP or qcow2 images are available. If you need to convert to vmdk format, you can use the following command:
-{{% /notice %}}
+Only GCP or qcow2 images are available. If you need vmdk format, convert it:
 
 ```bash
 qemu-img convert -f qcow2 -O vmdk source_image.qcow2 destination_image.vmdk
 ```
+{{% /notice %}}
 
 ## Import to Hypervisor
 

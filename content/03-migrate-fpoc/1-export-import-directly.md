@@ -110,7 +110,7 @@ You should now see the Fabric Studio Dashboard
 {{% notice warning %}}
 In some cases, firmware for certain devices might not be found. This often happens when devices were using snapshots or custom firmware, which are not exportable from FortiDemo. You may need to manually upload firmware for these devices, or follow the migration steps outlined in the next section.
 
-![img_40.png](images/img_40.png?height=500px)
+![The imported fabric with devices whose firmware wasn't found](images/img_40.png?height=500px)
 {{% /notice %}}
 
 #### Migrate Firmware if Needed
@@ -199,7 +199,7 @@ After installation:
 Please read this section, otherwise you may end up losing hours of work and changes you make to the Fabric template
 {{% /notice %}}
 
-A Fabric template is a stateful configuration, meaning the firmware, network connections, and device config applied to the template will get provisioned on the template install. But what if you need to make changes to the device's config? If you make any device settings, IE logging into a device via CLI/GUI, you need to Backup that config so that the next time Fabric Studio does an Install, it knows what extra config can be applied.
+A Fabric template is a stateful configuration, meaning the firmware, network connections, and device config applied to the template will get provisioned on the template install. But what if you need to make changes to the device's config? If you change any device settings (i.e. log into a device via CLI/GUI and configure it), you need to Backup that config so that the next time Fabric Studio does an Install, it knows what extra config can be applied.
 
 ##### Preferred Method Backup Config
 
@@ -209,7 +209,7 @@ The best option is saving the config through the **Right-Click-Device > Config &
 
 For Linux devices whose state isn't in a config file, **Disk > Backup as Firmware** saves the whole disk as a new firmware image. It's large and slow to move, so prefer Backup Config where it's enough. See [Back up a whole disk instead]({{% relref "/02-building-fabrics/05-saving-state#back-up-a-whole-disk-instead" %}}).
 
-#### Export Fabric "Fabric"
+#### Export the Fabric
 
 The team that manages FNDN's FortiDemo is very busy and tight on resources. So it may take some time before they can make a snapshot of the instance and save it. Since the FortiDemo spin has a countdown timer until it auto deletes, it's advised to grab an export from Fabric Studio in case you forget to extend the expiry.
 
@@ -305,11 +305,11 @@ Note the **Type** column that indicates the firmware classification (e.g., "SOAR
 
 A blank device usually requires additional configuration:
 
-- Cable device to NAT Internet
-- Select a network for the device
+- Cable the device to **Internet Access** (the ISP Router behind it was called "NAT Internet" in older builds)
+- Check its **Network Parameters** (the network its default route and DNS come from)
 - Adjust CPU and RAM allocations
 - Add a disk if needed
-- Change VIPs for access ports
+- Set its **Access** entries to the mode you need (e.g. SSH to **Any** to reach it from your own machine)
 
 #### Install Fabric
 

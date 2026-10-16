@@ -46,8 +46,8 @@ Pick per row:
 |---|---|---|
 | A **new** device | **Install** | It has no VM yet. |
 | A switch you only added a cable to | **Sync** | Sync wires the new port into the running switch. Install rebuilds the switch. |
-| A **running** device you only added a cable to (e.g. the FortiGate) | **Sync**. Install redeploys and re-licenses it |
-| An existing device whose settings you edited | **Sync** first | Pushes the model change without redeploying. Use Install only if Sync doesn't take effect (see below). |
+| A **running** device you only added a cable to (e.g. the FortiGate) | **Sync** | Install redeploys and re-licenses it. |
+| An existing device whose settings you edited | **Sync** first, unless it's on the list below | Pushes the model change (cables, accesses) without redeploying. Passwords, gateway/DNS and new port addresses need Install (see below). |
 | Something you're not ready to push | **Skip** | It stays pending. |
 
 ![Switches set to Sync, the new FortiGate to Install](images/apply-changes-sync-switches.png)
@@ -91,10 +91,16 @@ change a running device:
   [Example]({{% relref "../03-networking#step-5-configure-fortios-fabric-studio-wont" %}}).
 
 - **Gateway / DNS** from a device's **Network Parameters**: Fabric Studio
-  writes them into the guest during install, but only if the device has no
-  saved configuration. With one attached, the configuration file wins. Changing the network's gateway or
-  DNS later does not update an already-running guest. Reinstall the device
-  (back up its configuration first).
+  writes them into the guest during install. Changing them, or the network's
+  gateway or DNS, does not update an already-running guest; reinstall the
+  device (back up its configuration first). Exception: on a FortiGate with a
+  saved configuration the configuration file wins and Network Parameters are
+  never applied. LXC devices always take them from Network Parameters.
+  [Details]({{% relref "../05-saving-state#lxc-devices-are-different-the-backup-is-only-fabric" %}}).
+- **Passwords**: the device login password and the **Display Password** are
+  applied when the device is installed. A new Display Password is not applied
+  by Sync (confirmed); reinstall the device. See
+  [Logins and passwords]({{% relref "../02-first-fabric#logins-and-passwords" %}}).
 - **VLAN mode / tags on a switch port**: Sync updates the switch's settings, but
   traffic keeps flowing on the old VLANs until the switch itself is reinstalled
   (Runtime > Install on the switch). Reinstalling a switch does not reinstall the

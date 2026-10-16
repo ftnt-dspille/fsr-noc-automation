@@ -6,21 +6,21 @@ description: "SSH, HTTP, or HTTPS missing from a device's Access section: add it
 ---
 
 If SSH, HTTP, or HTTPS isn't available in a device's Access section, there are two
-different ways to add it — and picking the wrong one costs you a lot of time.
+different ways to add it - and picking the wrong one costs you a lot of time.
 
 | You want to… | Do this |
 |---|---|
 | Add access to **one existing VM** | Use the CLI: [VM Access]({{% relref "/06-handy-commands/02-vm-access" %}}). One command, no image changes, no repository refresh. |
-| Add access to **every future VM built from a firmware image** | Edit the image's `.meta` file — the procedure below. |
+| Add access to **every future VM built from a firmware image** | Edit the image's `.meta` file - the procedure below. |
 
 **For a single device, use the [VM Access]({{% relref "/06-handy-commands/02-vm-access" %}})
 page.** `model vm access create` adds the entry directly to the VM model. The
 `.meta` procedure below edits the *firmware image*, so it only affects VMs
-deployed from that image afterwards — it is not the quick fix for one device.
+deployed from that image afterwards - it is not the quick fix for one device.
 
 ## Add access to one device (CLI)
 
-If HTTPS is missing from a single device's Access section, add it from the CLI —
+If SSH, HTTP or HTTPS is missing from a single device's Access section, add it from the CLI -
 no image edit and no repository refresh needed.
 
 ### Initial Assessment
@@ -33,7 +33,7 @@ When HTTPS is not listed in the Access section:
 
 #### Step 1: Locate VM ID
 
-You can read it from the UI — click the **Info** tab, scroll to the **JSON
+You can read it from the UI - click the **Info** tab, scroll to the **JSON
 format** of access settings, and note the **VM ID** from the `vm` field
 (example: `66`):
 
@@ -82,10 +82,10 @@ running device:
 558 "Synchronize 'lxc1' device" ends with 0 code
 ```
 
-Then connect on the port from the create output — `https://<pod-host>:13001` above.
+Then connect on the port from the create output - `https://<pod-host>:13001` above.
 
-For the full reference — access types, `HTTPS2HTTP` for plain-HTTP guests, the
-pod-wide security gate, and updating or deleting entries — see
+For the full reference - access types, `HTTPS2HTTP` for plain-HTTP guests, the
+pod-wide security gate, and updating or deleting entries - see
 [VM Access]({{% relref "/06-handy-commands/02-vm-access" %}}).
 
 ## Bake access into a firmware image

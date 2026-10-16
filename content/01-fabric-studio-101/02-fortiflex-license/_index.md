@@ -129,6 +129,8 @@ license's address and reinstall the device:
 ```bash
 system license update <ID> '{"mgmt_addr": "<license IP>"}'
 ```
+
+Step by step: [License "ip doesn't match"]({{% relref "/04-troubleshooting/05-license-ip-mismatch" %}}).
 {{% /notice %}}
 
 ## The device's License setting
@@ -172,5 +174,6 @@ own FortiFlex or .lic files.
 | FortiManager `ip doesn't match` | License `mgmt_addr` (see above). |
 
 More detail in the Fabric Studio documentation:
-[FortiFlex licenses](https://register.fabricstudio.net/docs/fabric-studio/2.0.2/licenses/flexvm.html)
-and [Configuring a device's license](https://register.fabricstudio.net/docs/fabric-studio/2.0.2/licenses/general.html).
+[FortiFlex licenses](https://register.fabricstudio.net/docs/fabric-studio/2.2.35/licenses/flexvm.html)
+and [Configuring a device's license](https://register.fabricstudio.net/docs/fabric-studio/2.2.35/licenses/general.html)
+(sign-in required; also under `/help/licenses/` on your own Fabric Studio).

@@ -3,6 +3,7 @@ title: "Python Client"
 linkTitle: "Python Client"
 date: 2025-05-28T11:09:55-05:00
 weight: 10
+description: "A small Python wrapper for the Fabric Studio REST API, with a downloadable example"
 ---
 
 Welcome to the Python client documentation for Fabric Studio! This comprehensive wrapper simplifies HTTP requests to the Fabric Studio API, making it easy to integrate Fabric Studio functionality into your Python applications.
@@ -29,7 +30,7 @@ Download the complete client and example files in a convenient ZIP package:
 **What's included:**
 
 ```text
-fabric_api_example
+fabric_studio_api_example
 ├── example_fabric_api.py  - Api examples
 └── fabric_studio_client
     ├── __init__.py
@@ -41,9 +42,9 @@ fabric_api_example
 ```python
 #!/usr/bin/env python3
 """
-Simple FortiPOC REST Client
+Simple Fabric Studio REST Client
 
-A simplified single-file class for making REST API calls to FortiPOC instances.
+A simplified single-file class for making REST API calls to Fabric Studio instances.
 """
 
 from typing import Dict, Optional, Union
@@ -53,18 +54,18 @@ import requests
 
 class FabricStudioClient:
     """
-    A simple client for interacting with FortiPOC REST API.
+    A simple client for interacting with the Fabric Studio REST API.
     
     This client maintains a session with cookies in memory only and provides
-    methods for making REST API calls to a FortiPOC instance.
+    methods for making REST API calls to a Fabric Studio instance.
     """
 
     def __init__(self, server: str, username: str, password: str, verify_ssl: bool = False):
         """
-        Initialize a FortiPOC REST client.
+        Initialize a Fabric Studio REST client.
         
         Args:
-            server: The FortiPOC server URL or IP address
+            server: The Fabric Studio server URL or IP address
             username: Username for authentication
             password: Password for authentication
             verify_ssl: Whether to verify SSL certificates. Default is False.
@@ -119,7 +120,7 @@ class FabricStudioClient:
     def request(self, method: str, endpoint: str, data: Optional[Union[Dict, str]] = None,
                 headers: Optional[Dict[str, str]] = None, json_data: Optional[Dict] = None) -> requests.Response:
         """
-        Make a REST API request to the FortiPOC instance.
+        Make a REST API request to the Fabric Studio instance.
         
         Args:
             method: HTTP method (GET, POST, PUT, DELETE, etc.)
@@ -188,7 +189,7 @@ class FabricStudioClient:
 
     def login(self) -> Dict:
         """
-        Login to the FortiPOC instance.
+        Login to the Fabric Studio instance.
         
         Returns:
             The JSON response as a dictionary
@@ -225,7 +226,7 @@ from fabric_studio_client import FabricStudioClient
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 # Configuration
-SERVER_URL = "your-fortipoc-server.example.com"
+SERVER_URL = "your-fabric-studio.example.com"
 USERNAME = "admin"
 PASSWORD = "your-password"
 
@@ -233,11 +234,12 @@ PASSWORD = "your-password"
 def main():
     # Create client instance
     client = FabricStudioClient(server=SERVER_URL, username=USERNAME, password=PASSWORD, verify_ssl=False)
-    print("Connected to FortiPOC server")
+    print("Connected to Fabric Studio")
 
     # List all devices
     print("\nListing all devices...")
     response = client.get('/api/v1/model/device')
+    devices = []
     if response.status_code == 200:
         devices = response.json().get('object', [])
         print(f"Found {len(devices)} devices")
@@ -247,8 +249,10 @@ def main():
     else:
         print(f"Error: {response.status_code}")
 
-    # Get specific device by ID (example with ID 1)
-    device_id = devices[0].get('id', 'Unknown')
+    # Get details for the first device found
+    if response.status_code != 200 or not devices:
+        return
+    device_id = devices[0]['id']
     print(f"\nGetting details for device ID {device_id}...")
     response = client.get(f'/api/v1/model/device/{device_id}')
     if response.status_code == 200:
@@ -284,7 +288,7 @@ The client automatically handles login when instantiated, so you don't need to m
 
 ### Session Persistence
 
-Cookies and CSRF tokens are automatically managed throughout the session, ensuring secure and consistent API communication.
+Cookies and CSRF tokens are managed for you throughout the session. Note `verify_ssl` defaults to `False` (Fabric Studio usually has a self-signed certificate); set it to `True` if yours has a trusted one.
 
 ### Flexible Request Methods
 
@@ -297,7 +301,7 @@ The client provides convenient methods for all common HTTP operations:
 
 ### Error Handling
 
-Built-in exception handling for network issues and HTTP errors, making your code more robust.
+Network errors (`requests.RequestException`) are caught and re-raised with context. HTTP error statuses are **not** raised: check `response.status_code` yourself, as the example does.
 
 ## Configuration Requirements
 
@@ -305,7 +309,7 @@ Before using the client, ensure you have:
 
 1. **Server URL** - Your Fabric Studio server address
 2. **Credentials** - Valid username and password
-3**Python Dependencies** - The `requests` library
+3. **Python Dependencies** - The `requests` library
    
     ```bash
     pip install requests

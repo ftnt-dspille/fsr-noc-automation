@@ -123,5 +123,5 @@ something else that controls access.) Full details: **VNC and SPICE** in your
 Fabric Studio's built-in help, `https://<fabric-studio>/help/security.html#vnc-and-spice`.
 
 {{% notice info %}}
-**Additional Resources:** For comprehensive information on Security Policies, visit the [Fabric Studio Documentation](https://register.fabricstudio.net/docs/fabric-studio/2.0.2/security.html#ssh-access-to-device)
+**Additional Resources:** For comprehensive information on Security Policies, visit the [Fabric Studio Documentation](https://register.fabricstudio.net/docs/fabric-studio/2.2.35/security.html#ssh-access-to-device) (sign-in required), or `https://<fabric-studio>/help/security.html` on your own Fabric Studio.
 {{% /notice %}}

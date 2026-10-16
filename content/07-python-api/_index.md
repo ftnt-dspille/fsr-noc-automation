@@ -13,7 +13,7 @@ There are two primary approaches to explore the available API endpoints:
 
 ### Method 1: Swagger Documentation
 
-Browse the comprehensive API documentation at [Fabric Studio OpenAPI](https://register.fabricstudio.net/docs/fabric-studio/2.0.2/openapi/)
+Browse the comprehensive API documentation at [Fabric Studio OpenAPI](https://register.fabricstudio.net/docs/fabric-studio/2.2.35/openapi/) (sign-in required), or on your own Fabric Studio at `https://<fabric-studio>/help/openapi/`, which always matches its version.
 
 **Advantages:**
 - Complete API reference with detailed documentation

@@ -12,7 +12,8 @@ access entry is one protocol (SSH, HTTPS, …) on one VM, and Fabric Studio maps
 to an external port on the pod so you can reach the guest from your laptop.
 
 For the one-device GUI path, and what to check when access doesn't work, see
-[Adding Access to a Device]({{% relref "/04-troubleshooting/02-adding-access" %}}).
+[Adding Access That Isn't Listed]({{% relref "/04-troubleshooting/02-adding-access" %}})
+and [Device Access Blocked]({{% relref "/04-troubleshooting/01-device-access" %}}).
 
 Getting a working access entry is four steps, in this order:
 
@@ -114,12 +115,20 @@ That's why `fgt1` (index 0) gets SSH on 11000 while `lxc1` (index 1) gets 11001.
 
 ### Access modes
 
-- **PRIVATE** - reachable only inside the pod. No external port is opened.
-- **PUBLIC** - Fabric Studio opens the external port so you can reach it from outside.
+The CLI mode names map to the **Allowed to** column in the device's Access
+table:
+
+| CLI mode | UI name | Who can reach it |
+|---|---|---|
+| `ADMIN` | Admin | Only a Fabric Studio admin, through the web UI (SSH web console, VNC/SPICE consoles, HTTPS proxy while logged in). |
+| `PRIVATE` | Admin & Guest | The default. Admins and guests, through the web UI only. The external port doesn't answer your own tools. |
+| `PUBLIC` | Any | Anyone who can reach the pod, on the external port, from your own SSH client, browser or VNC client. |
 
 If you want to connect from your own machine, you want **PUBLIC**. A PRIVATE entry
-is created successfully and shows up in every listing, but nothing will be
-listening - this is the most common reason a new access "doesn't work".
+is created successfully, shows up in every listing, and even shows its external
+port (`from 11001`), but your own tools can't use that port. This is the most
+common reason a new access "doesn't work". VNC and SPICE need more than PUBLIC; see
+[VNC (graphical console) access]({{% relref "/04-troubleshooting/01-device-access#vnc-graphical-console-access" %}}).
 
 ### The pod-wide gate
 
@@ -452,9 +461,8 @@ needs a sync to pick it up and open the port forward - the same
 
 ![Syncing the device so the new SSH forward is created](images/device_sync_access_shh.png)
 
-> **Full screenshots and the vi walkthrough** live on the
-> [Troubleshooting]({{% relref "/04-troubleshooting" %}}) page
-> under "Baking access into a firmware image".
+> **Full screenshots and the vi walkthrough** live on
+> [Bake access into a firmware image]({{% relref "/04-troubleshooting/02-adding-access#bake-access-into-a-firmware-image" %}}).
 
 ---
 

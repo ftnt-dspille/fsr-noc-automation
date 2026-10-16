@@ -86,8 +86,10 @@ the **Networks** button (top right of the fabric view, second from the right):
 ![Networks manager with Used by column](images/networks-manager.png)
 
 {{% notice info %}}
-These are documentation ranges (RFC 5737), not real public addresses. They
-exist only inside the fabric. The ISP Router NATs them on the way out.
+`203.0.113.0/24` and `198.51.100.0/24` are documentation ranges (RFC 5737),
+and `10.254.254.0/24` is a private range (RFC 1918). None of them are real
+public addresses; they exist only inside the fabric, and the ISP Router NATs
+them on the way out.
 {{% /notice %}}
 
 ## Cable styles in the topology view

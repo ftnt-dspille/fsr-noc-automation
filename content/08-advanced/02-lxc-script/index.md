@@ -24,7 +24,7 @@ The goal:
 
    ![Add Device: an LXC](create_lxc_device.png?height=300px)
 
-3. Open the device and select the Browse under Configuration
+3. Open the device and click **…** (Browse) next to **Configuration**
    ![Device Edit: Configuration browse button](image.png?height=300px)
 4. Click **Create > Upload** and select the downloaded config file. Make sure to select **Restore**
    ![Configurations: Create > Upload](image-1.png)
@@ -33,7 +33,7 @@ The goal:
 6. Access the container's shell and explore `/fabric/`
 7. Check the logs in `/fabric/logs/setup.log`
 
-### Deep Device on How It Works (Option 2)
+### Deep Dive: How It Works (Option 2)
 
 We’ll use two main pieces:
 
@@ -69,7 +69,7 @@ Meaning:
 
 ## How Fabric Studio Uses `/fabric/init`
 
-Fabric Studio calls `/fabric/init` with different subcommands during backup/restore and on first boot.
+Fabric Studio calls `/fabric/init` with different subcommands during backup/restore and once after each device install.
 
 Your `/fabric/init` looks like this (simplified for explanation):
 
@@ -121,9 +121,9 @@ esac
 
 ### Key Behaviors
 
-- **`install`** (first boot)
+- **`install`** (after each device install)
 
-  - Runs once on first boot.
+  - Runs once after Fabric Studio installs (or reinstalls) the device, not on every boot.
   - In the default version, it ends by calling both `restore` and `script`:
 
     - `restore` copies `/fabric/fabric.script` → `/fabric.script`
@@ -162,7 +162,7 @@ Example:
 
 ```sh
 #!/bin/sh
-# /fabric/script
+# /fabric/fabric.script
 set -e
 
 LOG_DIR="/fabric/logs"
@@ -174,7 +174,7 @@ log() {
     echo "$(date '+%Y-%m-%d %H:%M:%S') [FABRIC]: $*" >>"$LOG_FILE"
 }
 
-log "=== /fabric/script called by /fabric/init script() ==="
+log "=== fabric.script called by /fabric/init script() ==="
 
 if [ ! -d /fabric/setup.d ]; then
     log "No /fabric/setup.d directory found. Nothing to do."
@@ -192,7 +192,7 @@ else
     log "ERROR: systemd-run is not available"
 fi
 
-log "=== /fabric/script finished (control returned to /fabric/init) ==="
+log "=== fabric.script finished (control returned to /fabric/init) ==="
 exit 0
 ```
 
@@ -285,7 +285,7 @@ This gives you a concrete, testable example of using `jq` inside this framework.
 
 Here’s how everything fits together across the main scenarios described in the documentation.
 
-### 1. Initial Install (First Boot)
+### 1. Device Install
 
 1. Fabric Studio:
 
@@ -330,7 +330,7 @@ Here’s how everything fits together across the main scenarios described in the
    - Runs each executable in `/fabric/setup.d/` in order.
    - All output goes into the same `setup.log`.
 
-Result: on first boot, your environment is initialized **from `/fabric`**, and every step is logged.
+Result: after each install, your environment is initialized **from `/fabric`**, and every step is logged.
 
 ### 2. Online Restore - “Restore method”
 
@@ -348,7 +348,7 @@ Result: on first boot, your environment is initialized **from `/fabric`**, and e
    /fabric/init script
    ```
 
-5. That triggers the same flow as first boot: `fabric.script` → `run-parts` → `/fabric/setup.d/*`.
+5. That triggers the same flow as an install: `fabric.script` → `run-parts` → `/fabric/setup.d/*`.
 
 ### 3. Online Restore - “Script method”
 

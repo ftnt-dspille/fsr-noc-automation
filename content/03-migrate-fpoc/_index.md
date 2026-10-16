@@ -7,9 +7,9 @@ description: "Ways to migrate an existing FortiPOC environment to Fabric Studio"
 
 There are two different ways to migrate from fortipoc to fabric studio.
 
-The method you choose will depend on if you have custom firmware or use snapshots. Fabric studio doesn't support snapshots directly, so some extra work is required to migrate that.
+The method you choose depends on whether you have custom firmware or use snapshots. Fabric studio doesn't support snapshots directly, so some extra work is required to migrate that.
 
-If your fabric studio uses custom firmware (custom defined as anything not supported explicitly in the fabric studio [supported devices](https://register.fabricstudio.net/docs/fabric-studio/2.0.2/supported.html) docs), then you need to use the Remote Import method. 
+If your fabric studio uses custom firmware (custom defined as anything not supported explicitly in the fabric studio [supported devices](https://register.fabricstudio.net/docs/fabric-studio/2.2.35/supported.html) docs, also at `/help/supported.html` on your Fabric Studio), then you need to use the Remote Import method. 
 
 {{% children %}}
 
@@ -23,4 +23,4 @@ Examples of custom firmware:
 ## How to tell if you're using snapshots
 When saving config in fortipoc you have two options, create a snapshot, or export the config.
 
-Even if you're using a fortinet product, that os could still be a snapshot. 
+Even if you're using a Fortinet product, its OS could still be a snapshot.

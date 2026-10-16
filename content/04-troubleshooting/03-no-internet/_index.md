@@ -61,10 +61,35 @@ Fabric Studio licenses the device through the management network first, then
 **replaces** the default route with the Network Parameters gateway. So the
 device licenses fine at install and loses the internet right after.
 
-**Fix:** open the device, **Network Parameters**, choose **Predefined** and the
-network that routes out (e.g. **Internet**), then reinstall that device
-(Runtime > Install). Back up its configuration first. Gateway/DNS changes only
-reach a guest at install time.
+**Fix:** it depends on whether the device has a saved **Configuration**
+(the column in the device table).
+
+- **No saved configuration, or any LXC device:** open the device, **Network
+  Parameters**, choose **Predefined** and the network that routes out (e.g.
+  **Internet**), then reinstall that device (Runtime > Install). Gateway/DNS
+  changes only reach a guest at install time.
+- **A FortiGate (or other appliance) with a saved configuration:** changing
+  Network Parameters does nothing, because the install restores the saved
+  config and its route and DNS win. Fix the route and DNS inside FortiOS, e.g.:
+
+  ```text
+  config router static
+      edit 1
+          set gateway 203.0.113.254
+          set device "port2"
+      next
+  end
+  config system dns
+      set primary 203.0.113.254
+  end
+  ```
+
+  then **Config & License > Backup Config** (with *Update device settings* on)
+  so the next install restores the fixed version. Also correct Network
+  Parameters, so the setting is right if the config is ever detached.
+
+See [Saving State]({{% relref "/02-building-fabrics/05-saving-state#what-fabric-studio-configures-by-itself-fortigate" %}})
+for what an install does with and without a saved configuration.
 
 ## Cause 3: DNS
 
@@ -89,6 +114,7 @@ reach a guest at install time.
   system license update <SERIAL> '{"mgmt_addr": "<license IP>"}'
   ```
 
-  and reinstall the device.
+  and reinstall the device. Step by step:
+  [License "ip doesn't match"]({{% relref "/04-troubleshooting/05-license-ip-mismatch" %}}).
 - **Is the device actually powered on?** A powered-off device looks exactly like
   one with no network.

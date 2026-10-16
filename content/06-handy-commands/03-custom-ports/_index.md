@@ -8,11 +8,11 @@ description: "Expose an app on a non-standard port with a System Host port redir
 ## Overview
 
 [VM Access]({{% relref "/06-handy-commands/02-vm-access" %}}) covers the well-known
-protocols — SSH, HTTP, HTTPS, RDP and the consoles. But if your app listens on
+protocols - SSH, HTTP, HTTPS, RDP and the consoles. But if your app listens on
 something else (8080, 9200, 5432, …), a VM access entry won't help: there's no
 access type for it.
 
-That case is a different mechanism entirely — a **port redirect** on the fabric's
+That case is a different mechanism entirely - a **port redirect** on the fabric's
 System Host, which acts as the fabric's router and NAT. It forwards an external
 port on the pod straight to an IP and port inside the fabric.
 
@@ -27,7 +27,7 @@ port on the pod straight to an IP and port inside the fabric.
 
 ---
 
-## Step 1 — Check the pod-wide gate
+## Step 1 - Check the pod-wide gate
 
 Custom redirects are gated pod-wide by `custom_rules_allowed`:
 
@@ -45,14 +45,14 @@ Here it's `no`. Enable it:
 {{% notice warning %}}
 **The gate is not enforced when you create the rule.** With
 `custom_rules_allowed='no'`, `model port redirect create` still returns success
-and the rule appears in every listing — Fabric Studio just never installs it, so
+and the rule appears in every listing - Fabric Studio just never installs it, so
 nothing listens. Check this flag *first*; a created-but-dead rule looks identical
 to a working one in the CLI output.
 {{% /notice %}}
 
 ---
 
-## Step 2 — Find the System Host ID
+## Step 2 - Find the System Host ID
 
 A redirect attaches to the **System Host of your fabric**, and each fabric has its
 own. Get your fabric's:
@@ -62,7 +62,7 @@ own. Get your fabric's:
 36 System Host [host] (HOST)
 ```
 
-Fabric 5's System Host is **36** — that's the `device` value in the JSON below.
+Fabric 5's System Host is **36** - that's the `device` value in the JSON below.
 
 {{% notice tip %}}
 `model host list` shows every System Host on the pod (one per fabric) with no
@@ -72,10 +72,10 @@ indication of which fabric each belongs to. Use `model fabric host detail
 
 ---
 
-## Step 3 — Find the target IP
+## Step 3 - Find the target IP
 
 The redirect targets an IP **inside** the fabric, so you need the guest's address.
-Ports are listed by device — note the filter key is `device`, not `vm`:
+Ports are listed by device - note the filter key is `device`, not `vm`:
 
 ```bash
 (cmm-master-fs-001) # model vm port list --select "device=41"
@@ -89,7 +89,7 @@ and can't be a redirect target.
 
 ---
 
-## Step 4 — Create the redirect
+## Step 4 - Create the redirect
 
 As with VM access, the argument is a **JSON object**:
 
@@ -102,7 +102,7 @@ As with VM access, the argument is a **JSON object**:
 
 | Field | Meaning |
 |---|---|
-| `device` | The **System Host** model ID from Step 2 — not the VM ID |
+| `device` | The **System Host** model ID from Step 2 - not the VM ID |
 | `name` | A label for the rule; make it identifiable |
 | `from_port` | The **external** port on the pod. Must be unique pod-wide |
 | `to_addr` | The guest's IP inside the fabric (Step 3) |
@@ -111,20 +111,20 @@ As with VM access, the argument is a **JSON object**:
 | `snat` | Source-NAT the traffic to the System Host's address |
 | `enabled` | `true` to activate the rule |
 
-`from_port` and `to_port` don't have to match — `{"from_port": 9122, "to_port": 22}`
+`from_port` and `to_port` don't have to match - `{"from_port": 9122, "to_port": 22}`
 is a perfectly good way to publish SSH on a custom external port.
 
 {{% notice warning %}}
 **`from_port` must be unique across the whole pod**, not just your fabric. It also
 must not collide with the ranges Fabric Studio allocates for VM access
-(11000–17999) or with port 22, which the pod's own SSH uses.
+(11000-17999) or with port 22, which the pod's own SSH uses.
 {{% /notice %}}
 
 ---
 
-## Step 5 — Review existing redirects
+## Step 5 - Review existing redirects
 
-List them before choosing an external port — this is how you spot a collision:
+List them before choosing an external port - this is how you spot a collision:
 
 ```bash
 (cmm-master-fs-001) # model port redirect list
@@ -140,7 +140,7 @@ List them before choosing an external port — this is how you spot a collision:
 
 Read each row as **ID**, name, then `external->target:port`. Note `SSH_Attacker`
 publishing guest port 22 on external 9122, and `rdp_bankdc` mapping 3390 to a
-guest's 3389 — both examples of custom external ports.
+guest's 3389 - both examples of custom external ports.
 
 Scope the list to one fabric:
 
@@ -159,14 +159,14 @@ One rule's detail:
 
 ---
 
-## Step 6 — Apply the change
+## Step 6 - Apply the change
 
 Like VM access, creating a redirect only edits the model. The rule has to be
 installed on the System Host before anything listens.
 
 {{% notice warning %}}
 **Do not reach for `model host sync`.** Syncing the System Host tears down **every
-port forward on the pod** — including other fabrics' — and they only return after
+port forward on the pod** - including other fabrics' - and they only return after
 a full fabric install. On a shared pod that's disruptive to everyone.
 {{% /notice %}}
 
@@ -193,7 +193,7 @@ SSH session):
 
 | Symptom | Cause |
 |---|---|
-| Rule created, nothing listening | `custom_rules_allowed='no'` — the rule was accepted but never installed. |
+| Rule created, nothing listening | `custom_rules_allowed='no'` - the rule was accepted but never installed. |
 | `Expecting value: line 1 column 1 (char 0)` | You passed `key='value'` instead of JSON. |
 | Rule created against the wrong fabric | `device` was another fabric's System Host. Use `model fabric host detail <FABRIC_ID>`. |
 | Connection refused on `from_port` | The external port collides with an existing rule or an FS-allocated range. Check `model port redirect list`. |

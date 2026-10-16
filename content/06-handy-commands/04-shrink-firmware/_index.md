@@ -12,7 +12,7 @@ repository to reclaim disk. This is a byte-preserving repack: only the qcow2
 container's compression codec changes, so a VM deployed from the repacked image
 boots identically. No in-guest work at all.
 
-**The payoff varies enormously — from 50% to nothing — and you can predict it in
+**The payoff varies enormously - from 50% to nothing - and you can predict it in
 about a minute.** Measured on real images:
 
 | Image | Compressed clusters | Before | After | Saved | Convert time |
@@ -21,7 +21,7 @@ about a minute.** Measured on real images:
 | FortiSOAR 7.6.6 | 75.75% | 6.1 GB | 6.0 GB | **1.8%** | 2m56s |
 
 Same product, same command, wildly different result. The predictor is the
-**compressed clusters** percentage — an image that was never written compressed
+**compressed clusters** percentage - an image that was never written compressed
 has everything to gain; one that's already compressed has almost nothing. Step 2
 shows how to read it *before* committing to a repack.
 
@@ -44,11 +44,11 @@ file in place without a rollback path.
 
 ---
 
-## Step 0 — Check that `qemu-img` exists
+## Step 0 - Check that `qemu-img` exists
 
 {{% notice warning %}}
 **`qemu-img` is not present on every pod.** The home-repo shell is a restricted
-environment and its toolset varies by pod. Check before you plan any of this — if
+environment and its toolset varies by pod. Check before you plan any of this - if
 it's missing, none of the procedure below is available to you.
 {{% /notice %}}
 
@@ -66,15 +66,15 @@ admin@cmm-master-fs-001:~$ qemu-img info firmwares/some-image.qcow2
 bash: qemu-img: command not found
 ```
 
-then stop — this pod can't repack images from the repo shell.
+then stop - this pod can't repack images from the repo shell.
 
 The shell is unprivileged and minimal. It has `sed`, `awk`, `stat`, `coreutils`,
-`base64` and `curl`, but **no `python3` and no `bc`** — which is why the commands
+`base64` and `curl`, but **no `python3` and no `bc`** - which is why the commands
 below stick to `sed` and `awk`.
 
 ---
 
-## Step 1 — Find the big images
+## Step 1 - Find the big images
 
 ```bash
 admin@cmm-master-fs-001:~$ du -sh firmwares/* | sort -h | tail -6
@@ -86,7 +86,7 @@ admin@cmm-master-fs-001:~$ du -sh firmwares/* | sort -h | tail -6
 13G	firmwares/fortisoar-8.0.0.qcow2
 ```
 
-Check you have room to work — the convert writes a second copy before you swap:
+Check you have room to work - the convert writes a second copy before you swap:
 
 ```bash
 admin@cmm-master-fs-001:~$ df -h /home/home | tail -1
@@ -95,7 +95,7 @@ admin@cmm-master-fs-001:~$ df -h /home/home | tail -1
 
 ---
 
-## Step 2 — Will it actually shrink?
+## Step 2 - Will it actually shrink?
 
 This is the step that saves you an hour. `qemu-img check` reports the share of
 clusters already compressed:
@@ -107,7 +107,7 @@ No errors were found on the image.
 Image end offset: 13020102656
 ```
 
-**`0.00% compressed clusters`** — nothing in this image is compressed, so a repack
+**`0.00% compressed clusters`** - nothing in this image is compressed, so a repack
 has everything to gain. This one went 13 GB → 6.1 GB.
 
 Compare:
@@ -119,14 +119,14 @@ No errors were found on the image.
 Image end offset: 6544752640
 ```
 
-**`75.75% compressed clusters`** — already compressed. Repacking this saved 1.8%
+**`75.75% compressed clusters`** - already compressed. Repacking this saved 1.8%
 for three minutes of CPU. Not worth it.
 
 Rule of thumb: **near 0% compressed → expect a large win. Already high → skip it.**
 
 {{% notice tip %}}
 `qemu-img info` also prints a `compression type:` line, but **don't use it to
-decide** — it names the codec that *would* be used for compressed clusters, not
+decide** - it names the codec that *would* be used for compressed clusters, not
 whether any clusters actually are. Both images above report `compression type:
 zlib`; only one of them had anything to gain. `qemu-img check` is the honest
 signal.
@@ -134,7 +134,7 @@ signal.
 
 ---
 
-## Step 3 — Standalone or overlay?
+## Step 3 - Standalone or overlay?
 
 Only **standalone base images** can be repacked. Check for a backing file:
 
@@ -172,18 +172,18 @@ Format specific information:
 ```
 
 {{% notice warning %}}
-**A `backing file:` means it's a diff/overlay — leave it alone.** The UI groups
+**A `backing file:` means it's a diff/overlay - leave it alone.** The UI groups
 these under "Diff". A plain `qemu-img convert` reads through the backing chain and
 would *flatten* the overlay into a full image, inflating a 3 GB delta into a
 full-size disk. Overlays are already small deltas, and recompressing their **base**
-keeps them valid — the base's guest data is preserved bit-for-bit.
+keeps them valid - the base's guest data is preserved bit-for-bit.
 {{% /notice %}}
 
 ---
 
-## Step 4 — Dry run: convert to scratch and compare
+## Step 4 - Dry run: convert to scratch and compare
 
-Don't touch the served file yet. Convert it to a scratch directory and measure —
+Don't touch the served file yet. Convert it to a scratch directory and measure -
 this reads the source read-only, so it's safe to run any time.
 
 {{% notice warning %}}
@@ -227,10 +227,10 @@ original.
 
 ---
 
-## Step 5 — Swap in the repacked disk
+## Step 5 - Swap in the repacked disk
 
 Back up the original **outside** `firmwares/`, then promote the repacked file. An
-`mv` is atomic — an in-flight read keeps the old inode, so a concurrent deploy
+`mv` is atomic - an in-flight read keeps the old inode, so a concurrent deploy
 won't tear on the swap. Still, don't repack a firmware that's mid-install.
 
 ```bash
@@ -242,18 +242,24 @@ admin@cmm-master-fs-001:~$ chmod 0644 firmwares/fortisoar-8.0.0.qcow2
 
 ---
 
-## Step 6 — Update `size=` in `active.meta`
+## Step 6 - Update `size=` in the firmware's `.meta`
 
-Directory-style firmwares carry an `active.meta` whose top-level `size` must match
-the new total bytes of its disks. (A bare `.qcow2` file with a sibling `.meta`
-works the same way.)
+Every firmware has a `.meta` whose top-level `size` must match the new total
+bytes of its disks. Which file that is depends on the firmware's layout:
 
-Get the new total — note `bc` isn't available, so use `awk`:
+| Firmware layout | Its `.meta` | Disk(s) to measure |
+|---|---|---|
+| A bare file, like the example `fortisoar-8.0.0.qcow2` | `firmwares/fortisoar-8.0.0.qcow2.meta` (same name plus `.meta`) | that one file |
+| A directory (`firmwares/<Name>/`, e.g. a snapshot) | `firmwares/<Name>/active.meta` | `firmwares/<Name>/*.qcow2` |
+
+Get the new total (`bc` isn't available, so use `awk`). For the example:
 
 ```bash
-admin@cmm-master-fs-001:~$ stat -c %s firmwares/<Name>/*.qcow2 | awk '{s+=$1} END {print s}'
+admin@cmm-master-fs-001:~$ stat -c %s firmwares/fortisoar-8.0.0.qcow2 | awk '{s+=$1} END {print s}'
 6509852160
 ```
+
+For a directory firmware, use `stat -c %s firmwares/<Name>/*.qcow2` instead.
 
 The `size` attribute lives on the `<model>` root element, on line 1:
 
@@ -261,15 +267,16 @@ The `size` attribute lives on the `<model>` root element, on line 1:
 <model xmlns:fp="fp" core_version="2.2.25.dev.2" hexdigest="e3b0c44..." name="SOAR" size="3251905539" time="1780774835.32" ...>
 ```
 
-Patch **only** that one:
+Patch **only** that one (for a directory firmware, the file is
+`firmwares/<Name>/active.meta`):
 
 ```bash
-admin@cmm-master-fs-001:~$ sed -i '1s/ size="[0-9]*"/ size="6509852160"/' firmwares/<Name>/active.meta
+admin@cmm-master-fs-001:~$ sed -i '1s/ size="[0-9]*"/ size="6509852160"/' firmwares/fortisoar-8.0.0.qcow2.meta
 ```
 
 {{% notice warning %}}
 **Only the model-level `size`.** The file contains several other `size`-like
-attributes — per-disk `fp:size` and `physical_size` are **MiB geometry**, not byte
+attributes - per-disk `fp:size` and `physical_size` are **MiB geometry**, not byte
 counts. Writing a byte count into those makes Fabric Studio read a ~12-EiB disk
 and reject the firmware. The `1s/ size="…"/` form above is deliberate: it's
 anchored to line 1 and the leading space stops it matching `fp:size="…"`.
@@ -278,7 +285,7 @@ anchored to line 1 and the leading space stops it matching `fp:size="…"`.
 Confirm only the first value moved:
 
 ```bash
-admin@cmm-master-fs-001:~$ grep -o 'size="[0-9]*"' firmwares/<Name>/active.meta | head -4
+admin@cmm-master-fs-001:~$ grep -o 'size="[0-9]*"' firmwares/fortisoar-8.0.0.qcow2.meta | head -4
 size="6509852160"      <- model-level, patched
 size="3251896320"      <- fp:size, untouched
 size="0"               <- untouched
@@ -287,7 +294,7 @@ size="471859200000"    <- virtual size, untouched
 
 ---
 
-## Step 7 — Refresh the repository
+## Step 7 - Refresh the repository
 
 Leave the shell and have Fabric Studio re-read the firmware rows:
 
@@ -301,14 +308,14 @@ that the firmware hasn't landed in an `unknown` status.
 
 ---
 
-## Step 8 — Prove the image still works
+## Step 8 - Prove the image still works
 
 A repack is byte-preserving, but prove it end to end **before** deleting your
 backup. Deploy or reinstall a VM from the repacked firmware and confirm:
 
 1. The refresh registered the firmware with its new size, no `unknown` status.
 2. A VM installed from it completes its install task and boots.
-3. The guest is reachable — console, or SSH on `11000+index` — and reports the
+3. The guest is reachable - console, or SSH on `11000+index` - and reports the
    expected version.
 4. If you repacked a **base** that overlays depend on, deploy one of those
    overlays too. That proves the backing chain survived.
@@ -317,7 +324,7 @@ Only when all four pass is the repack proven.
 
 ---
 
-## Step 9 — Delete the backup
+## Step 9 - Delete the backup
 
 This is where the disk is actually reclaimed:
 
@@ -333,7 +340,7 @@ admin@cmm-master-fs-001:~$ rm -rf /home/home/_shrink_demo
 Recompression can't reclaim blocks that were deleted inside the guest but never
 zeroed. To go further you need the guest itself: boot the VM, run `fstrim -a` (or
 `zerofree`), shut it down, *then* repack. That's a live-VM operation, not a
-repo-shell one — and it's what turns a "already compressed, nothing to gain" image
+repo-shell one - and it's what turns a "already compressed, nothing to gain" image
 into one worth repacking.
 
 ---

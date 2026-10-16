@@ -20,7 +20,7 @@ Find your symptom, then follow the link.
 
 ## Fabric Studio's own troubleshooting docs
 
-For more comprehensive troubleshooting assistance, consult the [Fabric Studio Documentation](https://register.fabricstudio.net/docs/fabric-studio/2.0.2/troubleshooting.html) which covers:
+For more comprehensive troubleshooting assistance, consult the [Fabric Studio Documentation](https://register.fabricstudio.net/docs/fabric-studio/2.2.35/troubleshooting.html) (sign-in required; also on your own Fabric Studio at `https://<fabric-studio>/help/troubleshooting.html`), which covers:
 
 - **Fabric Studio Logs** - Analyzing system logs for debugging
 - **SystemD Journal Logs** - Service-level log analysis

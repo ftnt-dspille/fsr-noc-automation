@@ -6,7 +6,7 @@ description: "Migrate FortiPOC instances to Fabric Studio remotely using the CLI
 ---
 
 
-\\\\\\\\\\\\\\\\\he remote import method allows you to migrate FortiPOC instances directly through Fabric Studio's command-line interface. This approach is particularly valuable when working with custom firmwares or configurations that aren't available in standard repositories.
+The remote import method allows you to migrate FortiPOC instances directly through Fabric Studio's command-line interface. This approach is particularly valuable when working with custom firmwares or configurations that aren't available in standard repositories.
 
 ## When to Use Remote Import
 
@@ -44,8 +44,8 @@ Choose your preferred method to access the command line:
 
 **Option A: Built-in Console**
 
-1. Log into Fabric Studio web interface
-2. Access the CLI directly
+1. Log into the Fabric Studio web interface.
+2. Click the **>_** (CLI) icon at the top right. A CLI console opens in the browser.
 
 **Option B: SSH Connection**
 
@@ -92,7 +92,7 @@ By default, the remote import process includes:
 
 ## Advanced Configuration Options
 
-For fine-tuned control over the import process, additional command-line options are available. Refer to the [comprehensive CLI documentation](https://register.fabricstudio.net/docs/fabric-studio/2.0.2/generated/cli/model.html#model-fabric-remote-import-fortipoc) for detailed parameter descriptions and advanced usage scenarios.
+For fine-tuned control over the import process, additional command-line options are available. Refer to the [CLI documentation](https://register.fabricstudio.net/docs/fabric-studio/2.2.35/generated/cli/model.html#model-fabric-remote-import-fortipoc) (sign-in required), or the same page on your own Fabric Studio at `https://<fabric-studio>/help/generated/cli/model.html#model-fabric-remote-import-fortipoc`.
 
 ## Troubleshooting
 
@@ -109,142 +109,7 @@ For fine-tuned control over the import process, additional command-line options 
 - **Monitor the import process** for errors or warnings
 - **Verify imported data** after completion
 
----
-
-## Troubleshooting Guide: Adding IP Address to License in Fabric Studio
-
-### Overview
-
-This guide addresses the common issue where deployment fails due to "ip doesn't match" license error in Fabric Studio. The root cause is typically that the license lacks a management IP address (`mgmt_addr`), preventing proper license validation during VM initialization.
-
-### Problem Symptoms
-
-#### Primary Error
-
-`License Status: ip doesn't match`
-![img.png](ip_doesnt_match.png)
-
-#### Secondary Indicators
-
-- FMG device fails to install/complete within expected timeframe
-- Only one interface (port1) is configured during deployment
-- License validation fails during VM boot process
-- Deployment timeout errors in Fabric Studio logs
-
-### Root Cause 
-
-**Issue**: Fabric Studio configures minimal network settings by default, setting only the management IP. Without a license IP (`mgmt_addr`) attached to the license object, the FortiManager cannot properly validate its license against the configured network interface.
-
-**Solution**: Update the license with the appropriate management IP address so Fabric Studio can configure both the management port and license port correctly.
-
-### Step-by-Step Resolution
-
-#### Step 1: Enable CLI JSON Mode
-
-```bash
-cli json enable
-```
-
-#### Step 2: Identify the License
-
-First, locate your license details:
-
-```bash
-system license detail <LICENSE_ID>
-```
-
-Example:
-
-```bash
-system license detail FMGVMSTM24005367
-```
-
-#### Step 3: Verify Current License State
-
-Check that `mgmt_addr` is currently `null`:
-
-```json
-{
-  "object": {
-    "mgmt_addr": null,
-    "name": "FMGVMSTM24005367",
-    "lic_type": "FMG",
-    "vm_type": "FMG"
-  }
-}
-```
-
-#### Step 4: Update License with Management IP
-
-Use the `system license update` command to add the management IP:
-
-```bash
-system license update <LICENSE_ID> '{"mgmt_addr": "<IP_ADDRESS>"}'
-```
-
-**Example:**
-
-```bash
-system license update FMGVMSTM24005367 '{"mgmt_addr": "10.100.55.12"}'
-```
-
-#### Step 5: Verify the Update
-
-Confirm the license now has the correct IP address:
-
-```bash
-system license detail FMGVMSTM24005367
-```
-
-Expected output:
-
-```json
-{
-  "object": {
-    "mgmt_addr": "10.100.55.12",
-    "name": "FMGVMSTM24005367",
-    "lic_type": "FMG"
-  }
-}
-```
-
-#### Step 6: Redeploy VM
-
-With the license properly configured, redeploy your FortiManager VM through Fabric Studio.
-
-### Validation Steps
-
-#### 1. License Status Check
-
-After successful deployment, connect to the FortiManager and verify:
-
-```bash
-get system status
-```
-
-Look for:
-
-```
-License Status: Valid
-```
-
-#### 2. Interface Configuration
-
-Verify that both management and license interfaces are properly configured:
-
-```bash
-show system interface
-```
-
-#### 3. Network Connectivity
-
-Test connectivity to the management IP:
-
-```bash
-ping <mgmt_addr>
-```
-
-### Next Steps
+## Next Steps
 
 After successful import:
 
@@ -254,3 +119,6 @@ After successful import:
 4. **Update any hardcoded references** to the new environment
 
 The remote import method provides a way to migrate complex FortiPOC environments while preserving custom configurations and firmware versions.
+
+If a FortiManager or FortiSandbox from the import then fails with `ip doesn't match`, see
+[License "ip doesn't match"]({{% relref "/04-troubleshooting/05-license-ip-mismatch" %}}).

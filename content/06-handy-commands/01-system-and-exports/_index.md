@@ -14,11 +14,17 @@ backups) and [Fabrics from Templates]({{% relref "/02-building-fabrics/06-templa
 
 `system execute upgrade --channel interim`
 
+{{% notice warning %}}
+This upgrades and restarts the Fabric Studio itself. Everyone using it loses
+access while it upgrades, and interim builds are pre-release. Back up running
+devices first, and check with anyone sharing the Fabric Studio.
+{{% /notice %}}
+
 ## Access FS Shell
 
 Sometimes you need to access the CLI / shell of Fabric studio
 
-`system repository home shell` [link](https://register.fabricstudio.net/docs/fabric-studio/2.0.2/generated/cli/system.html#system-repository-home-shell)
+`system repository home shell` ([CLI reference](https://register.fabricstudio.net/docs/fabric-studio/2.2.35/generated/cli/system.html#system-repository-home-shell), or `/help/generated/cli/system.html` on your Fabric Studio)
 
 ```bash
 (cmm-master-fs-001) # system repository home shell
@@ -42,7 +48,7 @@ drwxr-xr-x 2 admin www-data 4.0K May 28 14:53 templates
 3 FortiDemo-FortiSOAR: 
 ```
 
-The id's (2,3) are used to identify the fabric in filters
+The IDs (2,3) are used to identify the fabric in filters
 
 ## List available configs for a fabric
 
@@ -75,18 +81,18 @@ The id's (2,3) are used to identify the fabric in filters
 157 /fabrics/3/configs/FortiSOAR.conf
 ```
 
-## Create a fpoc export
+## Create an FPOC export
 
-`model debug fabric export --select id=3 fortisoar-fs-5-28-25.fpoc` [link](https://register.fabricstudio.net/docs/fabric-studio/2.0.2/generated/cli/model.html#model-debug-fabric-export)
+`model debug fabric export --select id=3 fortisoar-fs-5-28-25.fpoc` ([CLI reference](https://register.fabricstudio.net/docs/fabric-studio/2.2.35/generated/cli/model.html#model-debug-fabric-export), or `/help/generated/cli/model.html` on your Fabric Studio)
 
-## SCP Download a export
+## SCP Download an export
 
-Example showing how to download a fpoc export from Fabric studio to your downloads folder
+Example showing how to download an FPOC export from Fabric studio to your downloads folder
 
 `scp admin@<fs-domain>:<filename> <local-path>`
 
 ```text
-🚀  scp admin@dspille-fabric-studio-soar3.fortidemo.fortinet.com:fortisoar-fs-5-28-25.fpoc ~/Downloads/
+scp admin@dspille-fabric-studio-soar3.fortidemo.fortinet.com:fortisoar-fs-5-28-25.fpoc ~/Downloads/
 admin@dspille-fabric-studio-soar3.fortidemo.fortinet.com's password:
 fortisoar-fs-5-28-25.fpoc                                                                                                 100%  894MB   3.3MB/s   04:33
 ```

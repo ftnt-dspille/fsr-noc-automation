@@ -63,6 +63,13 @@ Access the official documentation and resources on the internal Sharepoint site:
 
 ![Fabric Studio Sharepoint](img.png?height=500px)
 
+The product documentation (user guide, CLI and API reference) is on
+[register.fabricstudio.net](https://register.fabricstudio.net/docs/fabric-studio/2.2.35/)
+(sign-in required). **Every Fabric Studio also serves the same documentation,
+for its own version, at `https://<fabric-studio>/help/`**, with the API
+browser at `/help/openapi/`. Links on this site point at the 2.2.35 pages;
+the same path under your Fabric Studio's `/help/` works too.
+
 ### Support
 
 Report bugs or issues with Fabric Studio through the official bug tracker:
