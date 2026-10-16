@@ -17,13 +17,18 @@ on Install, switching fabrics) rebuilds the device from firmware plus its saved
 **Config & License > Backup Config** and **Update device settings** on.
 [Details]({{% relref "/02-building-fabrics/05-saving-state" %}}).
 
-## A saved config overrides the model
+## A saved config overrides the model (FortiGate)
 
-Once a device has a saved **Configuration**, installs restore that file and
-skip Fabric Studio's own port, gateway and DNS setup. Edit a port address in
-the model, reinstall, and FortiOS still has the old address. Make the change
-inside the device and back up again, or detach the configuration first.
+Once a FortiGate has a saved **Configuration**, installs restore that file and
+skip Fabric Studio's own port, gateway and DNS setup. Edit a port address or
+the DNS in the model, reinstall, and FortiOS still has the old value. Make the
+change inside the device and back up again, or detach the configuration first.
 [Details]({{% relref "/02-building-fabrics/05-saving-state#what-fabric-studio-configures-by-itself-fortigate" %}}).
+
+LXC devices are the opposite: their backup is just the `/fabric` hook
+directory, so the model's gateway and DNS always apply, and a backup does
+**not** keep what you installed inside the container.
+[Details]({{% relref "/02-building-fabrics/05-saving-state#lxc-devices-are-different-the-backup-is-only-fabric" %}}).
 
 ## Runtime > Install doesn't ask for confirmation
 
@@ -106,6 +111,28 @@ public port:
 For direct access from your own tools, set the access to **Any** (`PUBLIC`)
 *and* allow it globally in **System > Settings**.
 [Details]({{% relref "/04-troubleshooting/01-device-access" %}}).
+
+## A Display Password over 8 characters silently blocks VNC
+
+With the default **VNC/SPICE password policy: Mandatory**, a Display Password
+longer than 8 characters isn't valid, and Fabric Studio doesn't open public
+VNC access. No error in the UI; only the install log says
+`No valid password for VNC, public access not allowed`. Use exactly 8
+characters (the password policy rejects fewer), and reinstall the device: a
+Sync doesn't apply a new Display Password.
+[Details]({{% relref "/04-troubleshooting/01-device-access#vnc-graphical-console-access" %}}).
+
+## Access changes save immediately
+
+In a device's **Edit > Access** table, picking a new **Allowed to** value is
+saved the moment you click Apply in the picker ("Your changes have been
+saved"). Clicking **Cancel** on the device form afterwards doesn't undo it.
+
+## Switching Network Parameters to Custom clears them
+
+**Predefined** shows the network's gateway and DNS. Switching to **Custom**
+empties both fields instead of copying them. Type them in again before you
+click OK.
 
 ## Logs and the Details tab show passwords
 

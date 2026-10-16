@@ -68,7 +68,9 @@ The install log shows two phases:
    `fortinet.com`, activates the license, reboots, and waits for
    `License Status: Valid`.
 2. **Final phase.** It **replaces** that route and DNS with the Network
-   Parameters values, e.g. `gateway 203.0.113.254` via port2.
+   Parameters values, e.g. `gateway 203.0.113.254` via port2. If the device
+   has a saved configuration, this phase is a config restore instead, and the
+   route and DNS come from that file.
 
 So a device can license successfully and *then* lose internet, if Network
 Parameters names a network whose gateway doesn't route out. The symptom shows
@@ -76,11 +78,13 @@ up later as a FortiGuard/FortiCare problem, not a network error. See
 [No Internet from a Device]({{% relref "/04-troubleshooting/03-no-internet" %}}).
 
 {{% notice note %}}
-Gateway and DNS are written into the guest **when it is installed**, and only
-if the device has **no saved configuration** (otherwise the config file wins).
+Gateway and DNS are written into the guest **when it is installed**.
 Changing Network Parameters, or a network's gateway/DNS, on a running device
-needs a reinstall of that device to take effect, or a matching change inside
-the device followed by a new backup.
+needs a reinstall of that device to take effect. On a **FortiGate with a saved
+configuration** they aren't applied at all: the config file wins, so make the
+change inside FortiOS and back up again. An **LXC** device always takes them
+from Network Parameters, because its backup holds no network settings (see
+[Saving State]({{% relref "../05-saving-state#lxc-devices-are-different-the-backup-is-only-fabric" %}})).
 {{% /notice %}}
 
 ## 3. Getting out: the default path to the internet
@@ -244,9 +248,23 @@ is a FortiGate's **licensing** step during install, which temporarily routes
 via the System Host on OOB Mgmt and then switches to the Network Parameters
 network (see [What Fabric Studio actually configures](#what-fabric-studio-actually-configures-fortigate)).
 
-The same rule holds for a device with three or more data ports: one default
-route, from Network Parameters. That's set by the **first data cable** unless
-you change it. If a client defaults to the wrong network, open it, set
+The same rule holds with more data ports. We cabled the client to a third
+switch, **LAN2** (`10.2.2.0/24`, gateway `10.2.2.254`, DNS `9.9.9.9`), and
+reinstalled it:
+
+```text
+# ip route
+default via 10.1.1.1 dev eth1 onlink
+10.1.1.0/24 dev eth1 proto kernel scope link src 10.1.1.2
+10.2.2.0/24 dev eth2 proto kernel scope link src 10.2.2.1
+10.254.254.0/24 dev eth0 proto kernel scope link src 10.254.254.3
+# cat /etc/resolv.conf
+nameserver 8.8.8.8
+```
+
+LAN2 gave eth2 an address and a connected route, nothing more. Network
+Parameters stayed on **LAN**: it's set by the **first data cable** unless you
+change it. If a client defaults to the wrong network, open it, set
 **Network Parameters > Predefined** to the right one, and reinstall the client.
 
 ## VLANs

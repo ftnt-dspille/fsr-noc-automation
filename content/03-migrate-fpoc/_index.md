@@ -14,13 +14,13 @@ If your fabric studio uses custom firmware (custom defined as anything not suppo
 {{% children %}}
 
 
-## How to tell if your using custom firmware.
-Any device that's not a fortinet firmware is treated as custom, as theres no way for fabric studio to configure them. 
+## How to tell if you're using custom firmware
+Any device that's not a fortinet firmware is treated as custom, as there's no way for fabric studio to configure them. 
 Examples of custom firmware:
 - WAN-EM
 - Any linux vm (Ubuntu, Lubuntu, debian)
 
-## How to tell if your using snapshots? 
+## How to tell if you're using snapshots
 When saving config in fortipoc you have two options, create a snapshot, or export the config.
 
 Even if you're using a fortinet product, that os could still be a snapshot. 

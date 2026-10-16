@@ -138,7 +138,7 @@ In some cases, you may want to reuse firmware images from another Fabric Studio 
    rsync -avzn --progress --exclude 'Package.xml*' ./ admin@<DEST_HOST>:firmwares/
    ```
 
-   ![alt text](dry_run.png)
+   ![rsync dry-run listing the firmware files to transfer](dry_run.png)
 
 3. **Run the actual transfer** once verified:
 
@@ -161,7 +161,7 @@ In some cases, you may want to reuse firmware images from another Fabric Studio 
    ```
 
    Confirm all `.qcow2` and `.zip` firmware files are present, and `Package.xml` / `Package.xml.gz` remain unchanged.
-   ![alt text](after_rsync_b.png)
+   ![The destination's firmwares directory after rsync](after_rsync_b.png)
 
 {{% notice note %}}
 You can repeat the `rsync` command from **System A** to keep firmware directories synchronized. Avoid using `--delete` to prevent removing files that exist only on the destination.
@@ -172,7 +172,7 @@ You can repeat the `rsync` command from **System A** to keep firmware directorie
 1. Navigate to **Repositories > Home > Firmwares**
 2. Click the **Sync** button to refresh the firmware list
 3. Confirm all required firmware is now available
-   ![alt text](firmware_after_sync_b.png)
+   ![Repositories > Home > Firmwares after Sync](firmware_after_sync_b.png)
 
 ### 4. Install and Test
 
@@ -203,17 +203,20 @@ A Fabric template is a stateful configuration, meaning the firmware, network con
 
 ##### Preferred Method Backup Config
 
-The best option is saving the config through the **Right-Click-Device > Config & License > Backup Config**
+The best option is saving the config through the **Right-Click-Device > Config & License > Backup Config**, with **Update device settings** on. See [Saving State]({{% relref "/02-building-fabrics/05-saving-state" %}}).
 
 ##### Less preferred: Backup Disk
+
+For Linux devices whose state isn't in a config file, **Disk > Backup as Firmware** saves the whole disk as a new firmware image. It's large and slow to move, so prefer Backup Config where it's enough. See [Back up a whole disk instead]({{% relref "/02-building-fabrics/05-saving-state#back-up-a-whole-disk-instead" %}}).
 
 #### Export Fabric "Fabric"
 
 The team that manages FNDN's FortiDemo is very busy and tight on resources. So it may take some time before they can make a snapshot of the instance and save it. Since the FortiDemo spin has a countdown timer until it auto deletes, it's advised to grab an export from Fabric Studio in case you forget to extend the expiry.
 
-{{% notice info %}}
-TODO: Add pictures for exporting Fabric
-{{% /notice %}}
+Back up each device's configuration first, then use the fabric's **☰ > Export
+Fabric**. Your browser downloads `<fabric>-<version>.zip`. Step-by-step, with
+screenshots and what the zip contains:
+[Export your own fabric as a template]({{% relref "/02-building-fabrics/06-templates#export-your-own-fabric-as-a-template" %}}).
 
 ### 5. Complete the Migration
 

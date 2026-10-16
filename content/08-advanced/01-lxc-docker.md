@@ -15,7 +15,7 @@ This guide shows how to set up a "simple" auto-start system using Fabric's **/fa
 
 ## Quick Overview
 
-1. Fabric Studio calls **/fabric/init install** on first boot
+1. Fabric Studio calls **/fabric/init install** once, after it installs the device
 2. Default **/fabric/init** (already built-in) calls **/fortipoc/postinst**
 3. **/fortipoc/postinst** runs scripts in **/fortipoc/setup.d/** using **run-parts**
 4. Result: Automatic Docker + nginx container setup
@@ -172,33 +172,33 @@ chmod +x /fortipoc/setup.d/20-run-nginx
 
 # Check if it worked
 docker ps
-curl http://localhost
+curl http://localhost:8080
 ```
 
-![alt text](confirm_server.png)
+![docker ps shows nginx-web running, and curl returns the page](confirm_server.png)
 
 ## Step 4. Add port forwarding in Fabric Studio
 
 ### Validate port forwarding is allowed
 
 In your fabric studio settings, make sure Custom port redirects is allowed
-![alt text](global_redirects.png)
+![System > Settings: Custom port redirections on](global_redirects.png)
 
 Now if you want to see your web server from outside the LXC container, add a port forward in Fabric Studio. Make sure you know the IP address of the LXC host, in my case, 10.254.1.1
 
 1. Edit the **System Host** Device
-   ![alt text](edit_system_host.png)
+   ![Edit on the System Host](edit_system_host.png)
 2. Under **Advanced** click **Custom Port Redirections**
-   ![alt text](custom_port_redirect.png)
+   ![System Host Advanced: Custom Port Redirections](custom_port_redirect.png)
 3. Click **Create**
 4. Fill out the relevant port details and click **OK**
-   ![alt text](port_forward_fs.png)
+   ![A port redirection to the LXC's port 8080](port_forward_fs.png)
 5. Make sure you click Save on the System Host device
 6. **Important**: Ensure you either sync the system host device, or install the system host again to apply the new port forward.
 
 ## How It Works
 
-1. **Container starts** → Fabric Studio calls `/fabric/init install`
+1. **Device installed** → Fabric Studio calls `/fabric/init install` (once per install, not on every boot)
 2. **Fabric init** → Calls `/fortipoc/postinst` (built-in behavior)
 3. **FortiPoC postinst** → Uses `run-parts` to run scripts in `/fortipoc/setup.d/`
 4. **Setup scripts run in order**:
@@ -208,13 +208,26 @@ Now if you want to see your web server from outside the LXC container, add a por
 ## Save config and test persistence
 
 1. Save your LXC container state in Fabric Studio by right clicking the device > **Config & License > Backup Config**
-   ![alt text](<Screenshot 2025-09-07 at 8.01.34 PM.png>)
-2. Choose a name and click **OK**
-   ![alt text](backup_config.png)
+   ![Config & License > Backup Config](backup_menu.png)
+2. Choose a name, turn on **Update device settings**, and click **OK**
+   ![Backup Configuration dialog](backup_config.png)
 3. Open the event logs and confirm you see your files in the backup detail
-   ![alt text](backup_logs.png?height=500px)
+   ![The backup task log listing the /fortipoc files](backup_logs.png?height=500px)
+
+The backup is a tar of `/fabric/` and `/fortipoc/` only, not the whole
+container: Docker itself and its images are reinstalled by your scripts. See
+[LXC devices are different]({{% relref "/02-building-fabrics/05-saving-state#lxc-devices-are-different-the-backup-is-only-fabric" %}}).
 
 ### Test persistence
+
+Reinstall the device (right-click **Runtime > Install**). When it's back, the
+install has restored `/fortipoc/` and run `/fabric/init install` again:
+
+```bash
+tail /fortipoc/logs/postinst.log
+docker ps
+curl http://localhost:8080
+```
 
 ## Directory Structure
 
@@ -232,7 +245,7 @@ Now if you want to see your web server from outside the LXC container, add a por
 
 ## Key Points
 
-- **Only `/fortipoc/` gets backed up** - store all important data there
+- **Only `/fabric/` and `/fortipoc/` get backed up** - store all important data there
 - **Scripts run in alphabetical order** - use numbers (10, 20, 30)
 - **Make scripts idempotent** - safe to run multiple times
 - **Use `--restart unless-stopped`** - containers restart automatically
@@ -254,4 +267,4 @@ docker ps -a
 /fortipoc/postinst
 ```
 
-This setup automatically installs Docker and runs an nginx web server every time your LXC container starts, with all data stored in the backed-up `/fortipoc/` directory.
+This setup installs Docker and starts an nginx web server after every install of the LXC device, with all data stored in the backed-up `/fortipoc/` directory. Between installs, Docker's `--restart unless-stopped` brings the container back after a reboot.

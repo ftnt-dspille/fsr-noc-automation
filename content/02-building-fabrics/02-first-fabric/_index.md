@@ -34,8 +34,8 @@ Set the password **before you install**. It's the login for every device you
 add.
 
 **Username:** `admin` by default, the same for every device (the username
-comes with the device's firmware; Linux LXC images such as the Debian toolbox
-use `root`).
+comes with the device's firmware). Linux LXC images such as the Debian toolbox
+use `root`.
 
 **Password:** two levels, and the device level wins:
 
@@ -51,8 +51,18 @@ use `root`).
 
    ![Device Edit > Advanced: empty Password means the fabric password applies](images/device-password.png)
 
-**Display Password**, at both levels, is the separate password for the VNC /
-SPICE console view.
+Fabric Studio applies the password **when it installs the device**. On a
+FortiGate, the install log shows it logging in with the firmware default,
+FortiOS forcing a password change, and Fabric Studio setting the fabric (or
+device) password. So after changing a password on a running device, reinstall
+it (Runtime > Install). For the Display Password we've confirmed that a Sync
+doesn't apply the change.
+
+**Display Password**, at both levels and with the same device-wins rule, is
+the separate password for the VNC / SPICE console. Make it **exactly 8
+characters**: VNC ignores the rest, a longer one stops Fabric Studio opening
+VNC access from outside, and the password policy rejects anything shorter. See
+[VNC (graphical console) access]({{% relref "/04-troubleshooting/01-device-access#vnc-graphical-console-access" %}}).
 
 Passwords must pass Fabric Studio's password policy (at least 8 characters,
 not a common word, mixed character types). Fabrics created from a template

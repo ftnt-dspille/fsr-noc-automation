@@ -143,7 +143,19 @@ Open a device, **Edit > License**:
 | | **Custom** | You pick one specific license (already uploaded, or already created in FortiFlex). |
 | | **None** | No license is installed. |
 | **Order of installation** | **Default** | Use the firmware's own order. For FortiGate that's the license first, then the saved configuration. |
-| | **Before config** / **After config** | Force the license before or after the configuration is restored. Use **After config** when the device's saved configuration supplies something the license needs, such as DNS. |
+| | **Before config** / **After config** | Force the license before or after the configuration is restored. Use **After config** when the device's saved configuration supplies something the license needs, such as DNS or its route out. |
+
+What the order changes, from two installs of the same FortiGate with a saved
+configuration:
+
+| Default (license first) | After config |
+|---|---|
+| Temporary route and DNS over the management network (`10.254.254.254`) | Same temporary route |
+| `execute vm-license`, reboot, wait for `License Status: Valid` | **TFTPRestore** of the saved config, reboot |
+| **TFTPRestore** of the saved config, reboot | `Internet access validated`, then `execute vm-license` over the restored config's own route, reboot, `Valid` |
+
+Both ended licensed. With **After config** the license request goes out the
+way the saved configuration routes it, not over the management network.
 
 Licenses are **never exported** with a fabric (a **Custom** assignment exports
 only the serial number). Whoever imports your fabric licenses it from their

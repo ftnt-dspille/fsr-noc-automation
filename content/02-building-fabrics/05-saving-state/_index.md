@@ -113,6 +113,34 @@ What this means in practice:
 - **Sync never touches FortiOS.** Its log records the new port address and
   moves on.
 
+We checked the gateway/DNS row directly: on a FortiGate with a saved config,
+Network Parameters were changed to DNS `1.1.1.1` and the device reinstalled.
+FortiOS still had `set primary 203.0.113.254`, the value in the saved config.
+
+## LXC devices are different: the backup is only `/fabric`
+
+For an LXC device, **Backup Config** doesn't capture the whole container. It
+tars the guest's `/fabric/` directory, which holds one hook script,
+`/fabric/init`, that runs at install time:
+
+```text
+Using 'LXC' implementation
+/fabric/
+/fabric/init
+1480 /fabrics/15/configs/client.conf
+```
+
+The default `init` does nothing: its `prepare` (runs before each backup) and
+`restore` (runs after each restore) functions are empty. To keep files across
+a reinstall, edit them to copy what you need into `/fabric/` and back. For a
+whole configured system, use
+[Backup as Firmware](#back-up-a-whole-disk-instead) instead.
+
+Because the backup holds no network settings, **an LXC device always takes
+its gateway and DNS from Network Parameters**, saved config or not. The same
+test as above on an LXC client (saved `client.conf`, Network Parameters DNS
+changed to `1.1.1.1`, reinstall) gave `nameserver 1.1.1.1`.
+
 {{% notice tip %}}
 A good workflow: let a **first install** (no config) lay down addressing from
 the model, add policy and the rest in FortiOS, then **Backup Config** with

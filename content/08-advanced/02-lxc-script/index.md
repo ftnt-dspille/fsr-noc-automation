@@ -20,16 +20,16 @@ The goal:
 {{% resources title="LXC Restore Config File" style="info" pattern=".*\.conf" /%}}
 
 2. Create an LXC container in Fabric Studio
-   ![alt text](select_add_device.png?height=150px)
+   ![The + menu: Device](select_add_device.png?height=150px)
 
-   ![alt text](create_lxc_device.png?height=300px)
+   ![Add Device: an LXC](create_lxc_device.png?height=300px)
 
 3. Open the device and select the Browse under Configuration
-   ![alt text](image.png?height=300px)
+   ![Device Edit: Configuration browse button](image.png?height=300px)
 4. Click **Create > Upload** and select the downloaded config file. Make sure to select **Restore**
-   ![alt text](image-1.png)
-   ![alt text](image-2.png)
-5. Install the Fabric
+   ![Configurations: Create > Upload](image-1.png)
+   ![Upload dialog with Restore selected](image-2.png)
+5. Install the device (Apply changes, or Runtime > Install on a running fabric)
 6. Access the container's shell and explore `/fabric/`
 7. Check the logs in `/fabric/logs/setup.log`
 
@@ -37,8 +37,8 @@ The goal:
 
 We’ll use two main pieces:
 
-- `/fabric/init` – the entrypoint Fabric Studio calls
-- `/fabric/fabric.script` – your orchestration script, which in turn runs `/fabric/setup.d/*`
+- `/fabric/init` - the entrypoint Fabric Studio calls
+- `/fabric/fabric.script` - your orchestration script, which in turn runs `/fabric/setup.d/*`
 
 ## Directory Layout
 
@@ -61,11 +61,11 @@ root@lxc002:/fabric# find .
 
 Meaning:
 
-- `/fabric/init` – main control script called by Fabric Studio (`install`, `restore`, `prepare`, `script`)
-- `/fabric/fabric.script` – your startup runner (invoked by `/fabric/init script`)
-- `/fabric/setup.d/` – directory of small, ordered scripts run by `run-parts`
-- `/fabric/logs/setup.log` – combined log for all setup scripts
-- `/fabric/data/` – example data directory (e.g. `config.json`)
+- `/fabric/init` - main control script called by Fabric Studio (`install`, `restore`, `prepare`, `script`)
+- `/fabric/fabric.script` - your startup runner (invoked by `/fabric/init script`)
+- `/fabric/setup.d/` - directory of small, ordered scripts run by `run-parts`
+- `/fabric/logs/setup.log` - combined log for all setup scripts
+- `/fabric/data/` - example data directory (e.g. `config.json`)
 
 ## How Fabric Studio Uses `/fabric/init`
 
@@ -332,7 +332,7 @@ Here’s how everything fits together across the main scenarios described in the
 
 Result: on first boot, your environment is initialized **from `/fabric`**, and every step is logged.
 
-### 2. Online Restore – “Restore method”
+### 2. Online Restore - “Restore method”
 
 1. Fabric Studio copies the backup file to the VM and extracts it.
 2. Fabric Studio calls:
@@ -350,7 +350,7 @@ Result: on first boot, your environment is initialized **from `/fabric`**, and e
 
 5. That triggers the same flow as first boot: `fabric.script` → `run-parts` → `/fabric/setup.d/*`.
 
-### 3. Online Restore – “Script method”
+### 3. Online Restore - “Script method”
 
 1. Fabric Studio copies the configuration file to the VM as:
 
