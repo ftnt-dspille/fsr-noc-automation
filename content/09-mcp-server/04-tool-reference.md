@@ -45,7 +45,8 @@ for the single SOAR VM and the running fabric.
 | Tool | Answers |
 |---|---|
 | `pod_health` | Fabric Studio version, serial, uptime, licenses, disk layout |
-| `list_snapshots` | Firmware images in the pod's repository |
+| `list_firmwares` | Every firmware image the pod can install, from all repositories, marked local, remote or unusable (a 0-byte stub) |
+| `list_snapshots` | Firmware in the pod's home repository only (default: FortiSOAR) |
 | `fs_license_pool`, `fs_license_assignment` | The pod's license pool, and what a VM was assigned |
 | `forticloud_status` | Whether the FortiFlex or FortiCloud account is registered |
 | `list_tasks`, `task_log` | Running tasks, and the log that explains a failure |
@@ -63,7 +64,7 @@ These SSH into the guest through the pod and run `csadm`. FortiSOAR only.
 ## Changes something
 
 {{% notice warning %}}
-These alter a pod, so each is gated. The first five do nothing unless the call
+These alter a pod, so each is gated. The first four do nothing unless the call
 carries `confirm=true`, and Claude Code asks your permission on every tool call
 besides. Read what it proposes before you approve.
 {{% /notice %}}
@@ -74,8 +75,13 @@ besides. Read what it proposes before you approve.
 | `install_system_host` | Installs the System Host so DHCP and NAT start working |
 | `set_vm_port_dhcp` | Points a guest port at a System Host DHCP reservation |
 | `set_vm_port_auto` | Puts a guest port on its auto network |
-| `apply_device_config` | Builds a config from `devices/<device>/` and pushes it to a device |
-| `create_fortigate_connector_config` | Mints a REST token on a FortiGate and stores it in a FortiSOAR connector. Defaults to a dry run |
+
+{{% notice note %}}
+The lab repository's own build adds two more changing tools that need that repository:
+`apply_device_config` (pushes a config from `devices/<device>/`; confirm to run) and
+`create_fortigate_connector_config` (mints a FortiGate REST token into a FortiSOAR connector; defaults
+to a dry run).
+{{% /notice %}}
 
 {{% notice warning %}}
 A reinstall wipes whatever you changed inside the guest. Back the device up
