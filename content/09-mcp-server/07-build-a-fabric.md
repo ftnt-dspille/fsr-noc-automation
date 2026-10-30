@@ -72,8 +72,13 @@ If a lockout is set, `apply` refuses by design. Don't lift it to get past it; as
 ## 4. Apply
 
 ```bash
-make apply POD=<pod> TOPO=examples/fabrics/fgt_fmg_faz
+make apply POD=<pod> TOPO=examples/fabrics/fgt_fmg_faz ARGS="--prune"
 ```
+
+`--prune` (in Claude: *"apply it with prune"*, which sets `prune=true`) removes the `ISP Router` that
+Fabric Studio seeds into every new fabric. Left in, it blocks every later plan of the fabric, even one
+that reports no changes. With it, `plan` after the build says *no changes* and the fabric can be
+applied again safely.
 
 The three devices install in parallel, then a provision step puts an SSH key and an API key on each.
 The run ends with:
@@ -116,7 +121,7 @@ drops and rebuilds each guest's port forwards as part of the install.
 
 ## Two variations
 
-Both install the same way (`make apply POD=<pod> TOPO=examples/fabrics/<name>`), and both were built
+Both install the same way (`make apply POD=<pod> TOPO=examples/fabrics/<name> ARGS="--prune"`), and both were built
 and checked on a real pod. Applying either one stops whichever fabric was running.
 
 ### Two managed branches: `branch_pair_managed`

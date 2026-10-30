@@ -92,8 +92,11 @@ server's environment; an agent cannot set it.
 
 {{% notice note %}}
 The lab repository's own build adds the tools that build a fabric: `list_topologies`,
-`validate_fabric`, `plan_fabric`, `apply_fabric` (confirm to run; it stops the fabric running on the
-pod) and `fabric_run_status`.
+`validate_fabric`, `plan_fabric`, `apply_fabric` (confirm to run, and you are asked to approve the plan; it
+stops the fabric running on the pod) and `fabric_run_status`. `plan_fabric` and `apply_fabric` take
+`prune=true`, which also deletes what the topology does not declare in that fabric. Use it for the
+examples: Fabric Studio seeds an `ISP Router` into every fabric, and left in place it blocks every later
+plan of that fabric.
 {{% /notice %}}
 
 {{% notice warning %}}
