@@ -34,7 +34,7 @@ In Claude, ask:
 Find my Fabric Studio env files and register the mypod one.
 ```
 
-Claude calls `discover_instances` to list the logins it can see (without
+Claude calls `pods` (view `known`) to list the logins it can see (without
 showing passwords), then `add_instance`. By default it logs in first and
 refuses a pod that rejects the login, so a wrong password fails here and not
 later.
@@ -58,7 +58,7 @@ registry entry only. The pod and your login file are untouched.
 
 ## Guest logins (FortiSOAR)
 
-The `read_guest_license`, `guest_config_status` and `validate_license_match`
+The `vm` (include `guest_license`), `vm` (include `guest_config`) and `vm` (include `license_match`)
 tools SSH into a FortiSOAR VM through the pod. They use the appliance's default
 login. For a different one, set `VM_USER_SOAR01` and `VM_PASS_SOAR01` in the
 server's environment, or have Claude pass `ssh_user` and `ssh_pass` for that

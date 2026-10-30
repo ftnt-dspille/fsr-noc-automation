@@ -37,7 +37,7 @@ claude mcp list
 ```
 
 You should see `fabric-studio: fabric-studio-mcp - ✔ Connected`. Inside a
-session, `/mcp` shows the same and lists the 38 tools.
+session, `/mcp` shows the same and lists the 12 tools.
 
 The first time Claude uses a tool it asks permission. To pre-approve the
 read-only ones, add `mcp__fabric-studio__list_instances` and its siblings to

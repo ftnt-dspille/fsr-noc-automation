@@ -25,7 +25,7 @@ faz (10.254.254.50) ──┘
 ## 1. Choose images that will install
 
 Ask Claude: *"Which FortiGate, FortiManager and FortiAnalyzer 7.6.4 images can `pod-a` install?"*
-It calls `list_firmwares` for each type. Image ids belong to one pod, so never copy them from another.
+It calls `pods` (view `firmwares`) for each type. Image ids belong to one pod, so never copy them from another.
 
 Read each row for two things:
 
@@ -56,7 +56,7 @@ make plan     POD=<pod> TOPO=examples/fabrics/fgt_fmg_faz
 
 {{% notice note %}}
 `plan` may warn that the switches are "not host-uplinked". On a fabric that does not exist yet that
-is expected: the check reads live state. After the install, `system_host` shows both switches
+is expected: the check reads live state. After the install, `fabric` (include `system_host`) shows both switches
 uplinked, which is what you want.
 {{% /notice %}}
 
@@ -65,7 +65,7 @@ uplinked, which is what you want.
 **A pod runs one fabric at a time.** Applying a new fabric stops the one that is running. Its model
 stays, so you can bring it back, but its devices go down. Ask first:
 
-*"What's running on `pod-a`, and is it locked?"* (`whats_up`, `list_lockouts`)
+*"What's running on `pod-a`, and is it locked?"* (`pods` (view `online`), `pods` (view `lockouts`))
 
 If a lockout is set, `apply` refuses by design. Don't lift it to get past it; ask whoever set it.
 
@@ -85,13 +85,13 @@ config ✓
 ```
 
 Everything the run prints is saved to `.logs/apply-<pod>.log`. While it runs, ask Claude
-*"What is installing on `pod-a`?"* (`list_tasks`).
+*"What is installing on `pod-a`?"* (`tasks`).
 
 ## 5. Check it came up
 
 Ask: *"Is the `fgt-fmg-faz` fabric up on `pod-a`, and can I reach each device?"*
 
-Claude calls `whats_up` and then `vm_access` for each device. On the test pod:
+Claude calls `pods` (view `online`) and then `vm` (include `access`) for each device. On the test pod:
 
 | Device | SSH | HTTPS | Answers |
 |---|---|---|---|
@@ -99,10 +99,10 @@ Claude calls `whats_up` and then `vm_access` for each device. On the test pod:
 | fmg | `<pod>:11001` | `<pod>:13001` | SSH banner, TLS 1.3 |
 | faz | `<pod>:11002` | `<pod>:13002` | SSH banner, TLS 1.3 |
 
-`licenses_overview` shows each device in license mode `NONE`, which is what an unlicensed install
+`pods` (view `licenses`) shows each device in license mode `NONE`, which is what an unlicensed install
 should show.
 
-To log in, ask *"How do I log in to `fmg`?"*. `device_credentials_hint` gives the user, where the
+To log in, ask *"How do I log in to `fmg`?"*. `vm` (include `credentials`) gives the user, where the
 password comes from, and the exact `fabric ssh` command. It never returns the password. Use that
 command rather than a hand-written `ssh`: repeated wrong prompts can lock the FortiOS admin out.
 
@@ -110,7 +110,7 @@ command rather than a hand-written `ssh`: repeated wrong prompts can lock the Fo
 
 A new fabric's System Host is not installed, so the devices have no NAT or DHCP service. That is fine
 for static addresses and an unlicensed install. If a device needs the internet (FortiGuard, firmware
-checks, licensing), ask *"Does this fabric have internet access?"*. `system_host` reports
+checks, licensing), ask *"Does this fabric have internet access?"*. `fabric` (include `system_host`) reports
 `installed: false`. *"Install the System Host."* then previews, and runs only when you confirm. It
 drops and rebuilds each guest's port forwards as part of the install.
 
@@ -133,7 +133,7 @@ FortiAnalyzer on 7.6.4F. A FortiManager ADOM is pinned to one OS version, so a m
 ADOM per train; this fabric gives you that to practise on. Keep the manager at or above the newest
 FortiGate: a manager may run ahead of its devices, never behind.
 
-After the install, `vm_detail` shows the firmware each FortiGate runs, so you can confirm the two
+After the install, `vm` (include `detail`) shows the firmware each FortiGate runs, so you can confirm the two
 trains are really different:
 
 ```text

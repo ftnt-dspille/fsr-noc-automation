@@ -58,7 +58,7 @@ elsewhere on purpose.
 
 ## A pod is offline or rejects the login
 
-`list_instances` shows the error beside the pod. Common causes:
+`pods` (view `instances`) shows the error beside the pod. Common causes:
 
 - **Unreachable**: the pod is off, or your network cannot reach HTTPS 443. Try
   the pod's URL in a browser from the same machine.

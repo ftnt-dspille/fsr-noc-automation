@@ -5,61 +5,63 @@ weight: 40
 description: "Every tool the Fabric Studio MCP server offers, and which ones change a pod"
 ---
 
-You rarely call these by name. Claude picks the right ones from your question.
-Most take a `host` (the pod, as shown by `list_instances`), and where a VM or
-fabric is involved, `vm` and `fabric` may each be an id or a name, or left out
-for the single SOAR VM and the running fabric.
+You rarely call these by name. Claude picks the right one from your question. There are few tools
+and each is broad: you choose a `view` or `include` inside it. Most take a `host` (the pod, as shown by
+the `instances` view), and where a VM or fabric is involved, `vm` and `fabric` may each be an id or a
+name, or left out for the single SOAR VM and the running fabric.
 
 ## Read-only
 
-### Your pods
+### `diagnose`: start here when something is wrong
 
-| Tool | Answers |
+One call checks every VM in a fabric and returns a verdict (healthy, needs attention, problems found)
+with findings ranked by severity. It reads the log of any failed install and names the cause, and
+checks firmware, power and boot state, licensing, forwards that do not answer, another fabric running
+on the pod, tasks in flight, and lockouts. Each finding gives the evidence and the next step. A login
+problem is not a `diagnose` job: use `vm` with `credentials`.
+
+### `pods`: anything about pods
+
+| `view` | Answers |
 |---|---|
-| `list_instances` | The pods you manage, and whether each is online |
-| `discover_instances` | Login files and pod hosts found on this machine |
-| `whats_up` | Only what is online: each pod, its fabric, its devices |
-| `instances_overview` | Every device in every fabric of every managed pod |
-| `find_device` | Which pod and fabric a named device is on |
-| `pods_health` | Is it safe to act: tasks in flight, locks, health |
-| `licenses_overview` | FortiFlex registration and license pool, per pod |
-| `reach_matrix` | Can this machine reach each pod (HTTPS, SSH), and its devices |
-| `list_lockouts` | Pods or fabrics frozen against changes, and why |
-| `list_pods` | Pods in the local backend database |
+| `online` | Only what is online: each pod, its fabric, its devices, and whether it is locked |
+| `overview` | Every device in every fabric of every managed pod |
+| `health` | Is it safe to act: Fabric Studio version, uptime, tasks in flight, locks (`host` for one pod's detail) |
+| `licenses` | FortiFlex and FortiCloud registration and the license pool (`host` for one pod) |
+| `reach` | Can this machine reach each pod (HTTPS, SSH); `devices=true` also probes devices |
+| `lockouts` | Pods or fabrics frozen against changes, and why |
+| `instances` | The pods you manage, and whether each is online |
+| `known` | Every pod found on this machine: login files and the local database |
+| `find` | Which pod and fabric a named device (`query`) is on |
+| `firmwares` | Every firmware image the pod can install, from all repositories, marked local, remote or unusable (a 0-byte stub); `vm_type` filters |
+| `snapshots` | Firmware in the pod's home repository only (default: FortiSOAR) |
 
-### Fabrics and devices
+### `fabric`: one fabric
 
-| Tool | Answers |
+`include` any of `fabrics` (what the pod has and which one runs), `vms`, `topology` (networks, subnets,
+gateways), `resources` (vCPU, memory, disk per VM, with totals) and `system_host` (the DHCP, NAT and
+routing device: installed or not, and its ports). The default is `vms`.
+
+### `vm`: one VM
+
+`include` any of:
+
+| `include` | Answers |
 |---|---|
-| `list_fabrics`, `list_vms` | What fabrics and VMs a pod has |
-| `fabric_topology` | The fabric's networks and switches |
-| `fabric_resources` | vCPU, memory and disk configured per VM, with totals |
-| `vm_detail` | One-shot picture of a VM: state, license, firmware, disks, access |
-| `vm_state`, `vm_disks` | Runtime state, and the VM's disks |
-| `vm_access` | SSH, HTTPS and RDP entries and whether they answer |
-| `system_host` | The fabric's System Host (DHCP, NAT, routing device) |
-| `device_credentials_hint` | The default login for a device type, without guessing |
+| `state` | Powered, booted, licensed, any task in flight, firmware (the default) |
+| `detail` | State plus CPU and memory, disks and access entries |
+| `access` | SSH, HTTPS and RDP entries and whether each forward answers |
+| `disks` | The VM's disks |
+| `license` | The license Fabric Studio assigned it |
+| `credentials` | The default login for the device type and where its password lives |
+| `license_match`, `guest_license`, `guest_config` | FortiSOAR only: SSH into the guest through the pod and compare or read its license, and report the first-boot wizard (configured, pending or failed) |
 
-### System, licensing and tasks
+A section that fails reports its error in place and does not hide the others.
 
-| Tool | Answers |
-|---|---|
-| `pod_health` | Fabric Studio version, serial, uptime, licenses, disk layout |
-| `list_firmwares` | Every firmware image the pod can install, from all repositories, marked local, remote or unusable (a 0-byte stub) |
-| `list_snapshots` | Firmware in the pod's home repository only (default: FortiSOAR) |
-| `fs_license_pool`, `fs_license_assignment` | The pod's license pool, and what a VM was assigned |
-| `forticloud_status` | Whether the FortiFlex or FortiCloud account is registered |
-| `list_tasks`, `task_log` | Running tasks, and the log that explains a failure |
+### `tasks`: what ran and why it failed
 
-### Inside a FortiSOAR guest
-
-These SSH into the guest through the pod and run `csadm`. FortiSOAR only.
-
-| Tool | Answers |
-|---|---|
-| `read_guest_license` | The guest's own license details |
-| `guest_config_status` | First-boot wizard: configured, pending or failed |
-| `validate_license_match` | Is the serial Fabric Studio assigned the one the guest uses |
+Without a task id, the tasks running now and (with `vm`) that VM's recent tasks and return codes. With
+a task id, that task's log, which holds the reason a device task failed.
 
 ## Changes something
 

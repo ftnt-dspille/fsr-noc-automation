@@ -13,13 +13,13 @@ Claude reaches for, so you can tell what it is doing and what it can see.
 
 | Ask | Tools |
 |---|---|
-| *What's up on my Fabric Studio pods?* | `whats_up` |
-| *Which pods are free to build on right now?* | `pods_health`, `list_lockouts` |
-| *Where is the FortiGate called `edge1`?* | `find_device` |
-| *Is anything installing on `pod-a`?* | `list_tasks` |
-| *Can this machine reach my pods, and which forwards are blocked?* | `reach_matrix` |
+| *What's up on my Fabric Studio pods?* | `pods` (view `online`) |
+| *Which pods are free to build on right now?* | `pods` (view `health`), `pods` (view `lockouts`) |
+| *Where is the FortiGate called `edge1`?* | `pods` (view `find`) |
+| *Is anything installing on `pod-a`?* | `tasks` |
+| *Can this machine reach my pods, and which forwards are blocked?* | `pods` (view `reach`) |
 
-`whats_up` lists only what is online, and says whether each pod is **locked**. A lockout freezes
+`pods` (view `online`) lists only what is online, and says whether each pod is **locked**. A lockout freezes
 `apply`, `provision` and `destroy` on a pod or fabric, so it is the quickest way to learn that a pod
 is somebody's keeper before you build on it.
 
@@ -27,11 +27,11 @@ is somebody's keeper before you build on it.
 
 | Ask | Tools |
 |---|---|
-| *Which FortiGate images can `pod-a` install?* | `list_firmwares` |
-| *Is FortiAnalyzer 7.6.4 on the pod already, or will it download?* | `list_firmwares` |
-| *Why did my plan pick image 850?* | `list_firmwares` |
+| *Which FortiGate images can `pod-a` install?* | `pods` (view `firmwares`) |
+| *Is FortiAnalyzer 7.6.4 on the pod already, or will it download?* | `pods` (view `firmwares`) |
+| *Why did my plan pick image 850?* | `pods` (view `firmwares`) |
 
-`list_firmwares` reads every repository, not just the home one, and marks each image:
+`pods` (view `firmwares`) reads every repository, not just the home one, and marks each image:
 
 - **local**: `ready` or `downloaded`. It installs at once.
 - **remote**: in a repository but not on the pod. Fabric Studio downloads it when the device is
@@ -45,20 +45,20 @@ Image ids are specific to each pod, so look them up on the pod you are building 
 
 | Ask | Tools |
 |---|---|
-| *Is `pod-a` registered with FortiCloud, and what licenses does it hold?* | `licenses_overview`, `forticloud_status`, `fs_license_pool` |
-| *Which license did Fabric Studio give `faz`, and does the device use it?* | `fs_license_assignment`, `validate_license_match` |
-| *Read the license on my FortiSOAR.* | `read_guest_license` |
+| *Is `pod-a` registered with FortiCloud, and what licenses does it hold?* | `pods` (view `licenses`), `pods` (view `licenses`), `pods` (view `licenses`) |
+| *Which license did Fabric Studio give `faz`, and does the device use it?* | `vm` (include `license`), `vm` (include `license_match`) |
+| *Read the license on my FortiSOAR.* | `vm` (include `guest_license`) |
 
 ## Reach a device
 
 | Ask | Tools |
 |---|---|
-| *How do I SSH and open the web UI of `fmg`?* | `vm_access` |
-| *What's the default login for a FortiManager?* | `device_credentials_hint` |
-| *Is the HTTPS forward of `fmg` actually answering?* | `vm_access` with a live probe |
+| *How do I SSH and open the web UI of `fmg`?* | `vm` (include `access`) |
+| *What's the default login for a FortiManager?* | `vm` (include `credentials`) |
+| *Is the HTTPS forward of `fmg` actually answering?* | `vm` (include `access`) with a live probe |
 | *Make `fgt` reachable over HTTPS from outside the pod.* | `set_vm_access_public` |
 
-`vm_access` shows each access entry, its external port, and whether that port answers (an SSH banner,
+`vm` (include `access`) shows each access entry, its external port, and whether that port answers (an SSH banner,
 or a TLS handshake). `set_vm_access_public` changes the pod, so it previews first and reinstalls the
 guest only when you confirm.
 
@@ -66,10 +66,10 @@ guest only when you confirm.
 
 | Ask | Tools |
 |---|---|
-| *Show me the networks and switches in `fgt-fmg-faz`.* | `fabric_topology` |
-| *How much CPU and memory is that fabric using?* | `fabric_resources` |
-| *Give me everything about `fmg`: state, license, firmware, disks, access.* | `vm_detail` |
-| *Does this fabric have DHCP and internet access?* | `system_host` |
+| *Show me the networks and switches in `fgt-fmg-faz`.* | `fabric` (include `topology`) |
+| *How much CPU and memory is that fabric using?* | `fabric` (include `resources`) |
+| *Give me everything about `fmg`: state, license, firmware, disks, access.* | `vm` (include `detail`) |
+| *Does this fabric have DHCP and internet access?* | `fabric` (include `system_host`) |
 
 ## Build and install a fabric
 
@@ -82,7 +82,7 @@ Claude runs those for you, then uses the tools above to watch and check the resu
 | Ask | Tools |
 |---|---|
 | *Freeze `pod-a` so nobody applies to it. Reason: demo on Thursday.* | `engage_lockout` |
-| *Who locked `pod-b` and why?* | `list_lockouts` |
+| *Who locked `pod-b` and why?* | `pods` (view `lockouts`) |
 
 The server can engage a lockout but has no tool to lift one. Lifting stays a deliberate step by the
 person who set it.
