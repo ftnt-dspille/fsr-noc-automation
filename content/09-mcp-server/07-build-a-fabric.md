@@ -157,10 +157,21 @@ change what you need. Ask Claude to do it: *"Copy `fgt_fmg_faz` to a fabric call
 FortiGates"*. Then `validate`, `plan` and `apply` as above. Keep each node's addresses unique within
 the network, and give FortiManager and FortiAnalyzer at least 4 vCPU and 8192 MiB of memory.
 
+## What this does not do
+
+The examples install the devices and give you SSH and API access to each. They do not register the
+FortiGates with the FortiManager or FortiAnalyzer, or create ADOMs. A topology can declare that in a
+`services:` block (see the repository's topology schema), but it needs the appliances' admin logins and,
+on FortiManager, its JSON-RPC permission, so treat it as a next step you set up, not part of these
+examples. The one-line check for the fabric's own health is `diagnose`, and `diagnose` with `deep=true`
+runs each device's verification.
+
 ## Licensing
 
 These devices are unlicensed: the API, CLI and GUI work, no FortiFlex points are spent and no pooled
 license is used. To license them, change `license: "none"` in the topology to a FortiFlex source:
-`license: {mode: auto, flex_config: <id or name>}`. A bare `license: auto` on a FortiManager or
-FortiAnalyzer fails at install with `No license for fmg000 (LIC,FLEX)`. See
+`license: {mode: auto, flex_config: <id or name>}`. A bare `license: auto` depends on the pod: with several
+active FortiFlex configurations for the device type, apply stops and asks you to name one; with a matching
+license in the pod's pool it takes that one (using up a pooled license); with neither, the install fails
+with `No license for fmg000 (LIC,FLEX)`. See
 [Troubleshooting a Failed Install]({{% relref "08-troubleshoot-a-failed-install" %}}).
