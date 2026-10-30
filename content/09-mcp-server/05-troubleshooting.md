@@ -7,7 +7,7 @@ description: "Fixes for the install, Claude registration and pod login problems 
 
 | Symptom | Go to |
 |---|---|
-| `uv tool install` fails fetching `fabric-studio-core` | [Install fails](#install-fails-on-git-or-ssh) |
+| `uv tool install` fails fetching `fabric-studio` | [Install fails](#install-fails-on-git-or-ssh) |
 | `fabric-studio-mcp: command not found` | [Not on PATH](#command-not-found) |
 | `claude mcp add` says `missing required argument` | [Wrong argument order](#missing-required-argument-commandorurl) |
 | The server is listed but shows no tools, or fails | [Won't connect](#the-server-shows-failed-in-mcp) |
@@ -16,7 +16,7 @@ description: "Fixes for the install, Claude registration and pod login problems 
 
 ## Install fails on git or SSH
 
-The package pulls `fabric-studio-core` from internal GitLab over SSH. Run:
+The package pulls `fabric-studio` from internal GitLab over SSH. Run:
 
 ```bash
 git ls-remote ssh://git@svl-devops-gitlab01.fortilab.fortinet.com/dspille/fabric-studio-core.git HEAD

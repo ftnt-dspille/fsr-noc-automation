@@ -23,10 +23,10 @@ The server ships as a Python package that installs one command,
 ## Install
 
 ```bash
-uv tool install "fabric-studio-core[mcp] @ git+ssh://git@svl-devops-gitlab01.fortilab.fortinet.com/dspille/fabric-studio-core.git"
+uv tool install "fabric-studio[mcp] @ git+ssh://git@svl-devops-gitlab01.fortilab.fortinet.com/dspille/fabric-studio-core.git"
 ```
 
-The server is part of **fabric-studio-core**, which is not on PyPI, so it installs from git. The
+The server is part of **fabric-studio**, which is not on PyPI, so it installs from git. The
 `[mcp]` part adds the MCP SDK. Check it landed on your `PATH`:
 
 ```bash
@@ -44,8 +44,8 @@ it speaks MCP over stdin and stdout and expects a client. Press Ctrl+C to leave.
 ## Update and remove
 
 ```bash
-uv tool upgrade fabric-studio-core     # newer version
-uv tool uninstall fabric-studio-core   # remove it
+uv tool upgrade fabric-studio     # newer version
+uv tool uninstall fabric-studio   # remove it
 ```
 
 Your pod registry in `~/.fsh/` is left alone by both.
