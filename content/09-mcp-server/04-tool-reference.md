@@ -64,9 +64,15 @@ These SSH into the guest through the pod and run `csadm`. FortiSOAR only.
 ## Changes something
 
 {{% notice warning %}}
-These alter a pod, so each is gated. The first four do nothing unless the call
-carries `confirm=true`, and Claude Code asks your permission on every tool call
-besides. Read what it proposes before you approve.
+These alter a pod, so each is gated twice. Without `confirm=true` a tool only reports what it
+would do. With it, the server runs that preview and then **asks you** to approve the exact plan
+(an MCP elicitation prompt in your client). The agent cannot answer for you. If you decline, nothing
+changes. A client that cannot show the prompt gets a refusal, so use Claude Code or another client
+that supports elicitation. Read the plan before you approve.
+
+Every tool also tells the client whether it is read-only or destructive, so the client can prompt
+accordingly. For an unattended run you operate yourself, set `FS_MCP_ASSUME_CONFIRMED=1` in the
+server's environment; an agent cannot set it.
 {{% /notice %}}
 
 | Tool | What it does |
