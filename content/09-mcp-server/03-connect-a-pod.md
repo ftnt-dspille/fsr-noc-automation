@@ -58,11 +58,11 @@ registry entry only. The pod and your login file are untouched.
 
 ## Guest logins (FortiSOAR)
 
-The `vm` (include `guest_license`), `vm` (include `guest_config`) and `vm` (include `license_match`)
-tools SSH into a FortiSOAR VM through the pod. They use the appliance's default
-login. For a different one, set `VM_USER_SOAR01` and `VM_PASS_SOAR01` in the
-server's environment, or have Claude pass `ssh_user` and `ssh_pass` for that
-call.
+The `vm` sections `guest_license`, `guest_config` and `license_match` SSH into a FortiSOAR VM through
+the pod. They only work on FortiSOAR VMs and refuse any other device before connecting. The login comes
+from the MCP server's environment and is never a tool argument: set `FS_SOAR_SSH_PASS` (and
+`FS_SOAR_SSH_USER` if it is not `csadmin`). There is no built-in password; without one the section
+says it is not configured.
 
 {{% notice warning %}}
 Fabric Studio pods rate-limit logins, and some ban a workstation that logs in
