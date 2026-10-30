@@ -83,6 +83,30 @@ first, as described in
 [Saving State]({{% relref "/02-building-fabrics/05-saving-state" %}}).
 {{% /notice %}}
 
+### Preview first, and order matters
+
+Every tool above reports what it would do until you pass `confirm=true`, so ask
+Claude to show you the preview before it applies anything. Several of them
+reinstall the guest by default; ask for `reinstall=false` when you only want the
+model changed.
+
+When you wire a guest to the fabric's DHCP, the order is:
+
+1. `set_vm_port_dhcp` on the guest. Fabric Studio only writes a DHCP reservation
+   into the System Host when the host is installed, so the reservation must
+   exist first.
+2. `install_system_host`. It drops every guest's external port forward, so the
+   tool rebuilds them one guest at a time. It never synchronizes the System
+   Host itself, because that wipes the host's egress address and cuts internet
+   access for the whole fabric.
+3. Reinstall the guest so it picks up its lease.
+
+To go back to fixed addressing, use `set_vm_port_auto`. There is no tool to
+uninstall the System Host.
+
+A tool that waits for a reinstall can run for many minutes. The server allows
+up to 20 minutes for those, and one minute for everything else.
+
 ## Local only
 
 These change your registry on this machine and never touch a pod.
