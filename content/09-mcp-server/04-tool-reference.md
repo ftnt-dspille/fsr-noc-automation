@@ -20,6 +20,11 @@ checks firmware, power and boot state, licensing, forwards that do not answer, a
 on the pod, tasks in flight, and lockouts. Each finding gives the evidence and the next step. A login
 problem is not a `diagnose` job: use `vm` with `credentials`.
 
+Add `deep=true` for the slower device-level checks, in the lab repository's build: each device's
+own verification (powered, booted, forwards answering, license as Fabric Studio records it, and a
+diagnosis such as a device sized above its eval limit with no FortiFlex activation), and, when you
+name a `topology`, that topology's health checks. In the core build `deep` says it has nothing to add.
+
 ### `pods`: anything about pods
 
 | `view` | Answers |
