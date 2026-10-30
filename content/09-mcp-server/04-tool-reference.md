@@ -77,10 +77,9 @@ besides. Read what it proposes before you approve.
 | `set_vm_port_auto` | Puts a guest port on its auto network |
 
 {{% notice note %}}
-The lab repository's own build adds two more changing tools that need that repository:
-`apply_device_config` (pushes a config from `devices/<device>/`; confirm to run) and
-`create_fortigate_connector_config` (mints a FortiGate REST token into a FortiSOAR connector; defaults
-to a dry run).
+The lab repository's own build adds the tools that build a fabric: `list_topologies`,
+`validate_fabric`, `plan_fabric`, `apply_fabric` (confirm to run; it stops the fabric running on the
+pod) and `fabric_run_status`.
 {{% /notice %}}
 
 {{% notice warning %}}
