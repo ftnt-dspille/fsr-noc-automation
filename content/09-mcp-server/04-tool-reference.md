@@ -83,6 +83,7 @@ server's environment; an agent cannot set it.
 | `install_system_host` | Installs the System Host so DHCP and NAT start working |
 | `set_vm_port_dhcp` | Points a guest port at a System Host DHCP reservation |
 | `set_vm_port_auto` | Puts a guest port on its auto network |
+| `snapshot_vm` | Saves a VM's disks as a new firmware in the pod's home repository. `action` is `diff` (only what changed since the original firmware; small) or `full` (one standalone image; larger, no dependency). The VM is hard powered off during the export and brought back up, so expect several minutes of downtime and lose unsaved guest state. `link=true` (the default) points the VM at the snapshot so a reinstall boots it |
 
 {{% notice note %}}
 The lab repository's own build adds the tools that build a fabric: `list_topologies`,
