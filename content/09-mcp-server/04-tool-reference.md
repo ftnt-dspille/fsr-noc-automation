@@ -88,6 +88,8 @@ server's environment; an agent cannot set it.
 | `install_system_host` | Installs the System Host so DHCP and NAT start working |
 | `set_vm_port_dhcp` | Points a guest port at a System Host DHCP reservation |
 | `set_vm_port_auto` | Puts a guest port on its auto network |
+| `vm_lifecycle` | One VM: `action` is `on`, `off`, `restart`, `reinstall` or `cancel_task` (with `task_id`). `off` and `restart` are hard power-offs, so unsaved guest state is lost. `reinstall` rebuilds the guest from its firmware and wipes everything changed inside it. Asking for `on` on a VM that is already on does nothing and does not ask you |
+| `set_vm_license` | Chooses how one VM is licensed on install: `NONE` (unlicensed, nothing spent) or `AUTO` (takes a pooled license or FortiFlex points). The preview shows the current mode, the license now served, how many pooled licenses match the device type and whether FortiFlex is registered. The mode only applies on the next install, so `reinstall=true` is the default; `reinstall=false` changes the setting only |
 | `snapshot_vm` | Saves a VM's disks as a new firmware in the pod's home repository. `action` is `diff` (only what changed since the original firmware; small) or `full` (one standalone image; larger, no dependency). The VM is hard powered off during the export and brought back up, so expect several minutes of downtime and lose unsaved guest state. `link=true` (the default) points the VM at the snapshot so a reinstall boots it |
 
 {{% notice note %}}
@@ -128,7 +130,28 @@ To go back to fixed addressing, use `set_vm_port_auto`. There is no tool to
 uninstall the System Host.
 
 A tool that waits for a reinstall can run for many minutes. The server allows
-up to 20 minutes for those, and one minute for everything else.
+up to 20 minutes for those, 30 for `snapshot_vm`, and one minute for the reads (`diagnose`
+and `vm` get 20). While a change runs, the server sends your client a progress update every ten
+seconds with the step it is on, so a long restart or snapshot shows activity.
+
+`vm_lifecycle` and `set_vm_license` refuse to run on a pod that carries a lockout. A lockout is a
+deliberate freeze, and the server cannot lift one.
+
+## Resources and prompts
+
+Besides tools, the server offers two other kinds of MCP content.
+
+| Kind | Name | What it gives you |
+|---|---|---|
+| Resource | `fabric-studio://pods` | The pods you manage (host and name), without contacting them |
+| Resource | `fabric-studio://pods/<host>/fabric` | The running fabric's VMs with firmware |
+| Resource | `fabric-studio://pods/<host>/firmwares` | Every image the pod can install, marked local, remote or unusable |
+| Prompt | `troubleshoot-failed-install` | `host` and optional `fabric`: runs `diagnose`, reads the failed task's log, explains the cause and changes nothing |
+| Prompt | `snapshot-before-change` | `host`, `vm`: checks the VM is healthy, picks a snapshot kind and previews `snapshot_vm` |
+| Prompt | `pod-health-check` | `host`: is this pod safe to build on right now |
+
+A resource is data you attach to the conversation (in Claude Code, type `@`). A prompt is a ready-made
+request you pick (in Claude Code, a slash command). Neither changes a pod.
 
 ## Local only
 

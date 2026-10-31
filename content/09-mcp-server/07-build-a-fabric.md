@@ -89,6 +89,11 @@ converged ✓
 config ✓
 ```
 
+You can also ask Claude to do the plan and the apply itself: *"Plan `examples/fabrics/fgt_fmg_faz` on `pod-a`
+with prune, then apply it."* In the lab repository's build that calls `plan_fabric` and `apply_fabric`,
+which show you the plan (including what it would stop and delete) and ask you to approve before
+anything starts; `fabric_run_status` follows the run. The `make` commands are the same thing by hand.
+
 Everything the run prints is saved to `.logs/apply-<pod>.log`. While it runs, ask Claude
 *"What is installing on `pod-a`?"* (`tasks`).
 
@@ -104,7 +109,7 @@ Claude calls `pods` (view `online`) and then `vm` (include `access`) for each de
 | fmg | `<pod>:11001` | `<pod>:13001` | SSH banner, TLS 1.3 |
 | faz | `<pod>:11002` | `<pod>:13002` | SSH banner, TLS 1.3 |
 
-`pods` (view `licenses`) shows each device in license mode `NONE`, which is what an unlicensed install
+`vm` (include `license`) shows each device in license mode `NONE`, which is what an unlicensed install
 should show.
 
 To log in, ask *"How do I log in to `fmg`?"*. `vm` (include `credentials`) gives the user, where the

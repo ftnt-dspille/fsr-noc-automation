@@ -23,6 +23,16 @@ Claude reaches for, so you can tell what it is doing and what it can see.
 `apply`, `provision` and `destroy` on a pod or fabric, so it is the quickest way to learn that a pod
 is somebody's keeper before you build on it.
 
+## Find out what is wrong
+
+| Ask | Tools |
+|---|---|
+| *The install on `pod-a` failed. What happened?* | `diagnose`, then `tasks` (with a task id) |
+| *Is `pod-a` safe to build on?* | `pods` (views `health`, `lockouts`), `diagnose` |
+
+`diagnose` is one call that checks every VM and ranks what it finds. The prompt
+`/mcp__fabric-studio__troubleshoot-failed-install` starts the same routine for you.
+
 ## Check an image before you install it
 
 | Ask | Tools |
@@ -45,7 +55,7 @@ Image ids are specific to each pod, so look them up on the pod you are building 
 
 | Ask | Tools |
 |---|---|
-| *Is `pod-a` registered with FortiCloud, and what licenses does it hold?* | `pods` (view `licenses`), `pods` (view `licenses`), `pods` (view `licenses`) |
+| *Is `pod-a` registered with FortiCloud, and what licenses does it hold?* | `pods` (view `licenses`) |
 | *Which license did Fabric Studio give `faz`, and does the device use it?* | `vm` (include `license`), `vm` (include `license_match`) |
 | *Read the license on my FortiSOAR.* | `vm` (include `guest_license`) |
 
@@ -62,6 +72,29 @@ Image ids are specific to each pod, so look them up on the pod you are building 
 or a TLS handshake). `set_vm_access_public` changes the pod, so it previews first and reinstalls the
 guest only when you confirm.
 
+## Start, stop, restart and relicense a VM
+
+| Ask | Tools |
+|---|---|
+| *Restart `fgt74` on `pod-a`.* | `vm_lifecycle` (action `restart`) |
+| *Power off `faz`.* | `vm_lifecycle` (action `off`) |
+| *The `fmg` install is stuck. Cancel task 1394.* | `tasks`, then `vm_lifecycle` (action `cancel_task`) |
+| *Install `fmg` unlicensed.* | `set_vm_license` (mode `NONE`) |
+
+These preview first and then ask you to approve. Power off and restart are hard, and a reinstall
+wipes the guest, so shut it down from inside or take a `snapshot_vm` first when its state matters.
+Changing a license mode reinstalls the guest unless you ask for `reinstall=false`.
+
+## Save a VM before you change it
+
+| Ask | Tools |
+|---|---|
+| *Take a diff snapshot of `faz` called `faz-before-upgrade`.* | `snapshot_vm` (action `diff`) |
+| *Take a full snapshot instead, so it does not depend on the original image.* | `snapshot_vm` (action `full`) |
+
+A diff is small and quick but installing it downloads the original image too. A full snapshot stands
+alone and is larger. The VM is powered off hard for several minutes while its disks are exported.
+
 ## Look at a fabric
 
 | Ask | Tools |
@@ -73,8 +106,9 @@ guest only when you confirm.
 
 ## Build and install a fabric
 
-Building a fabric from a topology file runs through the lab repo's `make plan` and `make apply`;
-Claude runs those for you, then uses the tools above to watch and check the result. Start with
+Building a fabric from a topology file is a lab-repository job. Its build of the server has
+`plan_fabric` and `apply_fabric`, which ask you to approve before they start; otherwise Claude runs the repo's
+`make plan` and `make apply` for you. Either way it then uses the tools above to watch and check the result. Start with
 [Build a FortiGate, FortiManager and FortiAnalyzer Fabric]({{% relref "07-build-a-fabric" %}}).
 
 ## Protect a pod you care about

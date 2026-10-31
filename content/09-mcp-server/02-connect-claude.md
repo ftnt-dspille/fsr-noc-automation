@@ -37,12 +37,18 @@ claude mcp list
 ```
 
 You should see `fabric-studio: fabric-studio-mcp - ✔ Connected`. Inside a
-session, `/mcp` shows the same and lists the 13 tools.
+session, `/mcp` shows the same and lists the 15 tools (18 in the lab repository's build).
 
 The first time Claude uses a tool it asks permission. To pre-approve the
-read-only ones, add `mcp__fabric-studio__list_instances` and its siblings to
-`permissions.allow` in your Claude Code settings. Leave the mutating tools out
-so Claude keeps asking.
+read-only ones, add `mcp__fabric-studio__pods`, `mcp__fabric-studio__fabric`,
+`mcp__fabric-studio__vm`, `mcp__fabric-studio__tasks` and `mcp__fabric-studio__diagnose` to
+`permissions.allow` in your Claude Code settings. Leave the tools that change a pod out
+so Claude keeps asking. (Those names replace the older per-question tools such as `list_instances`;
+if you allowed those, the entries do nothing now.)
+
+Besides tools, the server offers prompts, which Claude Code shows as slash commands:
+`/mcp__fabric-studio__troubleshoot-failed-install`, `/mcp__fabric-studio__snapshot-before-change` and
+`/mcp__fabric-studio__pod-health-check`. Type `@` to attach a resource such as the list of your pods.
 
 ## Claude Desktop
 

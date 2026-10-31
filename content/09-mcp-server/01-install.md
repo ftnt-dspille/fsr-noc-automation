@@ -41,6 +41,13 @@ Running `fabric-studio-mcp` by hand prints nothing and waits. That is correct:
 it speaks MCP over stdin and stdout and expects a client. Press Ctrl+C to leave.
 {{% /notice %}}
 
+## Give your agent the skill
+
+The repository carries an agent skill, `skills/fabric-studio/`, that tells an agent how Fabric Studio
+works (one fabric per pod, model versus runtime, what a bare `254` means) and which library function or
+MCP tool to use. For Claude Code, copy it into your skills folder from a checkout:
+`cp -r skills/fabric-studio ~/.claude/skills/`.
+
 ## Update and remove
 
 ```bash

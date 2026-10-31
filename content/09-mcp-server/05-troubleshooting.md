@@ -13,6 +13,7 @@ description: "Fixes for the install, Claude registration and pod login problems 
 | The server is listed but shows no tools, or fails | [Won't connect](#the-server-shows-failed-in-mcp) |
 | Claude finds no pods | [No pods](#claude-says-it-has-no-pods) |
 | A pod is `online: false` | [Pod offline](#a-pod-is-offline-or-rejects-the-login) |
+| A change says the client cannot ask, or the pod is locked | [Changes refused](#a-change-is-refused) |
 
 ## Install fails on git or SSH
 
@@ -68,3 +69,15 @@ elsewhere on purpose.
 - **`LoginCooldown ... retry in Ns`**: the pod rate-limits logins and the
   server is backing off after a failure. Wait that long. Retrying in a loop
   makes it worse.
+
+## A change is refused
+
+- **"this client cannot ask the person to approve"**: every tool that changes a pod asks you first
+  (an MCP elicitation prompt), and your client cannot show one. Use Claude Code, or another client that
+  supports elicitation. For an unattended run that you operate yourself, set `FS_MCP_ASSUME_CONFIRMED=1`
+  in the server's environment (`claude mcp add ... --env FS_MCP_ASSUME_CONFIRMED=1`). An agent cannot set it.
+- **"... is locked"**: the pod carries a lockout, a deliberate freeze by whoever set it. `pods` (view
+  `lockouts`) shows who and why. The server cannot lift it; ask them.
+- **"the person declined"**: you answered no to the approval prompt, so nothing changed.
+- **A guest section says it is not configured**: `guest_license`, `guest_config` and `license_match` need
+  `FS_SOAR_SSH_PASS` in the server's environment. See [Connect a Pod]({{% relref "03-connect-a-pod" %}}).
