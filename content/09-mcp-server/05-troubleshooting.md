@@ -14,6 +14,7 @@ description: "Fixes for the install, Claude registration and pod login problems 
 | Claude finds no pods | [No pods](#claude-says-it-has-no-pods) |
 | A pod is `online: false` | [Pod offline](#a-pod-is-offline-or-rejects-the-login) |
 | A change says the client cannot ask, or the pod is locked | [Changes refused](#a-change-is-refused) |
+| `cannot reach <pod> over HTTPS`, or `retry in Ns` | [Pod offline](#a-pod-is-offline-or-rejects-the-login) |
 
 ## Install fails on git or SSH
 
@@ -66,6 +67,9 @@ elsewhere on purpose.
 - **Login rejected**: the user or password in the env file is wrong, or the
   password changed since you registered. Edit the file; the server reads it on
   the next call.
+- **`cannot reach <pod> over HTTPS: it timed out` (or `refused the connection`, `does not resolve`)**: the
+  server could not open a connection. Check the pod is on and reachable from this machine (`pods` view
+  `reach`); a VPN is often the cause.
 - **`LoginCooldown ... retry in Ns`**: the pod rate-limits logins and the
   server is backing off after a failure. Wait that long. Retrying in a loop
   makes it worse.
@@ -81,3 +85,6 @@ elsewhere on purpose.
 - **"the person declined"**: you answered no to the approval prompt, so nothing changed.
 - **A guest section says it is not configured**: `guest_license`, `guest_config` and `license_match` need
   `FS_SOAR_SSH_PASS` in the server's environment. See [Connect a Pod]({{% relref "03-connect-a-pod" %}}).
+- **`<tool>: invalid arguments. limit: Input should be a valid integer (you sent 'lots')`**: Claude sent
+  an argument of the wrong type or left a required one out. It names the argument and what it sent, and Claude
+  normally corrects it and tries again.

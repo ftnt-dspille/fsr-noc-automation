@@ -61,7 +61,7 @@ routing device: installed or not, and its ports). The default is `vms`.
 | `credentials` | The default login for the device type and where its password lives |
 | `license_match`, `guest_license`, `guest_config` | FortiSOAR only: SSH into the guest through the pod and compare or read its license, and report the first-boot wizard (configured, pending or failed) |
 
-A section that fails reports its error in place and does not hide the others.
+A section that fails reports its error in place and does not hide the others. If every section fails the same way (the pod is down, or it refused the login), the call itself fails with that one error.
 
 ### `tasks`: what ran and why it failed
 
