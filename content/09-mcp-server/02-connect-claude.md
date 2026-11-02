@@ -50,6 +50,62 @@ Besides tools, the server offers prompts, which Claude Code shows as slash comma
 `/mcp__fabric-studio__troubleshoot-failed-install`, `/mcp__fabric-studio__snapshot-before-change` and
 `/mcp__fabric-studio__pod-health-check`. Type `@` to attach a resource such as the list of your pods.
 
+### Try it
+
+These five steps register the server for one folder, approve it, ask a question, and
+see the approval Claude asks for before it changes a pod.
+
+<!-- step: fsm09-01-register -->
+
+1. In an empty folder, register the server for this project. The command writes a `.mcp.json` file:
+
+```bash
+claude mcp add fabric-studio --scope project -- fabric-studio-mcp
+```
+
+<!-- capture: fsm09-01-register -->
+![fsm09-01-register](fsm09-01-register.png)
+
+<!-- step: fsm09-02-trust-folder -->
+
+2. Start Claude Code with `claude`. It asks whether you trust the folder; choose **Yes, I trust this folder**.
+   When the project has a `.mcp.json`, Claude may also ask you to approve the server it found there; choose
+   **Use this MCP server**.
+
+<!-- capture: fsm09-02-trust-folder -->
+![fsm09-02-trust-folder](fsm09-02-trust-folder.png)
+
+<!-- step: fsm09-03-check-mcp -->
+
+3. Type `/mcp`. `fabric-studio` is listed with its tools.
+
+<!-- capture: fsm09-03-check-mcp -->
+![fsm09-03-check-mcp](fsm09-03-check-mcp.png)
+
+<!-- step: fsm09-04-ask-pods -->
+
+4. Ask a question, such as `List my managed Fabric Studio instances.` Claude asks permission the first time it
+   uses a tool. Choose **Yes**, and it answers from your pods.
+
+<!-- capture: fsm09-04-ask-pods -->
+![fsm09-04-ask-pods](fsm09-04-ask-pods.png)
+
+<!-- step: fsm09-05-approve-change -->
+
+5. Ask for a change, such as restarting a VM. Claude previews the plan, and the server then asks you to
+   approve it. Tick **Approve** (press Space) and choose **Accept** to run it. Choosing **Decline**, pressing Esc, or
+   accepting without ticking **Approve** leaves the pod untouched.
+
+<!-- capture: fsm09-05-approve-change -->
+![fsm09-05-approve-change](fsm09-05-approve-change.png)
+
+{{% notice note %}}
+Registering with `--scope project` makes Claude ask for approval in step 2. With `--scope user`, as shown
+above, the server is available everywhere and that question is skipped. If `fabric-studio` is already
+registered in another scope, Claude warns about "Conflicting scopes"; remove the one you do not want with
+`claude mcp remove`.
+{{% /notice %}}
+
 ## Claude Desktop
 
 Claude Desktop starts with a minimal `PATH`, so give it the full path from
