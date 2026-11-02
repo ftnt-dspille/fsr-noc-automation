@@ -116,8 +116,8 @@ registered in another scope, Claude warns about "Conflicting scopes"; remove the
 ## Claude Desktop
 
 Claude Desktop starts with a minimal `PATH`, so give it the full path from
-`which fabric-studio-mcp`. Edit `claude_desktop_config.json` (on macOS,
-`~/Library/Application Support/Claude/`):
+`which fabric-studio-mcp` (`where.exe fabric-studio-mcp` on Windows). Edit `claude_desktop_config.json`
+(on macOS, `~/Library/Application Support/Claude/`; on Windows, `%APPDATA%\Claude\`):
 
 ```json
 {
@@ -128,6 +128,9 @@ Claude Desktop starts with a minimal `PATH`, so give it the full path from
   }
 }
 ```
+
+On Windows the command is the `.exe`, with doubled backslashes in JSON:
+`"C:\\Users\\you\\.local\\bin\\fabric-studio-mcp.exe"`.
 
 Restart Claude Desktop afterwards.
 

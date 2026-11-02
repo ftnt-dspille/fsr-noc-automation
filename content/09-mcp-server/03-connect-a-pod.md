@@ -13,6 +13,8 @@ login file once, then let Claude register it.
 
 Create `~/.fsh/.env.mypod` (any name after `.env.`) and lock it down:
 
+{{< tabs groupid="os" >}}
+{{% tab title="Linux" %}}
 ```bash
 mkdir -p ~/.fsh
 cat > ~/.fsh/.env.mypod <<'EOF'
@@ -22,6 +24,20 @@ FS_POD_PASS=<your-password>
 EOF
 chmod 600 ~/.fsh/.env.mypod
 ```
+{{% /tab %}}
+{{% tab title="Windows" %}}
+```powershell
+New-Item -ItemType Directory -Force "$HOME\.fsh" | Out-Null
+@"
+FS_POD_HOST=fabric-studio.example.com
+FS_POD_USER=admin
+FS_POD_PASS=<your-password>
+"@ | Set-Content -Encoding ascii "$HOME\.fsh\.env.mypod"
+```
+
+There is no `chmod` step: your user folder is already private to your account.
+{{% /tab %}}
+{{< /tabs >}}
 
 `FS_POD_HOST` is the pod's hostname or IP, the same one you open in the browser.
 The server also looks in any folder listed in `FS_ENV_DIRS`.

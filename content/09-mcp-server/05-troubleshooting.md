@@ -31,8 +31,8 @@ Python" means your uv is picking an older interpreter than 3.11: `uv tool instal
 
 ## Command not found
 
-uv puts tools in `~/.local/bin`. Run `uv tool update-shell`, open a new
-terminal, and check `which fabric-studio-mcp`. For Claude Desktop, use the full
+uv puts tools in `~/.local/bin` (`%USERPROFILE%\.local\bin` on Windows). Run `uv tool update-shell`, open a new
+terminal, and check `which fabric-studio-mcp` (`where.exe fabric-studio-mcp` in PowerShell). For Claude Desktop, use the full
 path in the config, since the app does not read your shell `PATH`.
 
 ## `missing required argument 'commandOrUrl'`

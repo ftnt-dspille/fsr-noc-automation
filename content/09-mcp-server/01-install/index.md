@@ -25,20 +25,14 @@ Open a terminal (macOS uses the same commands) and install uv:
 curl -LsSf https://astral.sh/uv/install.sh | sh
 ```
 {{% /tab %}}
-{{% tab title="Windows (WSL2)" %}}
-The server runs on Linux, so on Windows you run it inside WSL2. In an administrator PowerShell:
+{{% tab title="Windows" %}}
+Open **PowerShell** and install uv:
 
 ```powershell
-wsl --install
+powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
 ```
 
-Restart when asked, then open **Ubuntu** from the Start menu. **Do everything from here on in that Ubuntu
-terminal, including Claude Code**: install Claude Code inside WSL too, so it can start the server. Then install uv and unzip:
-
-```bash
-curl -LsSf https://astral.sh/uv/install.sh | sh
-sudo apt update && sudo apt install -y unzip
-```
+Close and reopen PowerShell so `uv` is on your `PATH`.
 {{% /tab %}}
 {{< /tabs >}}
 
@@ -59,15 +53,13 @@ unzip fabric-studio.zip
 uv tool install "./fabric-studio[mcp]"
 ```
 {{% /tab %}}
-{{% tab title="Windows (WSL2)" %}}
-The browser saves the zip on the Windows side. Copy it into your WSL home folder (replace `<you>` with your
-Windows user name), then install from there:
+{{% tab title="Windows" %}}
+In PowerShell, from the folder the zip downloaded to (usually Downloads):
 
-```bash
-cp /mnt/c/Users/<you>/Downloads/fabric-studio.zip ~/
-cd ~
-unzip fabric-studio.zip
-uv tool install "./fabric-studio[mcp]"
+```powershell
+cd $HOME\Downloads
+Expand-Archive fabric-studio.zip -DestinationPath .
+uv tool install ".\fabric-studio[mcp]"
 ```
 {{% /tab %}}
 {{< /tabs >}}
@@ -76,12 +68,21 @@ The server is part of **fabric-studio**, which is not on PyPI, so it installs fr
 `[mcp]` part adds the MCP SDK. Once it is installed you can delete the zip and the folder, but keep the folder
 if you want the agent skill below. Check the command landed on your `PATH`:
 
+{{< tabs groupid="os" >}}
+{{% tab title="Linux" %}}
 ```bash
 which fabric-studio-mcp
 ```
+{{% /tab %}}
+{{% tab title="Windows" %}}
+```powershell
+where.exe fabric-studio-mcp
+```
+{{% /tab %}}
+{{< /tabs >}}
 
 If that prints nothing, run `uv tool update-shell` and open a new terminal. uv installs tools to
-`~/.local/bin`.
+`~/.local/bin` (`%USERPROFILE%\.local\bin` on Windows).
 
 {{% notice tip %}}
 Running `fabric-studio-mcp` by hand prints nothing and waits. That is correct:
@@ -95,14 +96,25 @@ works (one fabric per pod, model versus runtime, what a bare `254` means) and wh
 MCP tool to use. The installed command does not include it, so for Claude Code copy the folder from the
 unzipped download into your skills folder:
 
+{{< tabs groupid="os" >}}
+{{% tab title="Linux" %}}
 ```bash
 mkdir -p ~/.claude/skills
 cp -r fabric-studio/skills/fabric-studio ~/.claude/skills/
 ```
+{{% /tab %}}
+{{% tab title="Windows" %}}
+```powershell
+New-Item -ItemType Directory -Force "$HOME\.claude\skills" | Out-Null
+Copy-Item -Recurse .\fabric-studio\skills\fabric-studio "$HOME\.claude\skills\"
+```
+{{% /tab %}}
+{{< /tabs >}}
 
 ## Update and remove
 
-To update, download the new zip, unzip it over the old folder, and reinstall:
+To update, download the new zip, unzip it over the old folder, and reinstall (on Windows,
+`.\fabric-studio[mcp]`):
 
 ```bash
 uv tool install --force "./fabric-studio[mcp]"
@@ -115,6 +127,8 @@ uv tool uninstall fabric-studio
 ```
 
 Your pod registry in `~/.fsh/` is left alone by both.
+
+Prefer a Linux shell on Windows? WSL2 works too: run the Linux commands inside it, and run Claude Code there.
 
 The source is on the Fortinet Git server if you want to read it or contribute.
 
