@@ -40,7 +40,7 @@ Close and reopen PowerShell so `uv` is on your `PATH`.
 
 Download the repository as a zip:
 
-{{% resources title="Download fabric-studio" style="info" pattern=".*\.zip" /%}}
+{{< download "/downloads/fabric-studio.zip" >}}fabric-studio.zip, the repository (about 400 KB){{< /download >}}
 
 {{% notice info %}}
 The zip is a snapshot. **The latest code is in the
@@ -49,6 +49,8 @@ The zip is a snapshot. **The latest code is in the
 and install from that folder instead of the zip, the same way.
 {{% /notice %}}
 
+<!-- step: fsm09-12-install -->
+
 Unzip it and install from the folder:
 
 {{< tabs groupid="os" >}}
@@ -56,7 +58,7 @@ Unzip it and install from the folder:
 From the folder the zip downloaded to:
 
 ```bash
-unzip fabric-studio.zip
+unzip -q fabric-studio.zip
 uv tool install "./fabric-studio[mcp]"
 ```
 {{% /tab %}}
@@ -70,6 +72,11 @@ uv tool install ".\fabric-studio[mcp]"
 ```
 {{% /tab %}}
 {{< /tabs >}}
+
+On Linux the whole install looks like this (uv also lists each package it installs; the picture keeps only the last line):
+
+<!-- capture: fsm09-12-install -->
+![fsm09-12-install](fsm09-12-install.png)
 
 The server is part of **fabric-studio**, which is not on PyPI, so it installs from this download. The
 `[mcp]` part adds the MCP SDK. Once it is installed you can delete the zip and the folder, but keep the folder

@@ -39,6 +39,11 @@ claude mcp list
 You should see *fabric-studio: fabric-studio-mcp - ✔ Connected*. Inside a
 session, `/mcp` shows the same and lists the 16 tools (a few more in the lab repository's build).
 
+<!-- step: fsm09-15-mcp-list -->
+
+<!-- capture: fsm09-15-mcp-list -->
+![fsm09-15-mcp-list](fsm09-15-mcp-list.png)
+
 The first time Claude uses a tool it asks permission. To pre-approve the
 read-only ones, add `mcp__fabric-studio__pods`, `mcp__fabric-studio__fabric`,
 `mcp__fabric-studio__vm`, `mcp__fabric-studio__tasks` and `mcp__fabric-studio__diagnose` to

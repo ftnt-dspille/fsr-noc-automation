@@ -14,17 +14,12 @@ you log in as, never a password. You add a pod once, from a terminal, before Cla
 fabric-studio-mcp setup
 ```
 
-It asks four things, checks the login against the pod, and remembers it:
+<!-- step: fsm09-13-setup -->
 
-```text
-Pod hostname or IP (as in your browser): fabric-studio.example.com
-Username [admin]:
-Name for this pod [fabric-studio]: mypod
-Password for admin@fabric-studio.example.com (not shown):
-Registered 'mypod' (fabric-studio.example.com, hostname fabric-studio) as admin.
-The password is kept in the system keychain; it is not in the registry.
-Next: connect Claude (see the docs), then ask: List my managed Fabric Studio instances.
-```
+It asks four things, checks the login against the pod, and remembers it. The password is typed but not shown:
+
+<!-- capture: fsm09-13-setup -->
+![fsm09-13-setup](fsm09-13-setup.png)
 
 The hostname is the pod's address, the same one you open in the browser. The same command works on every
 system. A wrong password fails here, with the pod's answer, and nothing is saved.
@@ -46,14 +41,14 @@ In PowerShell: `$env:POD_PASSWORD | fabric-studio-mcp setup --host fabric-studio
 
 ## 2. Check it
 
+<!-- step: fsm09-14-pods -->
+
 ```bash
 fabric-studio-mcp pods
 ```
 
-```text
-NAME             HOST                             USER         LOGIN
-mypod            fabric-studio.example.com        admin        system keychain
-```
+<!-- capture: fsm09-14-pods -->
+![fsm09-14-pods](fsm09-14-pods.png)
 
 To stop managing a pod, run `fabric-studio-mcp remove mypod`. That deletes the registry entry and the stored
 password only. The pod itself is untouched.

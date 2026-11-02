@@ -11,8 +11,23 @@ finds most causes.
 
 ## The routine
 
-Ask Claude: *"The install on pod-a failed. What happened?"* It starts with **diagnose**, one call that
-checks every device, reads the failed task's log and ranks what it finds. The steps below are what it
+<!-- step: fsm09-16-build-failed -->
+
+A failed build ends with Claude reporting that the run did not finish cleanly. Here a build of three devices
+failed on the FortiManager:
+
+<!-- capture: fsm09-16-build-failed -->
+![fsm09-16-build-failed](fsm09-16-build-failed.png)
+
+<!-- step: fsm09-17-diagnose -->
+
+Ask Claude: *"Why did it fail? Check the pod and tell me the cause."* It starts with **diagnose**, one call that
+checks every device, reads the failed task's log and ranks what it finds.
+
+<!-- capture: fsm09-17-diagnose -->
+![fsm09-17-diagnose](fsm09-17-diagnose.png)
+
+ The steps below are what it
 does underneath, and you can ask for any of them on its own.
 
 1. **Is anything still running, or is the pod locked?** **pods** (view *health*), **tasks**
