@@ -18,13 +18,13 @@ description: "Fixes for the install, Claude registration and pod login problems 
 
 ## Install fails on git or SSH
 
-The package pulls `fabric-studio` from internal GitLab over SSH. Run:
+The package pulls `fabric-studio` from git.fndn.fortinet.net over SSH. Run:
 
 ```bash
 git ls-remote ssh://git@git.fndn.fortinet.net:2222/dspille/fabric-studio.git HEAD
 ```
 
-If that fails, you are off the VPN or your SSH key is not on your GitLab
+If that fails, you are off the VPN or your SSH key is not on your
 profile. Fix that first, then rerun the install.
 
 ## Command not found

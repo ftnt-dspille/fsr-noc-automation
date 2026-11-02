@@ -13,10 +13,10 @@ The server ships as a Python package that installs one command,
 - **[uv](https://docs.astral.sh/uv/)**, which installs the command in its own
   isolated environment and fetches Python 3.13 or later if you lack it.
   `curl -LsSf https://astral.sh/uv/install.sh | sh`
-- **SSH access to Fortinet's internal GitLab.** The server installs
+- **SSH access to the Fortinet Git server (git.fndn.fortinet.net).** The server installs
   from there, so `git ls-remote
   ssh://git@git.fndn.fortinet.net:2222/dspille/fabric-studio.git`
-  must work from your machine (VPN on, SSH key added to your GitLab profile).
+  must work from your machine (VPN on, SSH key added to your profile on that server).
 - **Network reach to your pods** on HTTPS 443, from the machine that runs
   Claude.
 
@@ -45,8 +45,13 @@ it speaks MCP over stdin and stdout and expects a client. Press Ctrl+C to leave.
 
 The repository carries an agent skill, `skills/fabric-studio/`, that tells an agent how Fabric Studio
 works (one fabric per pod, model versus runtime, what a bare `254` means) and which library function or
-MCP tool to use. For Claude Code, copy it into your skills folder from a checkout:
-`cp -r skills/fabric-studio ~/.claude/skills/`.
+MCP tool to use. The installed command does not include it, so for Claude Code clone the repository once and
+copy the folder into your skills folder:
+
+```bash
+git clone ssh://git@git.fndn.fortinet.net:2222/dspille/fabric-studio.git
+cp -r fabric-studio/skills/fabric-studio ~/.claude/skills/
+```
 
 ## Update and remove
 
