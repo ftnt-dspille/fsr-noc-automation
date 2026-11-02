@@ -25,7 +25,7 @@ It talks to the same REST API the UI uses, with your own pod login. It has
 | 1 | Install the `fabric-studio-mcp` command | [Install]({{% relref "01-install" %}}) |
 | 2 | Register it with Claude | [Connect Claude]({{% relref "02-connect-claude" %}}) |
 | 3 | Give it a pod and a login | [Connect a Pod]({{% relref "03-connect-a-pod" %}}) |
-| 4 | Ask a question | [Try it](#try-it) |
+| 4 | Ask a question, then try a change | [Connect a Pod]({{% relref "03-connect-a-pod#3-check-it" %}}) |
 
 The whole thing takes a few minutes, and nothing is installed on the pod.
 

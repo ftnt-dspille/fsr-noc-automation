@@ -7,7 +7,8 @@ description: "Register a Fabric Studio pod with its login so Claude can query it
 
 The server manages the pods in a small **registry** at `~/.fsh/instances.json`.
 It holds hostnames and where each login lives, never a password. You create a
-login file once, then let Claude register it.
+login file once, then let Claude register it. This comes after
+[Connect Claude]({{% relref "02-connect-claude" %}}), because Claude does the registering.
 
 ## 1. Put the login in a file
 
@@ -61,16 +62,44 @@ needed.
 
 ## 3. Check it
 
+<!-- step: fsm09-04-ask-pods -->
+
+Start Claude with `claude` and ask:
+
 ```text
 List my managed Fabric Studio instances.
 ```
 
-Each row shows the host, the name, and whether the pod is `online`. A pod that
-is offline or rejects the login shows the error beside it instead of failing
-the whole call.
+Claude asks permission the first time it uses a tool. Choose **Yes**, and it answers from your pods. Each row
+shows the host, the name, and whether the pod is `online`. A pod that is offline or rejects the login shows the
+error beside it instead of failing the whole call.
 
-To stop managing a pod, ask Claude to `remove_instance` it. That deletes the
-registry entry only. The pod and your login file are untouched.
+<!-- capture: fsm09-04-ask-pods -->
+![fsm09-04-ask-pods](fsm09-04-ask-pods.png)
+
+## 4. Try a change
+
+Changes to a pod are different from questions: Claude previews the plan, and the server then asks **you** to
+approve it before anything happens.
+
+<!-- step: fsm09-05-approve-change -->
+
+Ask for a change, such as restarting a VM. Claude previews the plan, and the server asks you to approve it.
+Choosing **Decline**, pressing Esc, or accepting without ticking **Approve** leaves the pod untouched.
+
+<!-- capture: fsm09-05-approve-change -->
+![fsm09-05-approve-change](fsm09-05-approve-change.png)
+
+<!-- step: fsm09-06-approved -->
+
+To run the change, tick **Approve** (press Space), move to **Accept** and press Enter. The server then does
+the work and Claude reports the result.
+
+<!-- capture: fsm09-06-approved -->
+![fsm09-06-approved](fsm09-06-approved.png)
+
+To stop managing a pod, ask Claude to `remove_instance` it. That deletes the registry entry only. The pod and
+your login file are untouched.
 
 ## Guest logins (FortiSOAR)
 
