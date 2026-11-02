@@ -5,7 +5,7 @@ weight: 20
 description: "Register a Fabric Studio pod with its login so Claude can query it"
 ---
 
-The server manages the pods in a small **registry** at `~/.fsh/instances.json`. It holds hostnames and who
+The server manages the pods in a small **registry** at *~/.fsh/instances.json*. It holds hostnames and who
 you log in as, never a password. You add a pod once, from a terminal, before Claude is involved.
 
 ## 1. Add the pod
@@ -31,7 +31,7 @@ system. A wrong password fails here, with the pod's answer, and nothing is saved
 
 Where the password goes: the **system keychain** (macOS Keychain, Windows Credential Manager, or the Linux
 Secret Service). Where there is no keychain, such as a headless Linux server, the login goes in a private
-file, `~/.fsh/.env.<name>`, readable only by you. The password is never echoed, never in your shell history,
+file, *~/.fsh/.env.&lt;name&gt;*, readable only by you. The password is never echoed, never in your shell history,
 and never in the registry.
 
 For scripts, give everything as options and pipe the password in:
@@ -61,9 +61,9 @@ password only. The pod itself is untouched.
 ## Other ways to add a pod
 
 **From a login file.** For a team that already keeps logins in files, or for automation, create a file named
-`.env.<name>` and let Claude register it once [Claude is connected]({{% relref "03-connect-claude" %}}):
+*.env.&lt;name&gt;* and let Claude register it once [Claude is connected]({{% relref "03-connect-claude" %}}):
 
-Create `~/.fsh/.env.mypod` (any name after `.env.`) and lock it down:
+Create `~/.fsh/.env.mypod` (any name after *.env.*) and lock it down:
 
 {{< tabs groupid="os" >}}
 {{% tab title="Linux" %}}
@@ -87,7 +87,7 @@ FS_POD_PASS=<your-password>
 "@ | Set-Content -Encoding ascii "$HOME\.fsh\.env.mypod"
 ```
 
-There is no `chmod` step: your user folder is already private to your account.
+There is no chmod step: your user folder is already private to your account.
 {{% /tab %}}
 {{< /tabs >}}
 
@@ -100,20 +100,20 @@ Then, in Claude, ask:
 Find my Fabric Studio env files and register the mypod one.
 ```
 
-Claude calls `pods` (view `known`) to list the logins it can see, without showing passwords, then
-`add_instance`. By default it logs in first and refuses a pod that rejects the login. To keep the password in
+Claude calls **pods** (view *known*) to list the logins it can see, without showing passwords, then
+**add_instance**. By default it logs in first and refuses a pod that rejects the login. To keep the password in
 the OS keychain instead of the file, ask for `store="keychain"`: the server copies it in and the file is no
 longer needed. The server also looks for login files in any folder listed in `FS_ENV_DIRS`.
 
-**From Claude.** The `add_instance` tool never takes a password, so Claude can only register a pod whose login
+**From Claude.** The **add_instance** tool never takes a password, so Claude can only register a pod whose login
 is already in a login file or the keychain. Use `fabric-studio-mcp setup` to put it there.
 
 ## Guest logins (FortiSOAR)
 
-The `vm` sections `guest_license`, `guest_config` and `license_match` SSH into a FortiSOAR VM through
+The **vm** sections *guest_license*, *guest_config* and *license_match* SSH into a FortiSOAR VM through
 the pod. They only work on FortiSOAR VMs and refuse any other device before connecting. The login comes
 from the MCP server's environment and is never a tool argument: set `FS_SOAR_SSH_PASS` (and
-`FS_SOAR_SSH_USER` if it is not `csadmin`). There is no built-in password; without one the section
+`FS_SOAR_SSH_USER` if it is not csadmin). There is no built-in password; without one the section
 says it is not configured.
 
 {{% notice warning %}}
