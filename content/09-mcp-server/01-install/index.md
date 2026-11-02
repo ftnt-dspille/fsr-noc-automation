@@ -12,9 +12,35 @@ The server ships as a Python package that installs one command,
 
 - **[uv](https://docs.astral.sh/uv/)**, which installs the command in its own
   isolated environment and fetches Python 3.11 or later if you lack it.
-  `curl -LsSf https://astral.sh/uv/install.sh | sh`
 - **Network reach to your pods** on HTTPS 443, from the machine that runs
   Claude.
+
+Pick your system. The choice is remembered for the rest of the page.
+
+{{< tabs groupid="os" >}}
+{{% tab title="Linux" %}}
+Open a terminal (macOS uses the same commands) and install uv:
+
+```bash
+curl -LsSf https://astral.sh/uv/install.sh | sh
+```
+{{% /tab %}}
+{{% tab title="Windows (WSL2)" %}}
+The server runs on Linux, so on Windows you run it inside WSL2. In an administrator PowerShell:
+
+```powershell
+wsl --install
+```
+
+Restart when asked, then open **Ubuntu** from the Start menu. **Do everything from here on in that Ubuntu
+terminal, including Claude Code**: install Claude Code inside WSL too, so it can start the server. Then install uv and unzip:
+
+```bash
+curl -LsSf https://astral.sh/uv/install.sh | sh
+sudo apt update && sudo apt install -y unzip
+```
+{{% /tab %}}
+{{< /tabs >}}
 
 ## Install
 
@@ -24,10 +50,27 @@ Download the repository as a zip:
 
 Unzip it and install from the folder:
 
+{{< tabs groupid="os" >}}
+{{% tab title="Linux" %}}
+From the folder the zip downloaded to:
+
 ```bash
 unzip fabric-studio.zip
 uv tool install "./fabric-studio[mcp]"
 ```
+{{% /tab %}}
+{{% tab title="Windows (WSL2)" %}}
+The browser saves the zip on the Windows side. Copy it into your WSL home folder (replace `<you>` with your
+Windows user name), then install from there:
+
+```bash
+cp /mnt/c/Users/<you>/Downloads/fabric-studio.zip ~/
+cd ~
+unzip fabric-studio.zip
+uv tool install "./fabric-studio[mcp]"
+```
+{{% /tab %}}
+{{< /tabs >}}
 
 The server is part of **fabric-studio**, which is not on PyPI, so it installs from this download. The
 `[mcp]` part adds the MCP SDK. Once it is installed you can delete the zip and the folder, but keep the folder
