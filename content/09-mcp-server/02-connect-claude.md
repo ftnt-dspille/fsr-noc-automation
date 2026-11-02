@@ -93,11 +93,18 @@ claude mcp add fabric-studio --scope project -- fabric-studio-mcp
 <!-- step: fsm09-05-approve-change -->
 
 5. Ask for a change, such as restarting a VM. Claude previews the plan, and the server then asks you to
-   approve it. Tick **Approve** (press Space) and choose **Accept** to run it. Choosing **Decline**, pressing Esc, or
-   accepting without ticking **Approve** leaves the pod untouched.
+   approve it. Choosing **Decline**, pressing Esc, or accepting without ticking **Approve** leaves the pod untouched.
 
 <!-- capture: fsm09-05-approve-change -->
 ![fsm09-05-approve-change](fsm09-05-approve-change.png)
+
+<!-- step: fsm09-06-approved -->
+
+6. To run the change, tick **Approve** (press Space), move to **Accept** and press Enter. The server then
+   does the work and Claude reports the result.
+
+<!-- capture: fsm09-06-approved -->
+![fsm09-06-approved](fsm09-06-approved.png)
 
 {{% notice note %}}
 Registering with `--scope project` makes Claude ask for approval in step 2. With `--scope user`, as shown

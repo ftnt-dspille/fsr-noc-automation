@@ -7,7 +7,7 @@ import { test } from 'docubot';
 // Installs fabric-studio from the Git server exactly as the page says, registers it for a fresh folder,
 // then drives the real Claude Code TUI. The pod is read from the machine's own registry (~/.fsh).
 const REPO = process.env.FSM_REPO ?? 'ssh://git@git.fndn.fortinet.net:2222/dspille/fabric-studio.git';
-const POD = process.env.FSM_POD ?? '';           // host of a lab pod you may change; the change is declined, never accepted
+const POD = process.env.FSM_POD ?? '';           // host of a lab pod you may change; step 6 accepts the restart, so it runs on that pod
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
 // Show the folder the page tells a student to use, and drop the warning that comes from the
@@ -91,8 +91,17 @@ test('Connect Claude Code to the fabric-studio MCP server', async ({ local, capt
       await claude.waitFor(/requests your input/, { timeoutMs: 120_000 });
       await sleep(1500);
       await capture.screen('fsm09-05-approve-change', claude.screen(), { title, replace: swap, cols: 110 });
-      claude.write('\x1b');                     // decline: nothing on the pod changes
-      await sleep(5000);
+    });
+
+    await test.step('fsm09-06-approved', async () => {
+      claude.write(' '); await sleep(800);       // tick Approve
+      claude.write('\x1b[B'); await sleep(600);  // move to Accept
+      claude.write('\r');
+      // The restart takes about a minute: power off, power on, wait for ready.
+      // Wait for Claude's own report (the step 4 "Brewed for" line is still on screen, so it cannot be the cue).
+      await claude.waitFor(/restarted|powered on and ready/i, { timeoutMs: 240_000 });
+      await sleep(10_000);                       // let the closing "Brewed for" line settle
+      await capture.screen('fsm09-06-approved', claude.screen(), { title, replace: swap, cols: 110 });
     });
     claude.kill();
   } finally {
