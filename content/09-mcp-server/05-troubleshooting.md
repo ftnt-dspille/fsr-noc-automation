@@ -7,7 +7,7 @@ description: "Fixes for the install, Claude registration and pod login problems 
 
 | Symptom | Go to |
 |---|---|
-| `uv tool install` fails fetching `fabric-studio` | [Install fails](#install-fails-on-git-or-ssh) |
+| `uv tool install` fails | [Install fails](#install-fails) |
 | `fabric-studio-mcp: command not found` | [Not on PATH](#command-not-found) |
 | `claude mcp add` says `missing required argument` | [Wrong argument order](#missing-required-argument-commandorurl) |
 | The server is listed but shows no tools, or fails | [Won't connect](#the-server-shows-failed-in-mcp) |
@@ -16,16 +16,18 @@ description: "Fixes for the install, Claude registration and pod login problems 
 | A change says the client cannot ask, or the pod is locked | [Changes refused](#a-change-is-refused) |
 | `cannot reach <pod> over HTTPS`, or `retry in Ns` | [Pod offline](#a-pod-is-offline-or-rejects-the-login) |
 
-## Install fails on git or SSH
+## Install fails
 
-The package pulls `fabric-studio` from git.fndn.fortinet.net over SSH. Run:
+Run the install from the folder you unzipped, the one that contains `pyproject.toml`:
 
 ```bash
-git ls-remote ssh://git@git.fndn.fortinet.net:2222/dspille/fabric-studio.git HEAD
+ls fabric-studio/pyproject.toml
+uv tool install "./fabric-studio[mcp]"
 ```
 
-If that fails, you are off the VPN or your SSH key is not on your
-profile. Fix that first, then rerun the install.
+If `ls` finds nothing, the zip unpacked somewhere else: `cd` to where it landed. If uv says no Python
+matches, run `uv python install 3.11` and try again. A message about a package that "requires a different
+Python" means your uv is picking an older interpreter than 3.11: `uv tool install --python 3.12 "./fabric-studio[mcp]"`.
 
 ## Command not found
 

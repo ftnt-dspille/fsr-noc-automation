@@ -4,9 +4,10 @@ import { homedir } from 'node:os';
 import { join } from 'node:path';
 import { CLAUDE_TURN_DONE, fsGoto, fsOpenFabric, fsShot, getGuiDevice, skipStep, test } from 'docubot';
 
-// Installs fabric-studio from the Git server exactly as the page says, registers it for a fresh folder,
+// Installs fabric-studio from the zip the Install page offers, exactly as the page says (unzip, then uv tool install), registers it for a fresh folder,
 // then drives the real Claude Code TUI. The pod is read from the machine's own registry (~/.fsh).
-const REPO = process.env.FSM_REPO ?? 'ssh://git@git.fndn.fortinet.net:2222/dspille/fabric-studio.git';
+// The published download: the chapter tests the artifact a reader gets, not a checkout. Override with FSM_ZIP.
+const ZIP = process.env.FSM_ZIP ?? join(__dirname, '..', '..', 'content', '09-mcp-server', '01-install', 'fabric-studio.zip');
 const POD = process.env.FSM_POD ?? '';           // host of a lab pod you may change; step 6 accepts the restart, so it runs on that pod
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 // Steps 7-11 build a real fabric on the pod (and stop the one running there), so they run only when asked.
@@ -33,7 +34,10 @@ test('Connect Claude Code to the fabric-studio MCP server', async ({ local, capt
   const work = join(root, 'demo');
   mkdirSync(work);
   const env = { UV_TOOL_DIR: tools, UV_TOOL_BIN_DIR: join(tools, 'bin') };
-  execFileSync('uv', ['tool', 'install', `fabric-studio[mcp] @ git+${REPO}`], { env: { ...process.env, ...env }, stdio: 'pipe' });
+  const dl = join(root, 'download');
+  mkdirSync(dl);
+  execFileSync('unzip', ['-q', ZIP, '-d', dl], { stdio: 'pipe' });
+  execFileSync('uv', ['tool', 'install', './fabric-studio[mcp]'], { cwd: dl, env: { ...process.env, ...env }, stdio: 'pipe' });
   const path = `${join(tools, 'bin')}:${process.env.PATH}`;
   // A registry of one pod under a neutral name, so the shots show a student's view and not the author's pods.
   const registry = join(root, 'instances.json');

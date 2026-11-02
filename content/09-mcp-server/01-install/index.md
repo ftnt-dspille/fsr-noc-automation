@@ -2,7 +2,7 @@
 title: "Install"
 linkTitle: "Install"
 weight: 10
-description: "Install the fabric-studio-mcp command with uv"
+description: "Download fabric-studio, then install the fabric-studio-mcp command with uv"
 ---
 
 The server ships as a Python package that installs one command,
@@ -11,23 +11,27 @@ The server ships as a Python package that installs one command,
 ## Before you start
 
 - **[uv](https://docs.astral.sh/uv/)**, which installs the command in its own
-  isolated environment and fetches Python 3.13 or later if you lack it.
+  isolated environment and fetches Python 3.11 or later if you lack it.
   `curl -LsSf https://astral.sh/uv/install.sh | sh`
-- **SSH access to the Fortinet Git server (git.fndn.fortinet.net).** The server installs
-  from there, so `git ls-remote
-  ssh://git@git.fndn.fortinet.net:2222/dspille/fabric-studio.git`
-  must work from your machine (VPN on, SSH key added to your profile on that server).
 - **Network reach to your pods** on HTTPS 443, from the machine that runs
   Claude.
 
 ## Install
 
+Download the repository as a zip:
+
+{{% resources title="Download fabric-studio" style="info" pattern=".*\.zip" /%}}
+
+Unzip it and install from the folder:
+
 ```bash
-uv tool install "fabric-studio[mcp] @ git+ssh://git@git.fndn.fortinet.net:2222/dspille/fabric-studio.git"
+unzip fabric-studio.zip
+uv tool install "./fabric-studio[mcp]"
 ```
 
-The server is part of **fabric-studio**, which is not on PyPI, so it installs from git. The
-`[mcp]` part adds the MCP SDK. Check it landed on your `PATH`:
+The server is part of **fabric-studio**, which is not on PyPI, so it installs from this download. The
+`[mcp]` part adds the MCP SDK. Once it is installed you can delete the zip and the folder, but keep the folder
+if you want the agent skill below. Check the command landed on your `PATH`:
 
 ```bash
 which fabric-studio-mcp
@@ -45,22 +49,31 @@ it speaks MCP over stdin and stdout and expects a client. Press Ctrl+C to leave.
 
 The repository carries an agent skill, `skills/fabric-studio/`, that tells an agent how Fabric Studio
 works (one fabric per pod, model versus runtime, what a bare `254` means) and which library function or
-MCP tool to use. The installed command does not include it, so for Claude Code clone the repository once and
-copy the folder into your skills folder:
+MCP tool to use. The installed command does not include it, so for Claude Code copy the folder from the
+unzipped download into your skills folder:
 
 ```bash
-git clone ssh://git@git.fndn.fortinet.net:2222/dspille/fabric-studio.git
+mkdir -p ~/.claude/skills
 cp -r fabric-studio/skills/fabric-studio ~/.claude/skills/
 ```
 
 ## Update and remove
 
+To update, download the new zip, unzip it over the old folder, and reinstall:
+
 ```bash
-uv tool upgrade fabric-studio     # newer version
-uv tool uninstall fabric-studio   # remove it
+uv tool install --force "./fabric-studio[mcp]"
+```
+
+To remove it:
+
+```bash
+uv tool uninstall fabric-studio
 ```
 
 Your pod registry in `~/.fsh/` is left alone by both.
+
+The source is on the Fortinet Git server if you want to read it or contribute.
 
 ## Working from a checkout instead
 
