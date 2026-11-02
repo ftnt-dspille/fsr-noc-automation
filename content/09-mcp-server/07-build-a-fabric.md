@@ -44,8 +44,9 @@ fmg (10.254.254.40) ──┼── OOB Mgmt 10.254.254.0/24 ── the Fabric S
 faz (10.254.254.50) ──┘
 ```
 
-Every device installs **unlicensed** (evaluation): the API, CLI and GUI work, and no FortiFlex points or pooled
-licenses are used. Topologies from a workspace folder are listed too: see
+Every device installs **unlicensed** (evaluation): the CLI and GUI work, and no FortiFlex points or pooled
+licenses are used. An unlicensed FortiGate does not accept API keys, so to configure one with
+[the device tool]({{% relref "09-configure-a-fortigate" %}}) give it a license first. Topologies from a workspace folder are listed too: see
 [Make your own](#make-your-own).
 
 ## 1. Ask for it
@@ -183,8 +184,8 @@ give FortiManager and FortiAnalyzer at least 4 vCPU and 8192 MiB of memory, sinc
 ## What this does not do
 
 A build brings the devices up and gives you SSH and API access to each. It stops there. It does not register
-the FortiGates with the FortiManager or FortiAnalyzer, create ADOMs, or configure anything inside a device;
-those are the next step you set up. A topology that declares *images:* (firmware to upload or build) is refused
+the FortiGates with the FortiManager or FortiAnalyzer or create ADOMs. To configure a FortiGate once it is up, see
+[Configure a FortiGate]({{% relref "09-configure-a-fortigate" %}}). A topology that declares *images:* (firmware to upload or build) is refused
 with a message that says so, instead of skipping the build. The lab repository's build of the server does the
 device configuration phase for the topologies that declare it.
 
