@@ -46,12 +46,12 @@ that task was 254, the same as for every other failure.
 | The log says | Cause | What to do |
 |---|---|---|
 | `No license for <node>000 (FLEX,LIC)` | The device asked for a license (`license: auto`) and no source could supply one: no FortiFlex configuration for that device type, and no matching license in the pod's pool | Check `pods` (view `licenses`). Either pin a source in the topology (`license: {mode: auto, flex_config: ...}`), import a license file, or install unlicensed with `license: "none"` |
-| `0-byte stub -- install would fail with rc 254` (from the lab's `make plan`/`make apply`), or on a UI install `Internal error, reach remote file code for local file` | The image is a **0-byte stub**: a row marked downloaded whose file is empty | `pods` (view `firmwares`) shows `usable: false` for it. Pick another row for the same version (there is usually a working copy in the `fortinet` repository). The lab tooling refuses the stub before it changes anything; the UI does not |
+| `0-byte stub -- install would fail with rc 254` (from `build` with `plan`), or on a UI install `Internal error, reach remote file code for local file` | The image is a **0-byte stub**: a row marked downloaded whose file is empty | `pods` (view `firmwares`) shows `usable: false` for it. Pick another row for the same version (there is usually a working copy in the `fortinet` repository). `build` refuses the stub at plan time, before it changes anything; the UI does not |
 | A device installs but never becomes ready | The task passed (return code 0) but the guest did not finish booting | `vm` (include `state`) for the device; for FortiSOAR, `vm` (include `guest_config`) |
 | `Vm has no parameters` | A device row in the pod's model is missing its parameters | Inspect it with `vm` (include `detail`). We have seen this once, on a switch device, and have no verified fix |
 
-The license row is the real log above. The stub row is also real: `make apply` with a stub image
-stops at plan time with `node 'fgt': image '850' (id=850) is a 0-byte stub -- install would fail with
+The license row is the real log above. The stub row is also real: planning a build with a stub image
+stops with `node 'fgt': image '850' (id=850) is a 0-byte stub -- install would fail with
 rc 254` and changes nothing. The `Internal error, reach remote file code for local file` text is what
 an install of a stub produced when it was started some other way.
 
@@ -63,8 +63,8 @@ tools too.
 
 ## Before you fix and retry
 
-- **Know what a retry does.** Running `make apply` again converges the fabric and only reinstalls
-  devices whose settings changed. A reinstall rebuilds a device from firmware, so anything you changed
+- **Know what a retry does.** Running the build again (`build` with `apply`) converges the fabric and only
+  reinstalls devices whose settings changed. A reinstall rebuilds a device from firmware, so anything you changed
   inside it is lost.
 - **Check the lock.** If `pods` (view `online`) shows the pod locked, `apply` will refuse by design. That is a
   deliberate freeze, not a failure. Ask whoever set it (`pods` (view `lockouts`) shows who).

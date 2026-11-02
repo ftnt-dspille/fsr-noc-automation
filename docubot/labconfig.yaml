@@ -1,3 +1,11 @@
 devices:
   laptop:
     type: local
+  # The pod's web UI, for the steps that show Fabric Studio's own pages. The values here are placeholders:
+  # set DOCUBOT_POD_URL, DOCUBOT_POD_USER and DOCUBOT_POD_PASS in the environment (never commit a password).
+  pod:
+    type: gui
+    product: fabricstudio
+    url: https://pod.example.com/ng/
+    user: admin
+    pass: set-DOCUBOT_POD_PASS

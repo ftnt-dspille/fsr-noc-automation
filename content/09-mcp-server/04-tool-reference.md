@@ -90,16 +90,14 @@ server's environment; an agent cannot set it.
 | `set_vm_port_auto` | Puts a guest port on its auto network |
 | `vm_lifecycle` | One VM: `action` is `on`, `off`, `restart`, `reinstall` or `cancel_task` (with `task_id`). `off` and `restart` are hard power-offs, so unsaved guest state is lost. `reinstall` rebuilds the guest from its firmware and wipes everything changed inside it. Asking for `on` on a VM that is already on does nothing and does not ask you |
 | `set_vm_license` | Chooses how one VM is licensed on install: `NONE` (unlicensed, nothing spent) or `AUTO` (takes a pooled license or FortiFlex points). The preview shows the current mode, the license now served, how many pooled licenses match the device type and whether FortiFlex is registered. The mode only applies on the next install, so `reinstall=true` is the default; `reinstall=false` changes the setting only |
+| `build` | Makes a whole fabric from a topology. `action` is `topologies` (what can be built), `validate` (no pod), `plan` (what it would create, reinstall or delete, which firmware each device gets, which running fabric it would stop), `apply` (build it; with `confirm=true` you are asked to approve the plan, then it runs in the background and returns a `run_id`) or `status` (follow a run). Only `apply` changes the pod, and it **stops the fabric running there now**. `prune=true` also deletes what the topology does not declare in that fabric (the plan lists every delete). Refused on a locked pod, a blocked plan, or a pod with a build already running. See [Build a Fabric]({{% relref "07-build-a-fabric" %}}) |
 | `snapshot_vm` | Saves a VM's disks as a new firmware in the pod's home repository. `action` is `diff` (only what changed since the original firmware; small) or `full` (one standalone image; larger, no dependency). The VM is hard powered off during the export and brought back up, so expect several minutes of downtime and lose unsaved guest state. `link=true` (the default) points the VM at the snapshot so a reinstall boots it |
 
 {{% notice note %}}
-The lab repository's own build adds the tools that build a fabric: `list_topologies`,
-`validate_fabric`, `plan_fabric`, `apply_fabric` (confirm to run, and you are asked to approve the plan; it
-stops the fabric running on the pod) and `fabric_run_status`. `plan_fabric` and `apply_fabric` take
-`prune=true`, which also deletes what the topology does not declare in that fabric; the plan lists every delete
-(`deletes`), so read it before you approve, because a prune can remove seeded networks or switches the
-topology leaves out. The examples are written to prune only the seeded router: Fabric Studio seeds an `ISP Router` into every fabric, and left in place it blocks every later
-plan of that fabric.
+`build` ships two topologies, `fgt_single` and `fgt_fmg_faz`, and also lists any `intent.yaml` under
+`<workspace>/topologies/<name>/`. It brings devices up and stops there: configuring them afterwards is a separate
+step. The lab repository's own build of the server adds the device configuration phase and device-level checks
+for the topologies that use them.
 {{% /notice %}}
 
 {{% notice warning %}}

@@ -67,4 +67,4 @@ Your pod registry in `~/.fsh/` is left alone by both.
 If you work in the lab repository (`fabric_studio_terraform`) with its sibling projects, you don't
 need the installed command. Its `.mcp.json` starts the server straight from the checkout with
 `uv run python -m tools.fs_mcp.server`, so Claude Code picks it up when you open that directory. That
-build also has the tools that build a fabric from the repository's topologies, which need that repository.
+build also adds the device configuration phase of a build and the connector tools, which need that repository.

@@ -1,20 +1,42 @@
 ---
-title: "Build a FortiGate, FortiManager and FortiAnalyzer Fabric"
+title: "Build a Fabric with Claude"
 linkTitle: "Build a Fabric"
 weight: 70
-description: "Install a FortiGate, FortiManager and FortiAnalyzer fabric on a Fabric Studio pod with Claude, check it came up, and see what to change for other layouts"
+description: "Ask Claude to build a FortiGate, FortiManager and FortiAnalyzer fabric on a Fabric Studio pod, approve the plan, watch it install, and see how it recovers when an install fails"
 ---
 
-This walks one fabric from nothing to three running devices, then shows two variations. Every step
-here was run on a real pod. The install took under five minutes with the images already on the pod.
+The `build` tool makes a whole fabric (devices, networks, switches and cables) from a **topology**, a small
+file that says what you want. You describe what you need, Claude picks a topology, shows you what it would
+do, and builds it once you approve. Nothing else is needed on your machine: the topologies ship with the
+server, and there is no repository to check out.
 
-You need the lab repository (`fabric_studio_terraform`) checked out, the MCP server
-[registered with Claude]({{% relref "02-connect-claude" %}}), and a
-[pod registered]({{% relref "03-connect-a-pod" %}}). Building a fabric uses the repository's
-`make` targets; Claude runs them, and the MCP tools are how it checks its own work.
+You need the MCP server [registered with Claude]({{% relref "02-connect-claude" %}}) and a
+[pod registered]({{% relref "03-connect-a-pod" %}}).
 
-The fabric is `examples/fabrics/fgt_fmg_faz`: one FortiGate, one FortiManager and one FortiAnalyzer
-on a management network, installed **unlicensed**.
+## How a build goes
+
+`build` is one tool with five actions. Claude uses them in this order, and you see each result.
+
+| Action | What it does | Changes the pod? |
+|---|---|---|
+| `topologies` | Lists what can be built: name, devices, and the variables each takes | No |
+| `validate` | Checks one topology with no pod | No |
+| `plan` | Shows what building it on your pod would create, reinstall or delete, which firmware each device gets, and which running fabric it would stop | No |
+| `apply` | Builds it. You are asked to approve the plan first, then the build runs in the background and returns a run id | **Yes** |
+| `status` | Follows a build by run id | No |
+
+**A pod runs one fabric at a time.** Building a new fabric stops the one that is running. Its model stays,
+so you can bring it back, but its devices go down. The plan names the fabric it would stop, and Claude tells
+you before it asks for approval.
+
+## What can be built
+
+Ask: *"What fabrics can you build?"* Claude calls `build` with `topologies`. Two ship with the server:
+
+| Topology | Devices | Network |
+|---|---|---|
+| `fgt_single` | one FortiGate | management network `10.254.254.0/24` |
+| `fgt_fmg_faz` | a FortiGate, a FortiManager and a FortiAnalyzer | the same management network |
 
 ```text
 fgt (10.254.254.30) ──┐
@@ -22,161 +44,150 @@ fmg (10.254.254.40) ──┼── OOB Mgmt 10.254.254.0/24 ── the Fabric S
 faz (10.254.254.50) ──┘
 ```
 
-## 1. Choose images that will install
+Every device installs **unlicensed** (evaluation): the API, CLI and GUI work, and no FortiFlex points or pooled
+licenses are used. Topologies from a workspace folder are listed too: see
+[Make your own](#make-your-own).
 
-Ask Claude: *"Which FortiGate, FortiManager and FortiAnalyzer 7.6.4 images can `pod-a` install?"*
-It calls `pods` (view `firmwares`) for each type. Image ids belong to one pod, so never copy them from another.
+## 1. Ask for it
 
-Read each row for two things:
+<!-- step: fsm09-07-build-plan -->
 
-- **local or remote.** A remote image downloads on first install (slower, and the pod needs internet).
-- **usable.** A `usable: false` row is a 0-byte stub. Skip it.
-
-On the test pod the same release appeared twice: a stub in the home repository and a working copy in
-the `fortinet` repository. Only the second installs.
-
-| Type | Stub (skip) | Working copy (use) |
-|---|---|---|
-| FortiGate 7.6.4F | home repository, size 0 | `fortinet` repository, local |
-| FortiManager 7.6.4F | home repository, size 0 | `fortinet` repository, local |
-| FortiAnalyzer 7.6.4F | none | `fortinet` repository, local |
-
-The topology takes these as `fgt_image`, `fmg_image` and `faz_image`. Override them with
-`--var fgt_image=<id>`, or put them in a `<pod>.fabricvars` file next to the topology.
-
-## 2. Check the topology and the plan
-
-```bash
-make validate POD=<pod> TOPO=examples/fabrics/fgt_fmg_faz
-make plan     POD=<pod> TOPO=examples/fabrics/fgt_fmg_faz
-```
-
-`validate` needs no pod. `plan` reads the pod and changes nothing. For this fabric it reports
-`Plan: 15 to create`: the fabric, two networks, two switches, three nodes, six links and one boot.
-
-{{% notice note %}}
-`plan` may warn that the switches are "not host-uplinked". On a fabric that does not exist yet that
-is expected: the check reads live state. After the install, `fabric` (include `system_host`) shows both switches
-uplinked, which is what you want.
-{{% /notice %}}
-
-## 3. Know what you will stop
-
-**A pod runs one fabric at a time.** Applying a new fabric stops the one that is running. Its model
-stays, so you can bring it back, but its devices go down. Ask first:
-
-*"What's running on `pod-a`, and is it locked?"* (`pods` (view `online`), `pods` (view `lockouts`))
-
-If a lockout is set, `apply` refuses by design. Don't lift it to get past it; ask whoever set it.
-
-## 4. Apply
-
-```bash
-make apply POD=<pod> TOPO=examples/fabrics/fgt_fmg_faz ARGS="--prune"
-```
-
-`--prune` (in Claude: *"apply it with prune"*, which sets `prune=true`) removes the `ISP Router` that
-Fabric Studio seeds into every new fabric. Left in, it blocks every later plan of the fabric, even one
-that reports no changes. With it, `plan` after the build says *no changes* and the fabric can be
-applied again safely.
-
-The three devices install in parallel, then a provision step puts an SSH key and an API key on each.
-The run ends with:
+Ask for what you want in plain words. You do not have to name a topology.
 
 ```text
-converged ✓
-...
-config ✓
+Build me a fabric on pod-a with a FortiGate, a FortiManager and a FortiAnalyzer.
 ```
 
-You can also ask Claude to do the plan and the apply itself: *"Plan `examples/fabrics/fgt_fmg_faz` on `pod-a`
-with prune, then apply it."* In the lab repository's build that calls `plan_fabric` and `apply_fabric`,
-which show you the plan (including what it would stop and delete) and ask you to approve before
-anything starts; `fabric_run_status` follows the run. The `make` commands are the same thing by hand.
+Claude lists the topologies, picks `fgt_fmg_faz`, validates it and plans it. It then tells you what it
+found and what it needs from you. Read three things in its answer:
 
-Everything the run prints is saved to `.logs/apply-<pod>.log`. While it runs, ask Claude
-*"What is installing on `pod-a`?"* (`tasks`).
+- **What it will stop.** The running fabric is named. If that fabric matters, say no here.
+- **What it will create or reinstall.** A reinstall rebuilds a device from its firmware, so anything you
+  changed inside it is lost.
+- **Which firmware each device gets.** See [Firmware](#firmware).
 
-## 5. Check it came up
+<!-- capture: fsm09-07-build-plan -->
+![fsm09-07-build-plan](fsm09-07-build-plan.png)
 
-Ask: *"Is the `fgt-fmg-faz` fabric up on `pod-a`, and can I reach each device?"*
+## 2. Approve
 
-Claude calls `pods` (view `online`) and then `vm` (include `access`) for each device. On the test pod:
+<!-- step: fsm09-08-build-approve -->
 
-| Device | SSH | HTTPS | Answers |
-|---|---|---|---|
-| fgt | `<pod>:11000` | `<pod>:13000` | SSH banner, TLS 1.3 |
-| fmg | `<pod>:11001` | `<pod>:13001` | SSH banner, TLS 1.3 |
-| faz | `<pod>:11002` | `<pod>:13002` | SSH banner, TLS 1.3 |
+When you say to go ahead, Claude calls `build` with `apply` and `confirm=true`. The server then runs the plan
+again and asks **you** to approve it. The agent cannot answer for you. Tick **Approve** (press Space), move to
+**Accept** and press Enter. Decline, Esc, or accepting without ticking **Approve** leaves the pod untouched.
 
-`vm` (include `license`) shows each device in license mode `NONE`, which is what an unlicensed install
-should show.
+<!-- capture: fsm09-08-build-approve -->
+![fsm09-08-build-approve](fsm09-08-build-approve.png)
 
-To log in, ask *"How do I log in to `fmg`?"*. `vm` (include `credentials`) gives the user, where the
-password comes from, and the exact `fabric ssh` command. It never returns the password. Use that
-command rather than a hand-written `ssh`: repeated wrong prompts can lock the FortiOS admin out.
+## 3. Watch it build
 
-## 6. Optional: internet access from the devices
+<!-- step: fsm09-09-build-done -->
 
-A new fabric's System Host is not installed, so the devices have no NAT or DHCP service. That is fine
-for static addresses and an unlicensed install. If a device needs the internet (FortiGuard, firmware
-checks, licensing), ask *"Does this fabric have internet access?"*. `fabric` (include `system_host`) reports
-`installed: false`. *"Install the System Host."* then previews, and runs only when you confirm. It
-drops and rebuilds each guest's port forwards as part of the install.
+The build starts in the background and `build` returns a run id at once, because an install takes minutes.
+Claude follows it with `status`, and with `tasks` for the installs in flight. A build is finished when
+`status` says it **converged**; a run that exits is not the same thing, so Claude checks both.
 
-## Two variations
+You can keep talking while it runs. Ask *"What is installing on `pod-a`?"* (`tasks`) or *"Is it up yet?"*
 
-Both install the same way (`make apply POD=<pod> TOPO=examples/fabrics/<name> ARGS="--prune"`), and both were built
-and checked on a real pod. Applying either one stops whichever fabric was running.
+<!-- capture: fsm09-09-build-done -->
+![fsm09-09-build-done](fsm09-09-build-done.png)
 
-### Two managed branches: `branch_pair_managed`
+## 4. Check it came up
 
-Two FortiGates (`branch1`, `branch2`) joined by a `Transit` network (10.10.10.0/24, ports `port3`),
-plus the FortiManager and FortiAnalyzer from the first fabric. Four devices; it converged in about
-five minutes. The transit link is only cabled: routing and policy between the branches are
-configuration you add afterwards.
+Ask: *"Is the `fgt-fmg-faz` fabric up, and can I reach each device?"* Claude calls `fabric` and `vm` and reports
+each device's power, boot state and license mode (`NONE`, as an unlicensed install should show), and the
+forwards that answer.
 
-### One manager, two firmware trains: `mixed_versions`
+To log in, ask *"How do I log in to `fmg`?"*. `vm` (include `credentials`) gives the user, where the password
+comes from, and the exact `fabric ssh` command. It never returns the password.
 
-A FortiGate on 7.4.11 (`fgt74`) and one on 7.6.4F (`fgt76`) under one FortiManager and
-FortiAnalyzer on 7.6.4F. A FortiManager ADOM is pinned to one OS version, so a mixed estate needs an
-ADOM per train; this fabric gives you that to practise on. Keep the manager at or above the newest
-FortiGate: a manager may run ahead of its devices, never behind.
+### See it in Fabric Studio
 
-After the install, `vm` (include `detail`) shows the firmware each FortiGate runs, so you can confirm the two
-trains are really different:
+<!-- step: fsm09-10-fs-events -->
+
+Everything Claude does goes through the same API the web UI uses, so Fabric Studio keeps its own record of it.
+Open **Log > All Events** and every step is there, with its result:
+
+<!-- capture: fsm09-10-fs-events -->
+![fsm09-10-fs-events](fsm09-10-fs-events.png)
+
+<!-- step: fsm09-11-fs-topology -->
+
+And the fabric itself, under **Fabric Workspace**, with its topology:
+
+<!-- capture: fsm09-11-fs-topology -->
+![fsm09-11-fs-topology](fsm09-11-fs-topology.png)
+
+## When a build fails
+
+A build can fail for reasons a plan cannot see, such as an image that installs but will not boot. This
+happened in testing. The first build of this fabric on one pod failed: FortiManager 8.0.0.F, the newest
+image there, exited with return code 254 while the FortiGate and FortiAnalyzer installed fine.
+
+What Claude did is what you should expect:
+
+1. **Read the failure, not just the return code.** It called `diagnose` for the pod and fabric. A bare 254
+   says little, so `diagnose` reads the failed task's log and named the cause: the build's login to the
+   FortiManager was rejected.
+2. **Decided that repeating it would not help.** The same image would fail the same way.
+3. **Chose a different image and planned again.** `plan` showed one change: reinstall `fmg` on the other
+   image. The FortiGate and FortiAnalyzer stayed as they were.
+4. **Asked you again.** The retry is a new approval, with the new plan in front of you.
+5. **Finished.** The build converged, and only `fmg` was reinstalled.
+
+Fabric Studio's own record shows the whole sequence: the failed install, the uninstall, and the new install.
+
+<!-- capture: fsm09-09-build-done-recovery -->
+![fsm09-09-build-done-recovery](fsm09-09-build-done-recovery.png)
+
+A build is safe to repeat. It only does what is still missing, and it never reinstalls a device that matches
+its topology.
+
+## Firmware
+
+Left alone, each device uses the **newest usable image** on the pod: the newest in the home repository, and
+only when the home repository has none, the newest in another repository (the pod downloads it on the
+first install, which is slower). A 0-byte stub is never picked.
+
+The plan names the image each device will use, and it **checks every firmware before anything is created**.
+Ask for a version the pod does not have and the plan is blocked, and lists the versions it does have:
 
 ```text
-fgt74  firmware 811   (7.4.11)
-fgt76  firmware 234   (7.6.4F)
+node 'fgt': image '9.9' not found in home repository or the pod's other repos for FGT (have: ..., 7.6.6M)
 ```
 
-The 7.4.11 image is usually `remote` on a pod. The first apply downloads it, and the install still
-took about five minutes. If it cannot download, the pod has no internet access: see
-[Troubleshooting a Failed Install]({{% relref "08-troubleshoot-a-failed-install" %}}).
+To choose a version, name it in your request (*"use FortiOS 7.4"*). Claude passes it as a variable, for
+example `fgt_image` set to `7.4`: a version prefix picks the newest match.
+
+## Prune and the ISP Router
+
+Fabric Studio seeds an `ISP Router` into every new fabric. Left in place it blocks every later plan of that
+fabric as a black hole, even one that reports no changes. If a plan is blocked for that reason, Claude asks
+for `prune=true`, which removes the router. **Prune also deletes anything else the topology does not declare
+in that fabric**, so the plan lists every delete. Read that list before you approve.
 
 ## Make your own
 
-Copy one of the three directories under `examples/fabrics/`, rename the `fabric:` and the nodes, and
-change what you need. Ask Claude to do it: *"Copy `fgt_fmg_faz` to a fabric called `lab2` with two
-FortiGates"*. Then `validate`, `plan` and `apply` as above. Keep each node's addresses unique within
-the network, and give FortiManager and FortiAnalyzer at least 4 vCPU and 8192 MiB of memory.
+A topology is an `intent.yaml` in a folder named for it. To add yours, put it where the server looks:
+
+```text
+<workspace>/topologies/<name>/intent.yaml
+```
+
+Set `FS_WORKSPACE` to the workspace folder in the server's environment. `build` then lists it next to the
+bundled ones, and the same validate, plan, approve flow applies. Start from a bundled topology: copy it, rename
+the `fabric:` and the nodes, and change what you need. Keep each node's address unique within its network, and
+give FortiManager and FortiAnalyzer at least 4 vCPU and 8192 MiB of memory, since less does not boot healthy.
 
 ## What this does not do
 
-The examples install the devices and give you SSH and API access to each. They do not register the
-FortiGates with the FortiManager or FortiAnalyzer, or create ADOMs. A topology can declare that in a
-`services:` block (see the repository's topology schema), but it needs the appliances' admin logins and,
-on FortiManager, its JSON-RPC permission, so treat it as a next step you set up, not part of these
-examples. The one-line check for the fabric's own health is `diagnose`, and `diagnose` with `deep=true`
-runs each device's verification.
+A build brings the devices up and gives you SSH and API access to each. It stops there. It does not register
+the FortiGates with the FortiManager or FortiAnalyzer, create ADOMs, or configure anything inside a device;
+those are the next step you set up. A topology that declares `images:` (firmware to upload or build) is refused
+with a message that says so, instead of skipping the build. The lab repository's build of the server does the
+device configuration phase for the topologies that declare it.
 
-## Licensing
-
-These devices are unlicensed: the API, CLI and GUI work, no FortiFlex points are spent and no pooled
-license is used. To license them, change `license: "none"` in the topology to a FortiFlex source:
-`license: {mode: auto, flex_config: <id or name>}`. A bare `license: auto` depends on the pod: with several
-active FortiFlex configurations for the device type, apply stops and asks you to name one; with a matching
-license in the pod's pool it takes that one (using up a pooled license); with neither, the install fails
-with `No license for fmg000 (LIC,FLEX)`. See
-[Troubleshooting a Failed Install]({{% relref "08-troubleshoot-a-failed-install" %}}).
+The server never lifts a lockout. If the pod is locked, `apply` refuses by design: ask whoever set it. See
+[Troubleshooting a Failed Install]({{% relref "08-troubleshoot-a-failed-install" %}}) for reading a failure
+yourself.

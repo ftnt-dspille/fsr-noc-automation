@@ -106,10 +106,11 @@ alone and is larger. The VM is powered off hard for several minutes while its di
 
 ## Build and install a fabric
 
-Building a fabric from a topology file is a lab-repository job. Its build of the server has
-`plan_fabric` and `apply_fabric`, which ask you to approve before they start; otherwise Claude runs the repo's
-`make plan` and `make apply` for you. Either way it then uses the tools above to watch and check the result. Start with
-[Build a FortiGate, FortiManager and FortiAnalyzer Fabric]({{% relref "07-build-a-fabric" %}}).
+Ask: *"Build me a fabric on `pod-a` with a FortiGate, a FortiManager and a FortiAnalyzer."* Claude lists the
+topologies with `build`, validates and plans one, tells you which running fabric it would stop and which
+firmware each device gets, and asks you to approve before it builds. It then follows the build and checks the
+result with the tools above. When a build fails it reads the cause with `diagnose` and proposes a fix. Start with
+[Build a Fabric with Claude]({{% relref "07-build-a-fabric" %}}).
 
 ## Protect a pod you care about
 
