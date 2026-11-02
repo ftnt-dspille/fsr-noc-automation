@@ -15,7 +15,7 @@ The server ships as a Python package that installs one command,
   `curl -LsSf https://astral.sh/uv/install.sh | sh`
 - **SSH access to Fortinet's internal GitLab.** The server installs
   from there, so `git ls-remote
-  ssh://git@svl-devops-gitlab01.fortilab.fortinet.com/dspille/fabric-studio-core.git`
+  ssh://git@git.fndn.fortinet.net:2222/dspille/fabric-studio.git`
   must work from your machine (VPN on, SSH key added to your GitLab profile).
 - **Network reach to your pods** on HTTPS 443, from the machine that runs
   Claude.
@@ -23,7 +23,7 @@ The server ships as a Python package that installs one command,
 ## Install
 
 ```bash
-uv tool install "fabric-studio[mcp] @ git+ssh://git@svl-devops-gitlab01.fortilab.fortinet.com/dspille/fabric-studio-core.git"
+uv tool install "fabric-studio[mcp] @ git+ssh://git@git.fndn.fortinet.net:2222/dspille/fabric-studio.git"
 ```
 
 The server is part of **fabric-studio**, which is not on PyPI, so it installs from git. The

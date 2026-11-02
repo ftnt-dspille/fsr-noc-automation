@@ -21,7 +21,7 @@ description: "Fixes for the install, Claude registration and pod login problems 
 The package pulls `fabric-studio` from internal GitLab over SSH. Run:
 
 ```bash
-git ls-remote ssh://git@svl-devops-gitlab01.fortilab.fortinet.com/dspille/fabric-studio-core.git HEAD
+git ls-remote ssh://git@git.fndn.fortinet.net:2222/dspille/fabric-studio.git HEAD
 ```
 
 If that fails, you are off the VPN or your SSH key is not on your GitLab
