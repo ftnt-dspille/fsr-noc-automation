@@ -1,7 +1,7 @@
 ---
 title: "Connect Claude"
 linkTitle: "Connect Claude"
-weight: 20
+weight: 30
 description: "Register fabric-studio-mcp with Claude Code or Claude Desktop"
 ---
 
@@ -52,9 +52,8 @@ Besides tools, the server offers prompts, which Claude Code shows as slash comma
 
 ### Try it
 
-These three steps register the server for one folder, approve it, and check that Claude can see its tools.
-No pod is needed yet: [the next page]({{% relref "03-connect-a-pod" %}}) connects one, and then you ask your
-first question.
+These six steps register the server for one folder, approve it, ask a question about the pod you added on
+[the previous page]({{% relref "02-connect-a-pod" %}}), and see the approval Claude asks for before it changes a pod.
 
 <!-- step: fsm09-01-register -->
 
@@ -82,6 +81,30 @@ claude mcp add fabric-studio --scope project -- fabric-studio-mcp
 
 <!-- capture: fsm09-03-check-mcp -->
 ![fsm09-03-check-mcp](fsm09-03-check-mcp.png)
+
+<!-- step: fsm09-04-ask-pods -->
+
+4. Ask a question, such as `List my managed Fabric Studio instances.` Claude asks permission the first time it
+   uses a tool. Choose **Yes**, and it answers from your pods.
+
+<!-- capture: fsm09-04-ask-pods -->
+![fsm09-04-ask-pods](fsm09-04-ask-pods.png)
+
+<!-- step: fsm09-05-approve-change -->
+
+5. Ask for a change, such as restarting a VM. Claude previews the plan, and the server then asks you to
+   approve it. Choosing **Decline**, pressing Esc, or accepting without ticking **Approve** leaves the pod untouched.
+
+<!-- capture: fsm09-05-approve-change -->
+![fsm09-05-approve-change](fsm09-05-approve-change.png)
+
+<!-- step: fsm09-06-approved -->
+
+6. To run the change, tick **Approve** (press Space), move to **Accept** and press Enter. The server then
+   does the work and Claude reports the result.
+
+<!-- capture: fsm09-06-approved -->
+![fsm09-06-approved](fsm09-06-approved.png)
 
 {{% notice note %}}
 Registering with `--scope project` makes Claude ask for approval in step 2. With `--scope user`, as shown

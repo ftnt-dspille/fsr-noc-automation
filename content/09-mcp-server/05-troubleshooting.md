@@ -55,7 +55,7 @@ reconnect.
 
 ## Claude says it has no pods
 
-Nothing is registered yet. Follow [Connect a Pod]({{% relref "03-connect-a-pod" %}}).
+Nothing is registered yet. Follow [Connect a Pod]({{% relref "02-connect-a-pod" %}}).
 If you did, check the login file is in `~/.fsh/` (or a folder in
 `FS_ENV_DIRS`) and its name starts with `.env`. The server ignores files
 elsewhere on purpose.
@@ -86,7 +86,7 @@ elsewhere on purpose.
   `lockouts`) shows who and why. The server cannot lift it; ask them.
 - **"the person declined"**: you answered no to the approval prompt, so nothing changed.
 - **A guest section says it is not configured**: `guest_license`, `guest_config` and `license_match` need
-  `FS_SOAR_SSH_PASS` in the server's environment. See [Connect a Pod]({{% relref "03-connect-a-pod" %}}).
+  `FS_SOAR_SSH_PASS` in the server's environment. See [Connect a Pod]({{% relref "02-connect-a-pod" %}}).
 - **`<tool>: invalid arguments. limit: Input should be a valid integer (you sent 'lots')`**: Claude sent
   an argument of the wrong type or left a required one out. It names the argument and what it sent, and Claude
   normally corrects it and tries again.

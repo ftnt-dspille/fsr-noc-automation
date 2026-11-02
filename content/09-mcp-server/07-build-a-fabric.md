@@ -10,8 +10,8 @@ file that says what you want. You describe what you need, Claude picks a topolog
 do, and builds it once you approve. Nothing else is needed on your machine: the topologies ship with the
 server, and there is no repository to check out.
 
-You need the MCP server [registered with Claude]({{% relref "02-connect-claude" %}}) and a
-[pod registered]({{% relref "03-connect-a-pod" %}}).
+You need the MCP server [registered with Claude]({{% relref "03-connect-claude" %}}) and a
+[pod registered]({{% relref "02-connect-a-pod" %}}).
 
 ## How a build goes
 

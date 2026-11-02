@@ -6,7 +6,7 @@ description: "Plain-language requests that work with the Fabric Studio MCP serve
 ---
 
 You don't call tools by name. Ask the way you would ask a colleague, and name the pod by the name
-you gave it in [Connect a Pod]({{% relref "03-connect-a-pod" %}}). Each request below lists the tools
+you gave it in [Connect a Pod]({{% relref "02-connect-a-pod" %}}). Each request below lists the tools
 Claude reaches for, so you can tell what it is doing and what it can see.
 
 ## See what is going on
