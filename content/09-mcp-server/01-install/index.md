@@ -42,6 +42,13 @@ Download the repository as a zip:
 
 {{% resources title="Download fabric-studio" style="info" pattern=".*\.zip" /%}}
 
+{{% notice info %}}
+The zip is a snapshot. **The latest code is in the
+[fabric-studio repository](https://git.fndn.fortinet.net/dspille/fabric-studio)** on the Fortinet Git server
+(sign in with your Fortinet account). It always has the newest fixes and tools, so if you have access, clone it
+and install from that folder instead of the zip, the same way.
+{{% /notice %}}
+
 Unzip it and install from the folder:
 
 {{< tabs groupid="os" >}}
@@ -130,7 +137,7 @@ Your pod registry in `~/.fsh/` is left alone by both.
 
 Prefer a Linux shell on Windows? WSL2 works too: run the Linux commands inside it, and run Claude Code there.
 
-The source is on the Fortinet Git server if you want to read it or contribute.
+The [repository](https://git.fndn.fortinet.net/dspille/fabric-studio) has the latest code, the issue history, and a place to contribute. To update from a clone, run `git pull` and then `uv tool install --force "./fabric-studio[mcp]"` from its parent folder.
 
 ## Working from a checkout instead
 
