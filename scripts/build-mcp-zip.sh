@@ -5,6 +5,6 @@
 set -eu
 src="${1:?usage: build-mcp-zip.sh <path to the fabric-studio repository>}"
 out="$(cd "$(dirname "$0")/.." && pwd)/static/downloads/fabric-studio.zip"
-git -C "$src" diff --quiet HEAD || { echo "commit your changes first: the zip is built from HEAD" >&2; exit 1; }
+[ "${ALLOW_DIRTY:-0}" = 1 ] || git -C "$src" diff --quiet HEAD || { echo "commit your changes first: the zip is built from HEAD" >&2; exit 1; }
 git -C "$src" archive --format=zip --prefix=fabric-studio/ -o "$out" HEAD
 echo "wrote $out ($(git -C "$src" rev-parse --short HEAD), $(du -h "$out" | cut -f1))"
