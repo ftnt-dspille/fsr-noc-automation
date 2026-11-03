@@ -10,13 +10,14 @@ interfaces, routes, addresses, policies, DNS and the rest of its configuration. 
 you want. Claude picks the section, shows you exactly what would change, and applies it once you approve.
 
 You need a [pod registered]({{% relref "02-connect-a-pod" %}}) and a built fabric (see
-[Build a Fabric]({{% relref "07-build-a-fabric" %}})). The FortiGate must be **powered on**, **licensed**, and
-have its HTTPS and SSH access set to **public**.
+[Build a Fabric]({{% relref "07-build-a-fabric" %}})). The FortiGate must be **powered on** and have its SSH
+access set to **public** (HTTPS too, for the API).
 
-{{% notice warning %}}
-An unlicensed (evaluation) FortiGate does not accept API keys, so **device** cannot configure it. Give it a license
-first (**set_vm_license**, mode *AUTO*, which reinstalls it). **device** tells you this in plain words when it
-meets one; it does not silently fail.
+{{% notice note %}}
+**device** uses the FortiGate's API when it accepts it, and its command line over SSH when it does not. An
+unlicensed (evaluation) FortiGate, which is what a default build gives you, refuses API keys, so it is configured
+over SSH. The plan, the approval and the read-back are the same either way; each result says which way it went
+(*via*). Over SSH the change runs as the device's admin account, and the plan says so.
 {{% /notice %}}
 
 ## Look first
@@ -89,10 +90,12 @@ when a change touches one of those. The result is read back, but a lost route ca
 
 ## How it signs in
 
-You never give **device** a password. On first use of a FortiGate it creates a read-only API user called
-fsmcp-ro on the device and keeps the key in your system keychain. A read-write user, fsmcp-rw, is created only
-inside the first change you approve, and the plan says so. Looking at a device therefore never gives the tool the
-power to change it.
+You never give **device** a password. Over the API, on first use of a FortiGate it creates a read-only API user
+called fsmcp-ro on the device and keeps the key in your system keychain. A read-write user, fsmcp-rw, is created
+only inside the first change you approve, and the plan says so. Looking at a device therefore never gives the tool
+the power to change it. Over SSH it signs in as the device's admin account, and for a change it first sends the
+real commands and then abandons them without saving, so FortiOS checks every field and value and a mistake is
+reported in the plan, before you are asked.
 
 The tool makes **one** login attempt. If the device refuses it, the tool says so and does not retry for two
 minutes, because repeated failures lock the FortiGate's admin account for a while. A key the device no longer
@@ -102,7 +105,7 @@ accepts (after a reinstall, for example) is replaced once, automatically.
 
 | You see | What it means |
 |---|---|
-| "is an unlicensed (evaluation) FortiGate VM" | Give it a license with **set_vm_license**, then ask again. |
+| "the device's API is not available" in a plan | Nothing is wrong. The device is unlicensed or has HTTPS closed, so the change goes over SSH. |
 | "access is not PUBLIC" | Make the device's HTTPS and SSH access public on the pod (**set_vm_access_public**). |
 | "is powered off" | A pod runs one fabric at a time, and the device's fabric is not the one running. |
 | "is still booting" | Ask again in a minute. |
