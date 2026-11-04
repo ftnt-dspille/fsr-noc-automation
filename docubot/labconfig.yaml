@@ -9,3 +9,8 @@ devices:
     url: https://pod.example.com/ng/
     user: admin
     pass: set-DOCUBOT_POD_PASS
+  # FortiAgent, the desktop app, driven through Playwright's Electron support. Quit FortiAgent before a run:
+  # it runs as a single instance, and a second copy exits at once.
+  fortiagent:
+    type: electron
+    executable: /Applications/FortiAgent.app/Contents/MacOS/FortiAgent
