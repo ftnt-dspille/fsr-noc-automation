@@ -37,7 +37,7 @@ claude mcp list
 ```
 
 You should see *fabric-studio: fabric-studio-mcp - ✔ Connected*. Inside a
-session, `/mcp` shows the same and lists the 16 tools (a few more in the lab repository's build).
+session, `/mcp` shows the same and lists the 21 tools (a few more in the lab repository's build).
 
 <!-- step: fsm09-15-mcp-list -->
 

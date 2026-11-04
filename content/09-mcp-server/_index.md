@@ -15,7 +15,7 @@ clicking through each pod's UI or writing API calls, you ask:
 - *"Is the license FortiSOAR is using the one Fabric Studio assigned?"*
 
 It talks to the same REST API the UI uses, with your own pod login. It has
-16 broad tools, and most only read. The few that change a pod say so, refuse to run without
+21 broad tools, and most only read. The few that change a pod say so, refuse to run without
 *confirm*, and then ask you to approve the exact plan before they do anything. See the [tool reference]({{% relref "04-tool-reference" %}}).
 
 ## Set it up
@@ -25,6 +25,7 @@ It talks to the same REST API the UI uses, with your own pod login. It has
 | 1 | Install the `fabric-studio-mcp` command | [Install]({{% relref "01-install" %}}) |
 | 2 | Add a pod: run `fabric-studio-mcp setup` | [Connect a Pod]({{% relref "02-connect-a-pod" %}}) |
 | 3 | Register the server with Claude | [Connect Claude]({{% relref "03-connect-claude" %}}) |
+| 3 (or) | Add the server to FortiAgent instead | [Connect FortiAgent]({{% relref "11-connect-fortiagent" %}}) |
 | 4 | Ask a question, then try a change | [Try it]({{% relref "03-connect-claude#try-it" %}}) |
 
 The whole thing takes a few minutes, and nothing is installed on the pod.
