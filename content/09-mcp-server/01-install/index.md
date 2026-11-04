@@ -40,7 +40,7 @@ Close and reopen PowerShell so `uv` is on your `PATH`.
 
 Download the repository as a zip:
 
-{{< download "/downloads/fabric-studio.zip" >}}fabric-studio.zip, the repository (about 400 KB){{< /download >}}
+{{% resources title="Fabric Studio MCP server (fabric-studio.zip, about 470 KB)" style="info" pattern="fabric-studio\.zip" /%}}
 
 {{% notice info %}}
 The zip is a snapshot. **The latest code is in the
