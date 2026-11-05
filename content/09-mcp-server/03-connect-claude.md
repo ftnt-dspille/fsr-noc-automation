@@ -7,6 +7,11 @@ description: "Register fabric-studio-mcp with Claude Code or Claude Desktop"
 
 ## Claude Code
 
+{{% notice tip %}}
+**Quick way:** `fabric-studio-mcp connect claude` runs the command below for you, with the full path to the
+program filled in. See [Connect your agent](../01-install/#connect-your-agent).
+{{% /notice %}}
+
 ```bash
 claude mcp add fabric-studio --scope user -- fabric-studio-mcp
 ```
@@ -58,7 +63,7 @@ Besides tools, the server offers prompts, which Claude Code shows as slash comma
 ### Try it
 
 These six steps register the server for one folder, approve it, ask a question about the pod you added on
-[the previous page]({{% relref "02-connect-a-pod" %}}), and see the approval Claude asks for before it changes a pod.
+[the previous page]({{% relref "02-connect-a-pod" %}}), and see the permission Claude asks for before it changes a pod.
 
 <!-- step: fsm09-01-register -->
 
@@ -89,7 +94,7 @@ claude mcp add fabric-studio --scope project -- fabric-studio-mcp
 
 <!-- step: fsm09-04-ask-pods -->
 
-4. Ask a question, such as `List my managed Fabric Studio instances.` Claude asks permission the first time it
+4. Ask a question, such as `Which lab pods do I have, and are they up?` Claude asks permission the first time it
    uses a tool. Choose **Yes**, and it answers from your pods.
 
 <!-- capture: fsm09-04-ask-pods -->
@@ -97,16 +102,16 @@ claude mcp add fabric-studio --scope project -- fabric-studio-mcp
 
 <!-- step: fsm09-05-approve-change -->
 
-5. Ask for a change, such as restarting a VM. Claude previews the plan, and the server then asks you to
-   approve it. Choosing **Decline**, pressing Esc, or accepting without ticking **Approve** leaves the pod untouched.
+5. Ask for a change, such as restarting a VM. Claude previews the plan, then asks your permission to call the
+   tool that changes the pod. Choosing **No** or pressing Esc leaves the pod untouched.
 
 <!-- capture: fsm09-05-approve-change -->
 ![fsm09-05-approve-change](fsm09-05-approve-change.png)
 
 <!-- step: fsm09-06-approved -->
 
-6. To run the change, tick **Approve** (press Space), move to **Accept** and press Enter. The server then
-   does the work and Claude reports the result.
+6. To run the change, choose **Yes** (Enter takes the default). The server then does the work and Claude
+   reports the result.
 
 <!-- capture: fsm09-06-approved -->
 ![fsm09-06-approved](fsm09-06-approved.png)

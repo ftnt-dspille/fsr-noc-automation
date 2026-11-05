@@ -21,7 +21,7 @@ failed on the FortiManager:
 
 <!-- step: fsm09-17-diagnose -->
 
-Ask Claude: *"Why did it fail? Check the pod and tell me the cause."* It starts with **diagnose**, one call that
+Ask Claude: *"Why did it fail?"* It starts with **diagnose**, one call that
 checks every device, reads the failed task's log and ranks what it finds.
 
 <!-- capture: fsm09-17-diagnose -->

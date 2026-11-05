@@ -71,15 +71,11 @@ a task id, that task's log, which holds the reason a device task failed.
 ## Changes something
 
 {{% notice warning %}}
-These alter a pod, so each is gated twice. Without *confirm=true* a tool only reports what it
-would do. With it, the server runs that preview and then **asks you** to approve the exact plan
-(an MCP elicitation prompt in your client). The agent cannot answer for you. If you decline, nothing
-changes. A client that cannot show the prompt gets a refusal, so use Claude Code or another client
-that supports elicitation. Read the plan before you approve.
-
-Every tool also tells the client whether it is read-only or destructive, so the client can prompt
-accordingly. For an unattended run you operate yourself, set `FS_MCP_ASSUME_CONFIRMED=1` in the
-server's environment; an agent cannot set it.
+These alter a pod. Without *confirm=true* a tool only reports what it would do; the agent shows you
+that plan and calls again with *confirm=true* once you say yes. Every tool also tells the client whether
+it is read-only or destructive, so your client asks your permission before it calls one of the changing
+tools. Read the plan before you allow it. If you set a client to allow these tools without asking, a
+change runs as soon as the agent calls it.
 {{% /notice %}}
 
 | Tool | What it does |
@@ -91,7 +87,7 @@ server's environment; an agent cannot set it.
 | **vm_lifecycle** | One VM: *action* is *on*, *off*, *restart*, *reinstall* or **cancel_task** (with *task_id*). *off* and *restart* are hard power-offs, so unsaved guest state is lost. *reinstall* rebuilds the guest from its firmware and wipes everything changed inside it. Asking for *on* on a VM that is already on does nothing and does not ask you |
 | **set_vm_license** | Chooses how one VM is licensed on install: *NONE* (unlicensed, nothing spent) or *AUTO* (takes a pooled license or FortiFlex points). The preview shows the current mode, the license now served, how many pooled licenses match the device type and whether FortiFlex is registered. The mode only applies on the next install, so *reinstall=true* is the default; *reinstall=false* changes the setting only |
 | **build_plan** | Looks at a build and changes nothing. *action* is *topologies* (what can be built), *examples* (how existing topologies do a thing), *validate* (no pod), *plan* (the default: what it would create, reinstall or delete, which firmware each device gets, which running fabric it would stop) or *status* (follow a run). It is marked read-only, so a client that asks before changes does not ask before this |
-| **build** | Makes a whole fabric from a topology: *action=apply*, with *confirm=true* you are asked to approve the plan, then it runs in the background and returns a *run_id*. It still answers the looking actions, but use **build_plan** for those. Only *apply* changes the pod, and it **stops the fabric running there now**. *prune=true* also deletes what the topology does not declare in that fabric (the plan lists every delete). Refused on a locked pod, a blocked plan, or a pod with a build already running. See [Build a Fabric]({{% relref "07-build-a-fabric" %}}) |
+| **build** | Makes a whole fabric from a topology: *action=apply*, with *confirm=true* it runs in the background and returns a *run_id*. It still answers the looking actions, but use **build_plan** for those. Only *apply* changes the pod, and it **stops the fabric running there now**. *prune=true* also deletes what the topology does not declare in that fabric (the plan lists every delete). Refused on a locked pod, a blocked plan, or a pod with a build already running. See [Build a Fabric]({{% relref "07-build-a-fabric" %}}) |
 | **device** | Looks at and configures what is inside a FortiGate, by device name. *action* is *status* (firmware, license, HA mode), *config* (read a configuration section as structured data, such as *interfaces*, *routes*, *policies*, *addresses* or a path like system/interface), *set* (give an object field values; it is created when it does not exist) or *delete*. Reading never asks and never changes anything. *set* and *delete* return a plan first, the real before and after read from the device, and with *confirm=true* you are asked to approve it; the result is then read back, and *verified* says whether the device kept what was asked. Passwords and keys are never returned, and administrator and API-user accounts are refused. The device must be powered on with its SSH access public; it uses the API when the device accepts it and its command line over SSH when not, and says which in *via*. See [Configure a FortiGate]({{% relref "09-configure-a-fortigate" %}}) |
 | **run** | Runs a command over SSH, or makes an API call, on **any** device of a fabric by name, using its public SSH or HTTPS access. Give *command* (such as `get system status` or `df -h`) or *api* (such as `GET /api/v2/monitor/system/status`, with a *body* for POST and PUT). A command that only reads and every GET run at once; anything else returns a plan showing exactly what will be sent, and runs only after you approve it. FortiOS secrets in the output are hidden. See [Run Anything on a Device]({{% relref "10-run-on-a-device" %}}) |
 | **snapshot_vm** | Saves a VM's disks as a new firmware in the pod's home repository. *action* is *diff* (only what changed since the original firmware; small) or *full* (one standalone image; larger, no dependency). The VM is hard powered off during the export and brought back up, so expect several minutes of downtime and lose unsaved guest state. *link=true* (the default) points the VM at the snapshot so a reinstall boots it |

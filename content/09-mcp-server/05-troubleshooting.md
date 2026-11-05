@@ -78,13 +78,12 @@ elsewhere on purpose.
 
 ## A change is refused
 
-- **"this client cannot ask the person to approve"**: every tool that changes a pod asks you first
-  (an MCP elicitation prompt), and your client cannot show one. Use Claude Code, or another client that
-  supports elicitation. For an unattended run that you operate yourself, set `FS_MCP_ASSUME_CONFIRMED=1`
-  in the server's environment (`claude mcp add ... --env FS_MCP_ASSUME_CONFIRMED=1`). An agent cannot set it.
+- **A change runs without asking you**: the approval is your client's own permission prompt, not something
+  the server adds. If your client is set to allow the Fabric Studio tools without asking (Claude Code's
+  "always allow", FortiAgent's Auto), changes run as soon as the agent calls them with *confirm=true*. Set the
+  tools back to ask in the client's permissions settings if you want the prompt.
 - **"... is locked"**: the pod carries a lockout, a deliberate freeze by whoever set it. **pods** (view
   *lockouts*) shows who and why. The server cannot lift it; ask them.
-- **"the person declined"**: you answered no to the approval prompt, so nothing changed.
 - **A guest section says it is not configured**: *guest_license*, *guest_config* and *license_match* need
   `FS_SOAR_SSH_PASS` in the server's environment. See [Connect a Pod]({{% relref "02-connect-a-pod" %}}).
 - **`<tool>: invalid arguments. limit: Input should be a valid integer (you sent 'lots')`**: Claude sent

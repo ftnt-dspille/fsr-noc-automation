@@ -80,7 +80,7 @@ On Linux the whole install looks like this (uv also lists each package it instal
 
 The server is part of **fabric-studio**, which is not on PyPI, so it installs from this download. The
 `[mcp]` part adds the MCP SDK. Once it is installed you can delete the zip and the folder, but keep the folder
-if you want the agent skill below. Check the command landed on your `PATH`:
+if you want to copy the agent skill by hand. Check the command landed on your `PATH`:
 
 {{< tabs groupid="os" >}}
 {{% tab title="Linux" %}}
@@ -103,12 +103,41 @@ Running `fabric-studio-mcp` by hand prints nothing and waits. That is correct:
 it speaks MCP over stdin and stdout and expects a client. Press Ctrl+C to leave.
 {{% /notice %}}
 
-## Give your agent the skill
+## Connect your agent
 
-The repository carries an agent skill, `skills/fabric-studio/`, that tells an agent how Fabric Studio
-works (one fabric per pod, model versus runtime, what a bare `254` means) and which library function or
-MCP tool to use. The installed command does not include it, so for Claude Code copy the folder from the
-unzipped download into your skills folder:
+`fabric-studio-mcp connect` adds the server to the coding agents on this machine: **FortiAgent**, **Claude Code**,
+**Codex** and **opencode**. It runs each agent's own `mcp add` command, so it never edits their settings files. It
+prints the exact commands first and asks before it runs them:
+
+```bash
+fabric-studio-mcp connect              # every agent it finds, asking first
+fabric-studio-mcp connect claude codex # only these
+fabric-studio-mcp connect --dry-run    # print the commands, change nothing
+```
+
+<!-- step: fsm09-18-connect -->
+<!-- capture: fsm09-18-connect -->
+![fsm09-18-connect](fsm09-18-connect.png)
+
+- It also copies the **agent skill**, which tells an agent how Fabric Studio works (one fabric per pod, model versus
+  runtime, which tool to use). Claude Code reads it from `~/.claude/skills/` and Codex from `~/.codex/skills/`;
+  opencode reads Claude Code's folder, so it needs no copy of its own. Pass `--no-skill` to leave it out.
+- FortiAgent imports skills in the app, so for it `connect` prints the folder to import (see
+  [Connect FortiAgent](../11-connect-fortiagent/#4-add-the-fabric-studio-skill)).
+- It uses the full path of the command you ran, so there is no `which fabric-studio-mcp` to copy.
+- An agent that already has the server, or a skill copy you have edited, is left alone and reported. Add `--replace`
+  to point it at this install and update the skill (opencode's server entry cannot be replaced from the command line:
+  remove it there first).
+- If an agent is not installed, it is skipped. If none is, the command prints the path to give your agent by hand.
+- FortiAgent's launcher is found inside the app on macOS (`/Applications/FortiAgent.app`); set `FORTIAGENT_BIN` if yours is elsewhere.
+
+Register a pod first with [`fabric-studio-mcp setup`](../02-connect-a-pod/); the agents start the server on demand.
+
+## Give your agent the skill by hand
+
+[`fabric-studio-mcp connect`](#connect-your-agent) already copies the skill. If you would rather do it yourself, or
+you skipped it with `--no-skill`, the unzipped download carries it as `skills/fabric-studio/`. For Claude Code, copy
+the folder into your skills folder:
 
 {{< tabs groupid="os" >}}
 {{% tab title="Linux" %}}

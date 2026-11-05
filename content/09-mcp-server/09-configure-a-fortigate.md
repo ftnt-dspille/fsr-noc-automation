@@ -52,9 +52,8 @@ real value on the device now, and the value it would have.
 |---|---|---|
 | subnet | (new) | 10.80.0.0 255.255.255.0 |
 
-When you say to go ahead, Claude calls it again with *confirm=true*. The server then asks **you** to approve that
-plan, exactly as it does for a build: tick **Approve** (press Space), move to **Accept** and press Enter. The agent
-cannot answer for you. Decline, Esc, or accepting without ticking **Approve** leaves the device untouched.
+When you say to go ahead, Claude calls it again with *confirm=true*. Claude asks your permission to run it,
+exactly as it does for a build: choose **Yes** (Enter takes the default). **No** or Esc leaves the device untouched.
 
 After it applies a change, the tool reads the object back from the device. The result says *verified*: whether
 the FortiGate really holds what you asked. If it does not, Claude tells you, instead of reporting success.

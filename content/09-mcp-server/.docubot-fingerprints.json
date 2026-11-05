@@ -1,0 +1,79 @@
+{
+  "version": 1,
+  "pictures": {
+    "fsm09-01-register.png": "7f3393f7cefedc016e315ad8353d268a",
+    "fsm09-02-trust-folder.png": "c9f0a5258e718c5958c7abd4703d809c",
+    "fsm09-03-check-mcp.png": "138bc0c900d3c33fc4be5dd376daa4cd",
+    "fsm09-04-ask-pods.png": "5f78a16f194f8bfd840ead6e612d9258",
+    "fsm09-05-approve-change.png": "0cb28750bd7f610c61fe56471ec3c08d",
+    "fsm09-06-approved.png": "1530220bc1e95fa348ed0b7e78f2f433",
+    "fsm09-07-build-plan.png": "9a3785a29a29769be6b175d393da5359",
+    "fsm09-08-build-approve.png": "e6e12516746ad18d9fbe85c231250728",
+    "fsm09-09-build-done.png": "63b45a1d459cc5a63be3af4b898437fd",
+    "fsm09-10-fs-events.png": "a9eccf0f61cfe0d66e3d4eec4a395986",
+    "fsm09-11-fs-topology.png": "710d3869ae3a9db45c2038501cbd4c0e",
+    "fsm09-12-install.png": "4a0d9580ed541c8a2332e6f3ffe020bf",
+    "fsm09-13-setup.png": "a550c3115be081fbc20e68f6dc839314",
+    "fsm09-14-pods.png": "dc0c4df2752b648b3ca7f5f6ad105ec8",
+    "fsm09-15-mcp-list.png": "6e93949160fe9a682a4b776fad6dd42c",
+    "fsm09-30-fortiagent-tui-open.png": "ca6de842163a849ea37829a69e060c45",
+    "fsm09-31-fortiagent-tui-plan.png": "b066ddc1cad461a549ff7f9078c057b0",
+    "fsm09-32-fortiagent-tui-approve.png": "0d1222b3b95e431273f6ac1e487a0fea"
+  },
+  "steps": {
+    "fsm09-01-register": [
+      "fsm09-01-register.png"
+    ],
+    "fsm09-02-trust-folder": [
+      "fsm09-02-trust-folder.png"
+    ],
+    "fsm09-03-check-mcp": [
+      "fsm09-03-check-mcp.png"
+    ],
+    "fsm09-04-ask-pods": [
+      "fsm09-04-ask-pods.png"
+    ],
+    "fsm09-05-approve-change": [
+      "fsm09-05-approve-change.png"
+    ],
+    "fsm09-06-approved": [
+      "fsm09-06-approved.png"
+    ],
+    "fsm09-07-build-plan": [
+      "fsm09-07-build-plan.png"
+    ],
+    "fsm09-08-build-approve": [
+      "fsm09-08-build-approve.png"
+    ],
+    "fsm09-09-build-done": [
+      "fsm09-09-build-done.png"
+    ],
+    "fsm09-10-fs-events": [
+      "fsm09-10-fs-events.png"
+    ],
+    "fsm09-11-fs-topology": [
+      "fsm09-11-fs-topology.png"
+    ],
+    "fsm09-12-install": [
+      "fsm09-12-install.png"
+    ],
+    "fsm09-13-setup": [
+      "fsm09-13-setup.png"
+    ],
+    "fsm09-14-pods": [
+      "fsm09-14-pods.png"
+    ],
+    "fsm09-15-mcp-list": [
+      "fsm09-15-mcp-list.png"
+    ],
+    "fsm09-30-fortiagent-tui-open": [
+      "fsm09-30-fortiagent-tui-open.png"
+    ],
+    "fsm09-31-fortiagent-tui-plan": [
+      "fsm09-31-fortiagent-tui-plan.png"
+    ],
+    "fsm09-32-fortiagent-tui-approve": [
+      "fsm09-32-fortiagent-tui-approve.png"
+    ]
+  }
+}

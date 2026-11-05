@@ -56,9 +56,8 @@ anything but a plain filter, a redirect, a backtick), any command Claude cannot 
 PUT and DELETE. A script of several lines is a change too, and runs line by line, stopping at the first line the
 device refuses.
 
-When you say to go ahead, Claude calls it again with *confirm=true*. The server then asks **you** to approve the
-plan: tick **Approve** (press Space), move to **Accept** and press Enter. The agent cannot answer for you.
-Declining, Esc, or accepting without ticking **Approve** sends nothing.
+When you say to go ahead, Claude calls it again with *confirm=true*. Claude asks your permission to run it:
+choose **Yes** (Enter takes the default). **No** or Esc sends nothing.
 
 ## What it never does
 

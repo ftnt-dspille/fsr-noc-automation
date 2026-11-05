@@ -81,7 +81,7 @@ guest only when you confirm.
 | *The fmg install is stuck. Cancel task 1394.* | **tasks**, then **vm_lifecycle** (action **cancel_task**) |
 | *Install fmg unlicensed.* | **set_vm_license** (mode *NONE*) |
 
-These preview first and then ask you to approve. Power off and restart are hard, and a reinstall
+These preview first, and Claude runs them after you say yes. Power off and restart are hard, and a reinstall
 wipes the guest, so shut it down from inside or take a **snapshot_vm** first when its state matters.
 Changing a license mode reinstalls the guest unless you ask for *reinstall=false*.
 
@@ -108,7 +108,7 @@ alone and is larger. The VM is powered off hard for several minutes while its di
 
 Ask: *"Build me a fabric on pod-a with a FortiGate, a FortiManager and a FortiAnalyzer."* Claude lists the
 topologies with **build**, validates and plans one, tells you which running fabric it would stop and which
-firmware each device gets, and asks you to approve before it builds. It then follows the build and checks the
+firmware each device gets, and waits for your yes before it builds. It then follows the build and checks the
 result with the tools above. When a build fails it reads the cause with **diagnose** and proposes a fix. Start with
 [Build a Fabric with Claude]({{% relref "07-build-a-fabric" %}}).
 

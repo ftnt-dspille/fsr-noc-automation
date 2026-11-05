@@ -22,7 +22,7 @@ You need the MCP server [registered with Claude]({{% relref "03-connect-claude" 
 | *topologies* | Lists what can be built: name, devices, and the variables each takes | No |
 | *validate* | Checks one topology with no pod | No |
 | *plan* | Shows what building it on your pod would create, reinstall or delete, which firmware each device gets, and which running fabric it would stop | No |
-| *apply* | Builds it. You are asked to approve the plan first, then the build runs in the background and returns a run id | **Yes** |
+| *apply* | Builds it. Claude runs it after you approve the plan, then the build runs in the background and returns a run id | **Yes** |
 | *status* | Follows a build by run id | No |
 
 **A pod runs one fabric at a time.** Building a new fabric stops the one that is running. Its model stays,
@@ -75,8 +75,8 @@ found and what it needs from you. Read three things in its answer:
 <!-- step: fsm09-08-build-approve -->
 
 When you say to go ahead, Claude calls **build** with *apply* and *confirm=true*. The server then runs the plan
-again and asks **you** to approve it. The agent cannot answer for you. Tick **Approve** (press Space), move to
-**Accept** and press Enter. Decline, Esc, or accepting without ticking **Approve** leaves the pod untouched.
+again. Claude asks your permission to call the tool that changes the pod: choose **Yes** (Enter takes the
+default). **No** or Esc leaves the pod untouched.
 
 <!-- capture: fsm09-08-build-approve -->
 ![fsm09-08-build-approve](fsm09-08-build-approve.png)
@@ -134,7 +134,7 @@ What Claude did is what you should expect:
 2. **Decided that repeating it would not help.** The same image would fail the same way.
 3. **Chose a different image and planned again.** *plan* showed one change: reinstall fmg on the other
    image. The FortiGate and FortiAnalyzer stayed as they were.
-4. **Asked you again.** The retry is a new approval, with the new plan in front of you.
+4. **Asked you again.** The retry is a new request for your permission, with the new plan in front of you.
 5. **Finished.** The build converged, and only fmg was reinstalled.
 
 Fabric Studio's own record shows the whole sequence: the failed install, the uninstall, and the new install.

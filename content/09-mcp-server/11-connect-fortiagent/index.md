@@ -12,10 +12,14 @@ commands on devices.
 
 ## Before you start
 
+The screenshots were taken on macOS. FortiAgent runs on macOS, Linux and Windows and its settings are the same on
+each, so only the window frame differs; commands and paths that differ by system are in tabs, and the choice is
+remembered for the rest of the page.
+
 1. [Install the command]({{% relref "01-install" %}}) from the download zip.
 2. Add your Fabric Studio pod, in a terminal. This is the only place you type
-   the pod's password: it goes into the macOS Keychain, and FortiAgent never
-   sees it.
+   the pod's password: it goes into your system's keychain (the macOS Keychain, Windows Credential Manager, or the
+   Linux Secret Service), and FortiAgent never sees it.
 
    ```bash
    fabric-studio-mcp setup     # asks for the hostname, a name, the user and the password
@@ -26,9 +30,33 @@ commands on devices.
 3. Find the full path of the command. FortiAgent does not search your shell's
    `PATH`, so it needs the whole path:
 
-   ```bash
-   which fabric-studio-mcp
-   ```
+{{< tabs groupid="os" >}}
+{{% tab title="Linux" %}}
+Open a terminal (macOS uses the same commands):
+
+```bash
+which fabric-studio-mcp     # for example /home/you/.local/bin/fabric-studio-mcp, or /Users/you/... on macOS
+```
+{{% /tab %}}
+{{% tab title="Windows" %}}
+In PowerShell:
+
+```powershell
+where.exe fabric-studio-mcp     # for example C:\Users\you\.local\bin\fabric-studio-mcp.exe
+```
+
+{{% notice note %}}
+The Windows steps on this page follow FortiAgent's and the server's documentation but have not been verified on a
+Windows machine yet.
+{{% /notice %}}
+{{% /tab %}}
+{{< /tabs >}}
+
+{{% notice tip %}}
+**Quick way:** run `fabric-studio-mcp connect fortiagent`. It runs FortiAgent's own `fortiagent mcp add` with the
+right command path, then you can skip to [step 3](#3-check-that-it-is-listed). The steps below do the same by hand in
+the app, which is also how you see what each field means.
+{{% /notice %}}
 
 ## 1. Open the MCP servers settings
 
@@ -47,7 +75,7 @@ yourself go here. Click **Add an MCP server**.
 |---|---|
 | **Connection** | **Local command** |
 | **Name** | `Fabric Studio`, exactly. FortiAgent makes the server's ID from it (`fabric-studio`), and the skill in step 4 looks for that ID |
-| **Command** | the full path from `which fabric-studio-mcp`. Installed with `uv tool install` (from the download zip or a clone of the repository) it is `/Users/<you>/.local/bin/fabric-studio-mcp` |
+| **Command** | the full path from step 3: `/Users/<you>/.local/bin/fabric-studio-mcp` on macOS, `/home/<you>/.local/bin/fabric-studio-mcp` on Linux, `C:\Users\<you>\.local\bin\fabric-studio-mcp.exe` on Windows |
 | **Arguments** | leave empty |
 | **Environment variables** | none |
 
@@ -93,7 +121,7 @@ the old one first, then add it.
 
 The skill teaches the assistant how to use the tools well: which tool answers
 what, how to plan before building, and the traps to avoid. It ships in the
-download zip, at `fabric-studio/skills/fabric-studio/SKILL.md`.
+download zip, at `fabric-studio/skills/fabric-studio/SKILL.md` (with backslashes on Windows).
 
 Close Settings and open **Skills** (left bar). Click **Import** and choose
 **Import from SKILL.md**, then pick that file.
@@ -145,14 +173,28 @@ done when the **Stop** button turns back into **Send**.
 
 ## 6. Approve a change
 
-Reading is safe to leave on Auto. A change to a pod, such as building a fabric, asks you first. The terminal chat
+Reading is safe to leave on Auto. A change to a pod, such as building a fabric, asks you first unless you set it to Auto. The terminal chat
 shows the approval in full, so this section uses it: in a terminal, start the chat from a folder you do not mind
 FortiAgent touching (it can read and write files where it starts).
 
+{{< tabs groupid="os" >}}
+{{% tab title="Linux" %}}
 ```bash
 mkdir -p ~/fabric-studio-demo && cd ~/fabric-studio-demo
 fortiagent chat
 ```
+{{% /tab %}}
+{{% tab title="Windows" %}}
+```powershell
+New-Item -ItemType Directory -Force "$HOME\fabric-studio-demo" | Out-Null
+Set-Location "$HOME\fabric-studio-demo"
+fortiagent chat
+```
+
+The installer puts `fortiagent.cmd` on your `PATH`. If PowerShell does not find it, open the desktop app once (it
+repairs the command on every launch) and open a new PowerShell window.
+{{% /tab %}}
+{{< /tabs >}}
 
 <!-- step: fsm09-30-fortiagent-tui-open -->
 
@@ -169,7 +211,7 @@ needs this interactive chat or the desktop app.
 Name one of the bundled topologies (`fgt_single` is one FortiGate). Ask for the plan and say not to build yet.
 
 ```text
-Plan the fgt_single topology on mypod. Do not build it yet. In a few short lines: what would it create, and what would it stop?
+I want a fabric on mypod with a FortiGate, a FortiManager and a FortiAnalyzer. Do not build it yet. In a few short lines: what would it create, and what would it stop?
 ```
 
 The plan is read-only. It lists what would be created, and **what it would stop**: a pod runs one fabric at a time,
@@ -189,35 +231,22 @@ nothing to read (for example, no running fabric) is not a failure of the plan.
 
 ### Approve the build
 
-Say `Yes, build it.` FortiAgent may show its own sheet first (**1. Allow once**, **2. Deny**; Enter confirms and
-Esc denies). With a server on **Auto**, its review often lets the call through, so you see the Fabric Studio
-server's own question instead: an **MCP review** with the whole plan, ending in **Approve: Run it now?**.
+Say `Yes, build it.` FortiAgent shows its own approval sheet for the tool that changes the pod: **1. Allow once**,
+**2. Deny**. Enter confirms the highlighted choice and Esc denies. This is FortiAgent's own prompt, not something
+the Fabric Studio server adds.
 
 <!-- step: fsm09-32-fortiagent-tui-approve -->
 
-<!-- step: fsm09-33-fortiagent-tui-form -->
+<!-- capture: fsm09-32-fortiagent-tui-approve -->
+![fsm09-32-fortiagent-tui-approve](fsm09-32-fortiagent-tui-approve.png)
 
-<!-- capture: fsm09-33-fortiagent-tui-form -->
-![fsm09-33-fortiagent-tui-form](fsm09-33-fortiagent-tui-form.png)
-
-Read the plan, in particular `would_stop` (the fabric that will be powered off, or `null`) and `deletes`. The field
-starts on **No**.
-
-| To | Press |
-|---|---|
-| Switch **Approve** to **Yes** | the left or right arrow (the field has focus when the form opens) |
-| Run it | **Ctrl+S** (**MCP review accepted**) |
-| Decline | **Ctrl+D** |
-| Cancel the question | **Esc** |
+Read the plan in the sheet, in particular `would_stop` (the fabric that will be powered off, or `null`) and
+`deletes`, before you choose.
 
 {{% notice warning %}}
-**Tab** moves off the **Approve** field to **Accept**. After that the arrow keys do nothing, and **Enter** runs
-the form with **No**. If you tabbed, tab back before you press an arrow.
-{{% /notice %}}
-
-{{% notice note %}}
-A long plan pushes the field below the visible area. If you cannot see **Approve**, make the terminal taller
-(about 60 rows for a build) or press **Ctrl+F** to expand the form.
+With the server's changes set to **Auto**, FortiAgent's reviewer can let a call through without showing the sheet
+("Auto-approved by FortiAI review"). Auto is your setting to choose. To be asked every time, set the server's
+changes to **Ask** under Settings, then Permissions.
 {{% /notice %}}
 
 ### Check the result
@@ -226,7 +255,7 @@ The build runs in the background and takes a few minutes: the chat returns as so
 you want the state.
 
 ```text
-Is the fabric I just built up? Answer in a few short lines about its device only.
+Is the fabric I just built up?
 ```
 
 <!-- step: fsm09-34-fortiagent-tui-built -->
