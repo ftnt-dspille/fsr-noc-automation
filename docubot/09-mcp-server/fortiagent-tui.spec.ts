@@ -1,7 +1,7 @@
-import { existsSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, watch } from 'node:fs';
+import { mkdirSync, mkdtempSync, rmSync } from 'node:fs';
 import { homedir } from 'node:os';
 import { join } from 'node:path';
-import { assertPodAllowed, blankFortiagentAlways, guardedTurn, TuiSession, fortiagentStage, skipStep, test, waitForFortiagentIdle, watchFortiagentGate, withFortiagentRule } from 'docubot';
+import { assertPodAllowed, blankFortiagentAlways, defaultRunsDir, guardedTurn, TuiSession, fortiagentStage, skipStep, test, waitForBuildRun, waitForFortiagentIdle, watchFortiagentGate, withFortiagentRule } from 'docubot';
 import type { AgentDevice, FortiagentCallExpect } from 'docubot';
 
 // FortiAgent's terminal chat (`fortiagent chat`) in a pseudo-terminal, for what a one-shot `chat -m` cannot do:
@@ -15,7 +15,9 @@ import type { AgentDevice, FortiagentCallExpect } from 'docubot';
 // Every wait is on something on screen; there are no fixed sleeps.
 const POD = process.env.FS_MCP_POD ?? '';
 const POD_NAME = process.env.FS_MCP_POD_NAME ?? 'mypod';   // the name the pod was saved under with `fabric-studio-mcp setup`
-const TOPOLOGY = process.env.FS_MCP_TOPOLOGY ?? 'fgt_single';   // a bundled topology: build only builds ones that exist
+// A bundled topology whose fabric is NOT on the pod (fgt_fmg_faz makes fgt-fmg-faz), so the plan says what it would create and
+// stop, not "no-op". A fabric that already exists (fgt_single -> fgt-single) makes the plan read "nothing to build" before "Yes, build it".
+const TOPOLOGY = process.env.FS_MCP_TOPOLOGY ?? 'fgt_fmg_faz';
 // The sheet is denied unless FS_MCP_ACCEPT=1, so a run that only captures it builds nothing.
 const ACCEPT_BUILD = process.env.FS_MCP_ACCEPT === '1';
 const PROBE = process.env.FS_MCP_PROBE !== '0';
@@ -38,27 +40,7 @@ const BUILD_EXPECT: FortiagentCallExpect = { server: SERVER, tool: 'build', args
 const log = (message: string): void => console.log(`[fortiagent-tui ${new Date().toISOString().slice(11, 19)}] ${message}`);
 
 // The build runs detached and records each run under ~/.fsh/mcp-runs; its <run>.rc file appears when it exits.
-const RUNS = join(homedir(), '.fsh', 'mcp-runs');
-const exitFiles = (): Set<string> => new Set(existsSync(RUNS) ? readdirSync(RUNS).filter((f) => f.endsWith('.rc')) : []);
-
-/**
- * Wait for a build run that was not there before to record its exit code, and return that code. Waits on the
- * directory (fs.watch), not a timer, and logs each new file; the only clock is the overall deadline.
- */
-function waitForNewRun(before: Set<string>, timeoutMs: number): Promise<string> {
-  return new Promise((resolve, reject) => {
-    const fresh = (): string | undefined => [...exitFiles()].find((f) => !before.has(f));
-    const done = (file: string): void => { watcher.close(); clearTimeout(deadline); resolve(readFileSync(join(RUNS, file), 'utf8').trim()); };
-    const watcher = watch(RUNS, (event, name) => {
-      log(`mcp-runs: ${event} ${name ?? ''}`);
-      const file = fresh();
-      if (file) done(file);
-    });
-    const deadline = setTimeout(() => { watcher.close(); reject(new Error(`no build run recorded an exit code within ${timeoutMs}ms`)); }, timeoutMs);
-    const already = fresh();   // finished between the approval and this watch
-    if (already) done(already);
-  });
-}
+const RUNS = defaultRunsDir();
 
 /** The last `n` lines of a screen that carry text. */
 const tail = (screen: string, n = 14): string => screen.split('\n').filter((l) => l.trim()).slice(-n).join('\n');
@@ -96,13 +78,15 @@ test('Approve a change in the FortiAgent terminal chat', async ({ capture }) => 
         });
 
         await test.step('fsm09-31-fortiagent-tui-plan', async () => {
-          const plan = `Plan the ${TOPOLOGY} topology on ${POD_NAME}. Do not build it yet. In a few short lines: what would it create, and what would it stop?`;
+          const plan = `I want a fabric on ${POD_NAME} with a FortiGate, a FortiManager and a FortiAnalyzer. Do not build it yet. In a few short lines: what would it create, and what would it stop?`;
           log(`asked: ${plan.slice(0, 80)}`);
           // A plan only reads, so no approval sheet should show; if the assistant asks to write a file anyway, deny it.
           await fa.turn(plan, { timeoutMs: TURN_TIMEOUT_MS, decision: 'decline' });
           // The page promises a plan that names what it would stop; a screen without that is not one to publish.
           if (!/\bstop/i.test(fa.plainScreen()) || !/fgt/i.test(fa.plainScreen())) throw new Error(`no plan on screen:\n${tail(fa.plainScreen(), 25)}`);
-          const shot = fa.region({ start: /^[┃│|\s]*Plan the \S+ topology/, end: /Worked for/ });
+          // A plan for a fabric that already exists on the pod says it is a no-op, and the next step then builds it: refuse that picture.
+          if (/no-?op|nothing to (build|do|change)|already (exists|running|built)/i.test(fa.plainScreen().split(plan.slice(0, 30))[1] ?? '')) throw new Error(`the plan is a no-op: ${TOPOLOGY} is already on the pod; pick a topology that is not (FS_MCP_TOPOLOGY):\n${tail(fa.plainScreen(), 25)}`);
+          const shot = fa.region({ start: /^[┃│|\s]*I want a fabric on \S+ with a FortiGate/, end: /Worked for/ });
           await capture.screen('fsm09-31-fortiagent-tui-plan', shot, { title, replace: swap, cols: 110, keepIps: TOPO_IPS });
         });
 
@@ -140,16 +124,16 @@ test('Approve a change in the FortiAgent terminal chat', async ({ capture }) => 
               return;
             }
             // Allow once: the build runs for minutes, detached. The log must show the same call approved before it runs.
-            const before = exitFiles();
+            const before = waitForBuildRun.snapshot(RUNS);
             await fa.answer('approve', BUILD_EXPECT);
             await guardedTurn(waitForFortiagentIdle(fa.term, TURN_TIMEOUT_MS), watch, false);
             log('build started; waiting for its run to record an exit code');
-            const exit = await waitForNewRun(before, 25 * 60_000);
+            const exit = await waitForBuildRun(RUNS, { before, timeoutMs: 25 * 60_000, onEvent: log });
             if (exit !== '0') throw new Error(`the build run exited with ${exit}, not 0`);
             log('build run exited 0');
           } finally { watch.stop(); }
           await test.step('fsm09-34-fortiagent-tui-built', async () => {
-            await fa.turn('Is the fabric I just built up? Answer in a few short lines about its device only.', { timeoutMs: TURN_TIMEOUT_MS, decision: 'decline' });
+            await fa.turn('Is the fabric I just built up?', { timeoutMs: TURN_TIMEOUT_MS, decision: 'decline' });
             const shot = fa.region({ start: /^[┃│|\s]*Is the fabric I just built up/, end: /Worked for/ });
             await capture.screen('fsm09-34-fortiagent-tui-built', shot, { title, replace: swap, cols: 110, keepIps: TOPO_IPS });
           });

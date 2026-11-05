@@ -1,8 +1,7 @@
-import { spawnSync } from 'node:child_process';
-import { copyFileSync, existsSync, mkdirSync, mkdtempSync, rmSync } from 'node:fs';
+import { existsSync, mkdirSync, mkdtempSync, rmSync } from 'node:fs';
 import { homedir } from 'node:os';
 import { join } from 'node:path';
-import { test } from 'docubot';
+import { installFabricStudioMcp, test } from 'docubot';
 
 // The Install page's `fabric-studio-mcp connect`: install from the published zip into a throwaway tool folder, then run
 // the real command. It needs no pod. Claude Code and Codex are pointed at throwaway config folders, so this machine's
@@ -14,9 +13,7 @@ test('Connect the server to coding agents with one command', async ({ local, cap
   test.setTimeout(10 * 60_000);
   const root = mkdtempSync(join(homedir(), '.docubot-fsmcp-connect-'));
   const tools = join(root, 'tools');
-  const dl = join(root, 'download');
   const work = join(root, 'demo');
-  mkdirSync(dl);
   mkdirSync(work);
   const claudeCfg = join(root, 'claude-config');
   const codexHome = join(root, 'codex-home');
@@ -32,13 +29,7 @@ test('Connect the server to coding agents with one command', async ({ local, cap
   ];
   const title = 'student@laptop: ~/fabric-studio-demo';
   try {
-    const install = (cmd: string, args: string[]) => {
-      const r = spawnSync(cmd, args, { cwd: dl, env: { ...process.env, UV_TOOL_DIR: tools, UV_TOOL_BIN_DIR: bin, PATH: `${bin}:${process.env.PATH}` }, encoding: 'utf8' });
-      if (r.status !== 0) throw new Error(`${cmd} ${args.join(' ')} failed: ${r.stderr || r.stdout}`);
-    };
-    copyFileSync(ZIP, join(dl, 'fabric-studio.zip'));
-    install('unzip', ['-q', 'fabric-studio.zip']);
-    install('uv', ['tool', 'install', './fabric-studio[mcp]']);
+    installFabricStudioMcp({ zip: ZIP, dir: root, toolsDir: tools });
 
     await test.step('fsm09-18-connect', async () => {
       const env = { PATH: `${bin}:${process.env.PATH}`, CLAUDE_CONFIG_DIR: claudeCfg, CODEX_HOME: codexHome };

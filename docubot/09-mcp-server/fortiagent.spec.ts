@@ -1,9 +1,9 @@
 import { spawnSync } from 'node:child_process';
-import { copyFileSync, existsSync, mkdirSync, mkdtempSync, renameSync, rmSync } from 'node:fs';
+import { existsSync, mkdtempSync, renameSync, rmSync } from 'node:fs';
 import { homedir } from 'node:os';
 import { join } from 'node:path';
 import type { Page } from '@playwright/test';
-import { assertPodAllowed, getGuiDevice, test } from 'docubot';
+import { assertPodAllowed, getGuiDevice, installFabricStudioMcp, setupPod, test } from 'docubot';
 
 // The Connect FortiAgent page, followed as a new student would: install from the zip the Install page offers
 // (uv tool install, so the command lands in ~/.local/bin as the page says), add the pod with
@@ -81,25 +81,11 @@ test('Connect FortiAgent to the fabric-studio MCP server', async ({ app, capture
     // Before you start: the Install page's commands, then setup. Not captured here (the Install and Connect a Pod
     // pages show them); a failure stops the chapter, because the rest depends on them.
     log('installing from the download zip');
-    const dl = join(root, 'download');
-    mkdirSync(dl);
-    copyFileSync(ZIP, join(dl, 'fabric-studio.zip'));
-    for (const [cmd, args] of [['unzip', ['-q', 'fabric-studio.zip']], ['uv', ['tool', 'install', '--force', './fabric-studio[mcp]']]] as const) {
-      const r = spawnSync(cmd, [...args], { cwd: dl, encoding: 'utf8' });
-      if (r.status !== 0) throw new Error(`${cmd} failed: ${r.stderr || r.stdout}`);
-    }
+    const installed = installFabricStudioMcp({ zip: ZIP, dir: root });   // into ~/.local/bin, as the page says
+    const dl = installed.download;
     log('fabric-studio-mcp setup');
-    const s = await local('laptop', { file: join(bin, 'fabric-studio-mcp'), args: ['setup'], env, cols: 100, rows: 16 });
-    await s.waitFor(/Pod hostname or IP/, { where: 'transcript', timeoutMs: 60_000 }); s.send(POD);
-    await s.waitFor(/Username \[admin\]/, { where: 'transcript', timeoutMs: 30_000 }); s.send(POD_USER === 'admin' ? '' : POD_USER);
-    await s.waitFor(/Name for this pod/, { where: 'transcript', timeoutMs: 30_000 }); s.send('mypod');
-    await s.waitFor(/Password for/, { where: 'transcript', timeoutMs: 30_000 }); s.send(POD_PASS);
-    await s.waitFor(/Next: run\s+fabric-studio-mcp connect|Not registered/, { where: 'transcript', timeoutMs: 120_000 });
-    if (s.transcript().includes(POD_PASS)) throw new Error('the password reached the terminal output');
-    if (/Not registered/.test(s.transcript())) throw new Error(`setup failed: ${s.transcript().split('Not registered')[1]?.trim()}`);
-    s.kill();
-    const command = spawnSync('which', ['fabric-studio-mcp'], { env: { ...process.env, ...env }, encoding: 'utf8' }).stdout.trim();
-    if (command !== join(bin, 'fabric-studio-mcp')) throw new Error(`which fabric-studio-mcp gave ${command}, not ~/.local/bin`);
+    await setupPod({ pod: POD, user: POD_USER, password: POD_PASS, name: 'mypod', command: installed.command, env });
+    const command = installed.command;
 
     // A rerun starts from no Fabric Studio server, as a student does. The Settings page reads "No MCP servers
     // configured yet" until its list loads, so the cleanup asks the engine instead (fortiagent mcp, FortiAgent 0.2.6+).

@@ -1,8 +1,8 @@
 import { spawnSync } from 'node:child_process';
-import { copyFileSync, existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync } from 'node:fs';
+import { mkdirSync, mkdtempSync, rmSync } from 'node:fs';
 import { homedir } from 'node:os';
-import { join } from 'node:path';
-import { assertPodAllowed, buildExpect, classifyServer, ClaudeApproval, cleanScreen, fsGoto, fsOpenFabric, fsShot, getGuiDevice, skipStep, type LabConfig, test, type Expect, type PendingCall } from 'docubot';
+import { basename, join } from 'node:path';
+import { assertPodAllowed, buildExpect, createAgentLab, defaultRunsDir, fsGoto, fsOpenFabric, fsShot, getGuiDevice, installFabricStudioMcp, listRuns, operatorClaudeTitles, pollUntil, setupPod, skipStep, slashCommand, waitForBuildRun, waitForRunStart, type LabConfig, test, type Expect, type PendingCall } from 'docubot';
 
 // Captures run on the operator's own Claude login (Sonnet): `--setting-sources ''` + `--strict-mcp-config` keep the operator's rules and hooks out of the gate.
 // DOCUBOT_APPROVAL_ISOLATION=config-dir (CI, canary) uses a throwaway config and needs ANTHROPIC_API_KEY.
@@ -11,7 +11,6 @@ import { assertPodAllowed, buildExpect, classifyServer, ClaudeApproval, cleanScr
 // The published download: the chapter tests the artifact a reader gets, not a checkout. Override with FS_MCP_ZIP.
 const ZIP = process.env.FS_MCP_ZIP ?? join(__dirname, '..', '..', 'content', '09-mcp-server', '01-install', 'fabric-studio.zip');
 const POD = process.env.FS_MCP_POD ?? '';           // host of a lab pod you may change; step 6 accepts the restart, so it runs on that pod
-const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 // A timestamped line for every step and every change of what a wait is looking at, so a stall shows what it waited on.
 const T0 = Date.now();
 const log = (message: string): void => console.log(`[chapter +${String(Math.round((Date.now() - T0) / 1000)).padStart(4)}s] ${message}`);
@@ -29,8 +28,6 @@ const step = async (name: string, body: () => Promise<void>): Promise<void> =>
 // declares the one call it expects (tool, pod, confirm=true), any other change is denied, and the picture is taken
 // only for that call. The pod is addressed by the name step 13 registers it under.
 const POD_NAME = 'mypod';
-// The bundled topologies' own subnets are page content, not lab addresses: keep them through IP masking.
-const TOPO_IPS = ['10.254.254.0'];
 const BUILD = process.env.FS_MCP_BUILD === '1';
 // Steps 16-17 build a fabric that fails on purpose (FortiManager 8.0.0 does not install on the lab pod) so the
 // failed-install page can show Claude finding the cause. They are independent of FS_MCP_BUILD.
@@ -47,83 +44,56 @@ const FABRIC = process.env.FS_MCP_FABRIC ?? 'docs-demo';
 // The fabric steps 7-11 create. Defaults to FABRIC; name a new one when FABRIC is the fabric already running (a plan for a fabric that exists says "nothing to build").
 const BUILD_FABRIC = process.env.FS_MCP_BUILD_FABRIC ?? FABRIC;
 
-// Show the folder the page tells a student to use, and drop the warning that comes from the
-// author's own second registration (a student with a single registration never sees it).
-const tidy = (screen: string) =>
-  screen.replace(/MCP config diagnostics[\s\S]*?(?=\s*Manage MCP servers)/, '');
-
-/** Poll a condition on the screen (every 200 ms, logging nothing until it fails); throws with the label when the deadline passes. */
-async function pollUntil(label: string, ok: () => boolean, timeoutMs: number): Promise<void> {
-  const until = Date.now() + timeoutMs;
-  while (Date.now() < until) { if (ok()) return; await sleep(200); }
-  throw new Error(`timed out after ${timeoutMs}ms waiting for ${label}`);
-}
-
 /** The pod login, from the `pod` device (env DOCUBOT_POD_* over labconfig.local.yaml over labconfig.yaml); a placeholder is no login. */
 function podLogin(lab: LabConfig): { user: string; pass: string } {
   const dev = getGuiDevice(lab, 'pod');
   return { user: dev.user || 'admin', pass: /^set-/.test(dev.pass ?? '') ? '' : dev.pass ?? '' };
 }
 
-test('Connect Claude Code to the fabric-studio MCP server', async ({ local, capture, gui, lab }) => {
+
+test('Connect Claude Code to the fabric-studio MCP server', async ({ page, local, capture, gui, lab }) => {
   const { user: POD_USER, pass: POD_PASS } = podLogin(lab);
   assertPodAllowed(POD);   // named for this run, not locked, not on the deny list: checked before anything is launched
-  test.setTimeout(45 * 60_000);   // a real Claude conversation can take minutes, and the build steps wait for a fabric install
-  const root = mkdtempSync(join(homedir(), '.docubot-fs-mcp-'));
+  test.setTimeout(75 * 60_000);   // a real Claude conversation can take minutes, and the build steps wait for a fabric install
+  // The root sits under the operator's real home: Claude's login is found through HOME, so the folder is real. Its random name is
+  // the only part boxed in pictures; the folder the page names (fabric-studio-demo) is the real working folder.
+  const root = mkdtempSync(join(homedir(), 'fsmcp-'));
+  // Boxed in every Claude picture: the temp folder's random name, and the names of the operator's other background Claude sessions
+  // (Claude draws a live session's name in the prompt box's border; it is not something a student has).
+  // The footer's "← N agents" counts the operator's other background sessions: boxed too.
+  const HIDE = [basename(root), 'fsmcp-', ...operatorClaudeTitles(), ...Array.from({ length: 20 }, (_, i) => `← ${i + 1} agent${i ? 's' : ''}`)];
   const tools = join(root, 'tools');
-  const work = join(root, 'demo');
+  const work = join(root, 'fabric-studio-demo');
   mkdirSync(work);
-  const env = { UV_TOOL_DIR: tools, UV_TOOL_BIN_DIR: join(tools, 'bin') };
-  const dl = join(root, 'download');
-  mkdirSync(dl);
-  const path = `${join(tools, 'bin')}:${process.env.PATH}`;
   // `fabric-studio-mcp setup` creates this registry, as it does for a student. Nothing is written by hand.
   const registry = join(root, 'instances.json');
-  const shellEnv = { PATH: path, FSH_INSTANCES_FILE: registry };
-  const runsDir = join(root, 'mcp-runs');
+  const runsDir = defaultRunsDir(registry);
   const swap: Array<[string | RegExp, string]> = [
     [join(tools, 'bin'), '~/.local/bin'],
-    [work, '~/fabric-studio-demo'], [/~\/\.docubot-fs-mcp-[A-Za-z0-9]+(?:\/(?:demo|d(?:emo)?|…)?)?/g, '~/fabric-studio-demo'],   // also the truncated form on option 2 of a dialog ("~/.docubot-fs-mcp-8SJQhJ/…")
+    [work, '~/fabric-studio-demo'],
     [homedir(), '~'],
-    // Same width as the real host: Claude lays tables out before the swap, so a longer or shorter text would break their borders.
+    // Same width as the real host: the swap runs after the text is laid out, so a longer or shorter text would break its borders.
     [POD, '192.0.2.10'.padEnd(POD.length)],
-    // the operator's own plan usage and time zone, shown by Claude Code under a long answer: not part of the page
-    [/You.ve used \d+%[^\r\n]*limit[^\r\n]*/g, ''],
   ];
   const title = 'student@laptop: ~/fabric-studio-demo';
-  const rcCount = () => (existsSync(runsDir) ? readdirSync(runsDir).filter((f) => f.endsWith('.rc')).length : 0);
+  const agents = createAgentLab({ name: 'fsmcp' });
+  const shellEnvFor = (bin: string) => ({ PATH: `${bin}:${process.env.PATH}`, FSH_INSTANCES_FILE: registry });
+  let shellEnv: Record<string, string> = shellEnvFor(join(tools, 'bin'));
+  let session: Awaited<ReturnType<typeof agents.startClaudeApproval>> | undefined;
 
   try {
     // The Install page: unzip the download and install from the folder. Real commands, run in a throwaway tool folder.
     await step('fsm09-12-install', async () => {
-      copyFileSync(ZIP, join(dl, 'fabric-studio.zip'));
-      const run = (cmd: string, args: string[]) => {
-        const r = spawnSync(cmd, args, { cwd: dl, env: { ...process.env, ...env, PATH: path }, encoding: 'utf8' });
-        if (r.status !== 0) throw new Error(`${cmd} ${args.join(' ')} failed: ${r.stderr || r.stdout}`);
-        return `${r.stdout}${r.stderr}`;
-      };
-      run('unzip', ['-q', 'fabric-studio.zip']);
-      const installed = run('uv', ['tool', 'install', './fabric-studio[mcp]'])
-        .split('\n').filter((l) => /^Installed 1 executable/.test(l)).join('\n');   // drop the package-by-package list
-      const where = run('which', ['fabric-studio-mcp']).trim();
-      const out = ['$ unzip -q fabric-studio.zip', '$ uv tool install "./fabric-studio[mcp]"', installed,
-        '$ which fabric-studio-mcp', where].join('\n');
-      await capture.terminal('fsm09-12-install', out, { title: 'student@laptop: ~/Downloads', replace: swap });
+      const installed = installFabricStudioMcp({ zip: ZIP, dir: root, toolsDir: tools });
+      shellEnv = shellEnvFor(installed.bin);
+      await capture.terminal('fsm09-12-install', installed.shown, { title: 'student@laptop: ~/Downloads', replace: swap });
     });
 
-    // The Connect a Pod page: add the pod with the real command, answering its prompts as a student would.
+    // The Connect a Pod page: add the pod with the real command, answering its prompts through responders as a student would.
     await step('fsm09-13-setup', async () => {
       if (!POD || !POD_PASS) throw new Error('set FS_MCP_POD and DOCUBOT_POD_PASS: the chapter adds the pod with fabric-studio-mcp setup');
-      const s = await local('laptop', { file: 'fabric-studio-mcp', args: ['setup'], cwd: work, env: shellEnv, cols: 100, rows: 16 });
-      await s.waitFor(/Pod hostname or IP/, { where: 'transcript', timeoutMs: 60_000 }); s.send(POD);
-      await s.waitFor(/Username \[admin\]/, { where: 'transcript', timeoutMs: 30_000 }); s.send(POD_USER === 'admin' ? '' : POD_USER);
-      await s.waitFor(/Name for this pod/, { where: 'transcript', timeoutMs: 30_000 }); s.send('mypod');
-      await s.waitFor(/Password for/, { where: 'transcript', timeoutMs: 30_000 }); s.send(POD_PASS);
-      await s.waitFor(/Next: run\s+fabric-studio-mcp connect/, { where: 'transcript', timeoutMs: 120_000 });
-      const out = s.transcript().trimEnd();
-      if (out.includes(POD_PASS)) throw new Error('the password reached the terminal output');
-      await capture.terminal('fsm09-13-setup', out, { title, command: 'fabric-studio-mcp setup', replace: swap });
-      s.kill();
+      const { output } = await setupPod({ pod: POD, user: POD_USER, password: POD_PASS, name: 'mypod', command: join(tools, 'bin', 'fabric-studio-mcp'), cwd: work, env: shellEnv });
+      await capture.terminal('fsm09-13-setup', output, { title, command: 'fabric-studio-mcp setup', replace: swap });
     });
 
     await step('fsm09-14-pods', async () => {
@@ -136,94 +106,89 @@ test('Connect Claude Code to the fabric-studio MCP server', async ({ local, capt
       await capture.terminal('fsm09-14-pods', table, { title, command: 'fabric-studio-mcp pods', replace: swap });
     });
 
+    // `claude mcp add` is a plain command, not a TUI: it runs without a terminal and its output is the picture's text.
     await step('fsm09-01-register', async () => {
-      const sh = await local('laptop', { cwd: work, env: shellEnv });
       const cmd = 'claude mcp add fabric-studio --scope project -- fabric-studio-mcp';
-      sh.send(cmd);
-      await sh.waitFor(/File modified:[^\n]*\.mcp\.json/, { where: 'transcript', timeoutMs: 90_000 });
-      const said = sh.transcript();
+      const r = spawnSync('claude', cmd.split(' ').slice(1), { cwd: work, env: { ...process.env, ...shellEnv }, encoding: 'utf8' });
+      const said = `${r.stdout}${r.stderr}`;
+      if (r.status !== 0 || !/Added stdio MCP server/.test(said)) throw new Error(`claude mcp add failed:\n${said}`);
       const out = said.slice(said.indexOf('Added stdio MCP server')).trimEnd().replace(/File modified: .*/, 'File modified: ~/fabric-studio-demo/.mcp.json');
       await capture.terminal('fsm09-01-register', out, { title, command: cmd, replace: swap });
-      sh.kill();
     });
 
-    // --strict-mcp-config limits the session to the file step 1 wrote, so the shots show only this server. --no-chrome leaves the
-    // operator's claude-in-chrome out of the run (it is a built-in MCP server, listed by /mcp). computer-use has no flag or setting
-    // (a server-side feature gate), so /mcp still lists it.
-    // The read and change tool lists come from the server itself (tools/list); a tool it adds later is denied until classified.
-    // Captures use the operator's login and the Sonnet header; `--setting-sources ''` drops their rules and hooks (proven live with a
-    // control). DOCUBOT_APPROVAL_ISOLATION=config-dir switches to the throwaway config + ANTHROPIC_API_KEY + Haiku (CI/canary).
-    const approval = new ClaudeApproval({ dev: { type: 'agent', tool: 'claude', cwd: work }, isolation: process.env.DOCUBOT_APPROVAL_ISOLATION === 'config-dir' ? 'config-dir' : 'operator-login' });
-    const policy = await classifyServer(join(work, '.mcp.json'), 'fabric-studio', { builtins: ['ToolSearch'] }, shellEnv);
-    const gate = approval.prepare(policy);
-    const claude = await local('laptop', {
-      file: 'claude',
-      args: ['--permission-mode', 'default', '--model', gate.model, '--strict-mcp-config', '--no-chrome', '--mcp-config', '.mcp.json', ...gate.args],
-      cwd: work, env: { ...shellEnv, ...gate.env }, cols: 110, rows: 100,   // a long answer after the restart is taller than 64 rows: Ink then repaints the header twice
-    });
-    const session = approval.attach(claude);
+    // Claude Code runs in a real terminal. --strict-mcp-config limits the session to the file step 1 wrote, so the shots show only this
+    // server; --no-chrome leaves the operator's claude-in-chrome out (a built-in server /mcp would list). The read and change tool lists
+    // come from the server itself (tools/list); a tool it adds later is denied until classified. Captures use the operator's login and
+    // the Sonnet header; `--setting-sources ''` drops their rules and hooks. DOCUBOT_APPROVAL_ISOLATION=config-dir switches to the
+    // throwaway config + ANTHROPIC_API_KEY + Haiku (CI/canary).
+    const escapeRe = (t: string) => t.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    /** The picture starts at the question the student typed (what is above it is an earlier step's screen). */
+    const fromQuestion = (q: string) => new RegExp(`^\\s*[>❯]\\s+${escapeRe(q.slice(0, 24))}`);
+    // One Claude conversation runs through steps 02-17, so a step cannot run alone: when the fingerprint gate skipped the steps
+    // before it, run with FORCE=1 (or --from fsm09-02-trust-folder) so the session exists.
+    const S = (): NonNullable<typeof session> => {
+      if (!session) throw new Error('this step continues the Claude conversation started by fsm09-02-trust-folder, which did not run (skipped as unchanged?): run with FORCE=1');
+      return session;
+    };
+    // A finished turn ends with "Worked for 7s · done 8:56 AM": non-dialog pictures end there (no empty rows, no idle input box below).
+    const DONE = /\bfor (?:\d+m )?\d+s\b.*\bdone \d/;
+    const real = () => S().real;
+    const approval = () => S().approval;
+    /** Which tools Claude called since `from` events ago: the pick is asserted, never hinted at in the prompt. A wrong pick is a finding. */
+    const eventCount = () => approval().events().length;
+    const assertPicked = (what: string, from: number, tools: RegExp): void => {
+      const called = approval().events().slice(from).filter((e) => e.hook_event_name === 'PreToolUse').map((e) => String(e.tool_name).replace(/^mcp__[^_]+(?:-[^_]+)*__/, ''));
+      if (!called.some((t) => tools.test(t))) throw new Error(`FINDING (${what}): Claude did not pick a tool matching ${tools}; it called: ${called.join(', ') || '(no tool)'}`);
+    };
     const expectChange = (e: Omit<Expect, 'decision'>): Expect => {
-      const expected = buildExpect(policy, { ...e, decision: 'approve' });
-      approval.setExpect(expected);
+      const expected = buildExpect(S().policy, { ...e, decision: 'approve' });
+      approval().setExpect(expected);
       return expected;
     };
+    const plain = () => real().term.plainScreen();
 
-    // /clear, done by watching the input box instead of racing it: the slash-command menu can swallow the first Enter, and a
-    // second prompt typed behind an unsubmitted "/clear" would be one line. The lowest "❯" row is the input box.
-    const inputRow = (): string => claude.plainScreen().split('\n').filter((l) => /^\s*❯/.test(l)).pop() ?? '';
-    const clearConversation = async (): Promise<void> => {
-      claude.type('/clear');
-      await pollUntil('/clear in the input box', () => /\/clear/.test(inputRow()), 15_000);
-      for (let attempt = 1; attempt <= 4; attempt++) {
-        claude.enter();
-        try { await pollUntil('the input box to empty after /clear', () => !/\/clear/.test(inputRow()), 8_000); return; } catch { log(`/clear still in the input box after Enter ${attempt}`); }
-      }
-      throw new Error(`/clear never ran:\n${claude.plainScreen()}`);
-    };
-
+    // Claude asks whether to trust a folder the first time it opens it: the gate itself is photographed (onGate), then answered.
     await step('fsm09-02-trust-folder', async () => {
-      // Claude asks whether to trust a folder the first time it opens it.
-      await claude.waitFor(/trust this folder/, { timeoutMs: 60_000 });
-      await sleep(1500);
-      await capture.screen('fsm09-02-trust-folder', claude.screen(), { title, replace: swap, cols: 110 });
-      claude.write('\x1b[B'); await sleep(600); claude.write('\r');   // "Yes, I trust this folder"
-      await claude.waitFor(/\? for shortcuts/, { timeoutMs: 60_000 });
+      session = await agents.startClaudeApproval(page, {
+        mcpConfig: join(work, '.mcp.json'), cwd: work, server: 'fabric-studio', policyExtra: { builtins: ['ToolSearch'] },
+        env: shellEnv, args: ['--no-chrome'], cols: 110, rows: 70,
+        isolation: process.env.DOCUBOT_APPROVAL_ISOLATION === 'config-dir' ? 'config-dir' : 'operator-login',
+        onGate: async (_gate, r) => { await capture.agent('fsm09-02-trust-folder', r, { terms: HIDE, startAt: /\S/ }); },
+      });
     });
 
     await step('fsm09-03-check-mcp', async () => {
-      claude.type('/mcp'); await sleep(1500); claude.enter();
-      await claude.waitFor(/fabric-studio\s+\d+ tools/, { timeoutMs: 60_000 });
-      await sleep(1500);
-      await capture.screen('fsm09-03-check-mcp', cleanScreen(tidy(claude.screen())), { title, replace: swap, cols: 110 });
-      claude.write('\x1b'); await sleep(1000);
+      await slashCommand(real().term, '/mcp');
+      await pollUntil('the /mcp dialog to list fabric-studio', () => /fabric-studio\s+\d+ tools/.test(plain()), { timeoutMs: 60_000, intervalMs: 200 });
+      // The /mcp dialog sits at the bottom of the terminal: the picture starts at the dialog (nothing is cut out of the middle).
+      await capture.agent('fsm09-03-check-mcp', real(), { terms: HIDE, startAt: /Manage MCP servers/ });
+      real().term.write('\x1b');
+      await pollUntil('the /mcp dialog to close', () => !/Manage MCP servers/.test(plain().split('\n').slice(-30).join('\n')), { timeoutMs: 15_000, intervalMs: 200 });
     });
 
-    // `claude mcp list` health-checks every server on the machine, including the author's own. Run it against a
-    // throwaway Claude config, registered the way the page says (user scope), so it shows only this server and the
-    // real ~/.claude.json is never touched.
+    // `claude mcp list` health-checks every server on the machine, including the author's own. Run it against a throwaway Claude
+    // config, registered the way the page says (user scope), so it shows only this server and the real ~/.claude.json is never touched.
     await step('fsm09-15-mcp-list', async () => {
       const cfg = join(root, 'claude-config');
       mkdirSync(cfg);
-      const sh = await local('laptop', { cwd: work, env: { ...shellEnv, CLAUDE_CONFIG_DIR: cfg } });
-      // an interactive shell's startup files can rebuild PATH and drop the throwaway tool folder
-      sh.send(`export PATH="${join(tools, 'bin')}:$PATH"`); await sleep(3000);
-      sh.send('claude mcp add fabric-studio --scope user -- fabric-studio-mcp');
-      await sh.waitFor(/Added stdio MCP server/, { where: 'transcript', timeoutMs: 90_000 });
-      await sleep(4000);   // let the shell draw its prompt, or the next command is swallowed
-      sh.send('claude mcp list');
-      await sh.waitFor(/fabric-studio: fabric-studio-mcp[^\n]*(Connected|Failed|authentication)/, { timeoutMs: 180_000 });
-      const line = sh.plainScreen().split('\n').map((l) => l.trim()).filter((l) => /^fabric-studio: fabric-studio-mcp/.test(l)).pop();
+      const env = { ...process.env, ...shellEnv, CLAUDE_CONFIG_DIR: cfg };
+      const add = spawnSync('claude', ['mcp', 'add', 'fabric-studio', '--scope', 'user', '--', 'fabric-studio-mcp'], { cwd: work, env, encoding: 'utf8' });
+      if (add.status !== 0) throw new Error(`claude mcp add (user scope) failed: ${add.stderr || add.stdout}`);
+      const list = spawnSync('claude', ['mcp', 'list'], { cwd: work, env, encoding: 'utf8', timeout: 180_000 });
+      const line = `${list.stdout}${list.stderr}`.split('\n').map((l) => l.trim()).filter((l) => /^fabric-studio: fabric-studio-mcp/.test(l)).pop();
       if (!line || !/Connected/.test(line)) throw new Error(`the server is not connected: ${line}`);
       await capture.terminal('fsm09-15-mcp-list', `Checking MCP server health…\n\n${line}`, { title, command: 'claude mcp list', replace: swap });
-      sh.kill();
     });
 
     await step('fsm09-04-ask-pods', async () => {
-      await clearConversation();   // drops the setup steps' "MCP dialog dismissed" noise; the picture starts at the question
-      await session.send('List my managed Fabric Studio instances.');
-      await approval.turnDone(180_000);   // reads run unprompted: the policy allows them
-      const shown = await approval.settled(/managed Fabric Studio instance/);
-      await capture.screen('fsm09-04-ask-pods', shown.clean, { title, replace: swap, cols: 110 });
+      const q = 'Which lab pods do I have, and are they up?';
+      const from = eventCount();
+      await slashCommand(real().term, '/clear');   // drops the setup steps' "MCP dialog dismissed" noise; the picture starts at the question
+      await S().session.send(q);
+      await approval().turnDone(180_000);   // reads run unprompted: the policy allows them
+      assertPicked('which pods', from, /^pods$/);
+      await pollUntil('the answer to name the pod', () => /mypod/.test(plain().split(q.slice(0, 20)).pop() ?? ''), { timeoutMs: 30_000, intervalMs: 200 });
+      await capture.agent('fsm09-04-ask-pods', real(), { terms: HIDE, startAt: fromQuestion(q), endAt: DONE });
     });
 
     // The call step 5 pauses on, answered by step 6.
@@ -233,39 +198,40 @@ test('Connect Claude Code to the fabric-studio MCP server', async ({ local, capt
       // The fabric is pinned: the pod can hold the same VM name in two fabrics (docs-demo and docs-fail both have an fgt), so an
       // expectation without it would approve a restart of the wrong one.
       const expected = expectChange({ tool: 'vm_lifecycle', args: { host: POD_NAME, action: 'restart', vm: VM, fabric: FABRIC, confirm: true } });
-      await session.send(`Restart the VM ${VM} in the fabric ${FABRIC} on mypod.`);   // what a student would type; the model may preview first and ask
+      const q = `Restart the VM ${VM} in the fabric ${FABRIC} on mypod.`;
+      await S().session.send(q);   // what a student would type; the model may preview first and ask
       // Resolves on Claude's own permission event for exactly this call; a different change is denied and fails here.
-      let call = await approval.pendingOrEnd(expected, 240_000);
-      for (let i = 0; i < 3 && !call; i++) {
-        await session.send('Yes, go ahead.');
-        call = await approval.pendingOrEnd(expected, 240_000);
-      }
-      if (!call) throw new Error('the permission request never appeared for the restart');
-      change = call;
+      change = await approval().pendingOrNudge(S().session, expected, { timeoutMs: 240_000, nudge: 'Yes, go ahead.' });
       log(`waiting for approval: ${change.tool} ${JSON.stringify(change.args)}`);
-      const frame = await approval.capture(change);   // whole frame, checked to be this call's dialog
-      await capture.screen('fsm09-05-approve-change', frame.clean, { title, replace: swap, cols: 110 });
+      await capture.agent('fsm09-05-approve-change', await approval().snapDialog(change, real(), { terms: HIDE, startAt: fromQuestion(q) }));
     });
 
     await step('fsm09-06-approved', async () => {
-      await approval.answer(change!, 'approve');   // the "Yes" row, by name; "always" is never chosen
+      const q = `Restart the VM ${VM} in the fabric ${FABRIC} on mypod.`;
+      await approval().answer(change!, 'approve');   // the "Yes" row, by name; "always" is never chosen
       // The restart takes about a minute: power off, power on, wait for ready. The turn's Stop event ends the wait.
-      await approval.turnDone(240_000);
-      await sleep(3000);                           // let the closing end-of-turn line settle
-      await capture.screen('fsm09-06-approved', (await approval.settled(/restarted|power/i)).clean, { title, replace: swap, cols: 110 });
+      await approval().turnDone(240_000);
+      await pollUntil('Claude to report the restart', () => /restarted|power/i.test(plain()), { timeoutMs: 30_000, intervalMs: 200 });
+      await capture.agent('fsm09-06-approved', real(), { terms: HIDE, startAt: fromQuestion(q), endAt: DONE });
     });
 
+    // Steps 7-11 build a fabric on the pod.
+    let buildBefore = new Set<string>();
+    let runsBefore = new Set<string>();
     await step('fsm09-07-build-plan', async () => {
       if (!BUILD) return skipStep('fsm09-07-build-plan', 'set FS_MCP_BUILD=1 to build a fabric on the pod');
-      approval.setExpect(undefined);   // a plan changes nothing: any approval request for a change is denied
-      await clearConversation();   // drops the earlier "/mcp ... MCP dialog dismissed" lines; the picture starts at the question
-      await session.send(`Plan a fabric called ${BUILD_FABRIC} on mypod with a FortiGate, a FortiManager and a FortiAnalyzer, using version 7.6 for all three. Do not build it yet: tell me what it would stop and which firmware each device gets.`);
-      await approval.turnDone(420_000);
+      approval().setExpect(undefined);   // a plan changes nothing: any approval request for a change is denied
+      await slashCommand(real().term, '/clear');   // the picture starts at the question
+      const q = `Plan a fabric called ${BUILD_FABRIC} on mypod with a FortiGate, a FortiManager and a FortiAnalyzer, using version 7.6 for all three. Do not build it yet: tell me what it would stop and which firmware each device gets.`;
+      const from = eventCount();
+      await S().session.send(q);
+      await approval().turnDone(420_000);
+      assertPicked('the plan', from, /^(build_plan|build)$/);
       // A plan that failed is not a screenshot to publish: the page promises a plan. Judge only what Claude said after
-      // the question (the screen above it is earlier output), and ask for what a plan has, not for absent bad words.
-      const screen = claude.plainScreen();
+      // the question, and ask for what a plan has, not for absent bad words. A plan for a fabric that is already running
+      // reads "nothing to build" and contradicts the next step, so that is refused too.
       const marker = 'which firmware each device gets.';
-      const answer = screen.slice(screen.lastIndexOf(marker) + marker.length);
+      const answer = plain().slice(plain().lastIndexOf(marker) + marker.length);
       const has = (re: RegExp) => re.test(answer);
       const problems = [
         !has(new RegExp(BUILD_FABRIC)) && `the fabric name ${BUILD_FABRIC}`,
@@ -275,108 +241,92 @@ test('Connect Claude Code to the fabric-studio MCP server', async ({ local, capt
         !has(/FortiAnalyzer|\bfaz\b/i) && 'a FortiAnalyzer',
         !has(/\d+\.\d+\.\d+/) && 'a firmware version',
         has(/image not found|repository root/i) && 'an image or repository error',
+        has(/no-?op|nothing to (build|do|change)|already (exists|running|built)/i) && 'a "no-op / already exists" plan (use a fabric name that is not on the pod)',
       ].filter(Boolean);
-      if (problems.length) {
-        throw new Error(`Claude did not produce a plan (missing or wrong: ${problems.join(', ')}). After the question:\n${answer.split('\n').filter((l) => l.trim()).slice(-30).join('\n')}`);
-      }
+      if (problems.length) throw new Error(`Claude did not produce a plan (missing or wrong: ${problems.join(', ')}). After the question:\n${answer.split('\n').filter((l) => l.trim()).slice(-30).join('\n')}`);
       log('plan has the fabric, a stop statement, three devices and firmware versions');
-      await capture.screen('fsm09-07-build-plan', (await approval.settled()).clean, { title, replace: swap, cols: 110, keepIps: TOPO_IPS });
+      await capture.agent('fsm09-07-build-plan', real(), { terms: HIDE, startAt: fromQuestion(q), endAt: DONE });
     });
 
     await step('fsm09-08-build-approve', async () => {
       if (!BUILD) return skipStep('fsm09-08-build-approve', 'set FS_MCP_BUILD=1 to build a fabric on the pod');
       const expected = expectChange({ tool: 'build', args: { action: 'apply', host: POD_NAME, confirm: true } });
-      await session.send('Yes, build it.');
-      const call = await approval.pending(expected, 420_000);
-      const frame = await approval.capture(call);
-      await capture.screen('fsm09-08-build-approve', frame.clean, { title, replace: swap, cols: 110, keepIps: TOPO_IPS });
+      const q = 'Yes, build it.';
+      await S().session.send(q);
+      const call = await approval().pending(expected, 420_000);
+      await capture.agent('fsm09-08-build-approve', await approval().snapDialog(call, real(), { terms: HIDE, startAt: fromQuestion(q) }));
       // FS_MCP_DECLINE_BUILD=1 declines instead (the dialog is identical and the pod is not changed); steps 09-11 then have nothing to show.
-      await approval.answer(call, DECLINE_BUILD ? 'decline' : 'approve');   // the build runs
+      buildBefore = waitForBuildRun.snapshot(runsDir);
+      runsBefore = listRuns(runsDir);
+      await approval().answer(call, DECLINE_BUILD ? 'decline' : 'approve');   // the build runs
     });
 
     await step('fsm09-09-build-done', async () => {
       if (!BUILD) return skipStep('fsm09-09-build-done', 'set FS_MCP_BUILD=1 to build a fabric on the pod');
-      await approval.turnDone(300_000);
-      // The build runs detached: wait for its run to record an exit code, then ask whether the fabric is up.
-      const runs = join(root, 'mcp-runs');
-      const deadline = Date.now() + 25 * 60_000;
-      const finished = () => existsSync(runs) && readdirSync(runs).some((f) => f.endsWith('.rc'));
-      const screenTail = () => claude.plainScreen().split('\n').filter((l) => l.trim()).slice(-25).join('\n');
-      const started = Date.now();
-      while (!finished()) {
-        // An approved build records its run within seconds; none after 3 minutes means it never started.
-        if (Date.now() - started > 180_000 && !(existsSync(runs) && readdirSync(runs).length)) {
-          throw new Error(`no build run was recorded in ${runs} after the approval. Last screen:\n${screenTail()}`);
-        }
-        if (Date.now() > deadline) throw new Error('the build did not finish within 25 minutes');
-        log(`waiting for the build run to record an exit code (runs recorded: ${existsSync(runs) ? readdirSync(runs).length : 0})`);
-        await sleep(10_000);
-      }
-      approval.setExpect(undefined);
-      await session.send('Is the fabric up? Check the devices.');
-      await approval.turnDone(420_000);
-      await capture.screen('fsm09-09-build-done', (await approval.settled()).clean, { title, replace: swap, cols: 110, keepIps: TOPO_IPS });
+      if (DECLINE_BUILD) return skipStep('fsm09-09-build-done', 'the build was declined');
+      await approval().turnDone(300_000);
+      // The build runs detached: it records its run within seconds, and writes <run>.rc when it exits. Watch the folder.
+      await waitForRunStart(runsDir, { before: runsBefore, timeoutMs: 180_000 });
+      const exit = await waitForBuildRun(runsDir, { before: buildBefore, timeoutMs: 25 * 60_000, onEvent: log });
+      log(`build run exited ${exit}`);
+      if (exit !== '0') throw new Error(`the build run exited ${exit}: the picture would show a failed build, not a fabric that is up`);
+      approval().setExpect(undefined);
+      const q = 'Is the fabric up?';
+      await S().session.send(q);
+      await approval().turnDone(420_000);
+      if (/isn.t up|not up|failed|can.t (currently )?see the pod/i.test(plain().split(q.slice(0, 20)).pop() ?? '')) throw new Error(`Claude did not report the fabric as up:\n${plain().slice(-1500)}`);
+      await capture.agent('fsm09-09-build-done', real(), { terms: HIDE, startAt: fromQuestion(q), endAt: DONE });
     });
 
     // The same build as Fabric Studio records it: the Events page and the fabric's topology.
     await step('fsm09-10-fs-events', async () => {
-      if (!BUILD) return skipStep('fsm09-10-fs-events', 'set FS_MCP_BUILD=1 to build a fabric on the pod');
-      const page = await gui('pod');
-      await page.setViewportSize({ width: 1280, height: 640 });
-      await fsGoto(page, getGuiDevice(lab, 'pod').url, 'eventsAll');
-      await capture.shot(page, 'fsm09-10-fs-events', fsShot(page));
+      if (!BUILD || DECLINE_BUILD) return skipStep('fsm09-10-fs-events', 'set FS_MCP_BUILD=1 (and do not decline) to build a fabric on the pod');
+      const p = await gui('pod');
+      await p.setViewportSize({ width: 1280, height: 640 });
+      await fsGoto(p, getGuiDevice(lab, 'pod').url, 'eventsAll');
+      await capture.shot(p, 'fsm09-10-fs-events', fsShot(p));
     });
 
     await step('fsm09-11-fs-topology', async () => {
-      if (!BUILD) return skipStep('fsm09-11-fs-topology', 'set FS_MCP_BUILD=1 to build a fabric on the pod');
-      const page = await gui('pod');
-      await page.setViewportSize({ width: 1280, height: 760 });
-      await fsOpenFabric(page, getGuiDevice(lab, 'pod').url, BUILD_FABRIC);
-      await capture.shot(page, 'fsm09-11-fs-topology', fsShot(page));
+      if (!BUILD || DECLINE_BUILD) return skipStep('fsm09-11-fs-topology', 'set FS_MCP_BUILD=1 (and do not decline) to build a fabric on the pod');
+      const p = await gui('pod');
+      await p.setViewportSize({ width: 1280, height: 760 });
+      await fsOpenFabric(p, getGuiDevice(lab, 'pod').url, BUILD_FABRIC);
+      await capture.shot(p, 'fsm09-11-fs-topology', fsShot(p));
     });
 
     // A build that fails on purpose, for the failed-install page: FortiManager 8.0.0 does not install on the lab pod.
     await step('fsm09-16-build-failed', async () => {
       if (!FAIL) return skipStep('fsm09-16-build-failed', 'set FS_MCP_FAIL=1 to build a fabric that fails');
-      const before = rcCount();
+      const before = waitForBuildRun.snapshot(runsDir);
       const expected = expectChange({ tool: 'build', args: { action: 'apply', host: POD_NAME, confirm: true } });
-      await session.send(`Build a fabric called ${FAIL_FABRIC} on mypod with a FortiGate, a FortiManager and a FortiAnalyzer. Use version 8.0.0 for the FortiManager and 7.6 for the other two. Build it as soon as I approve.`);
-      // The model may ask first instead of calling: when the turn ends with no call, tell it to go ahead (up to 4 times).
-      let call = await approval.pendingOrEnd(expected, 420_000);
-      for (let i = 0; i < 3 && !call; i++) {
-        await session.send('Yes, build it.');
-        call = await approval.pendingOrEnd(expected, 420_000);
-      }
-      if (!call) throw new Error('the permission request never appeared for the failing build');
-      await approval.answer(call, 'approve');
-      await approval.turnDone(300_000);
-      const deadline = Date.now() + 25 * 60_000;
-      while (rcCount() <= before) {
-        if (Date.now() > deadline) throw new Error('the failing build did not finish within 25 minutes');
-        log(`waiting for the failing build's exit code (${rcCount()} of more than ${before})`);
-        await sleep(10_000);
-      }
-      const rcs = readdirSync(runsDir).filter((f) => f.endsWith('.rc'));
-      if (rcs.every((f) => readFileSync(join(runsDir, f), 'utf8').trim() === '0') && rcs.length > before) {
-        // every run succeeded: the 8.0.0 FortiManager installed, so there is no failure to show
-        throw new Error('the build that was meant to fail succeeded');
-      }
-      approval.setExpect(undefined);
-      await session.send('Did the build finish? Give me the result in a sentence or two.');
-      await approval.turnDone(420_000);
-      await capture.screen('fsm09-16-build-failed', (await approval.settled()).clean, { title, replace: swap, cols: 110 });
+      await S().session.send(`Build a fabric called ${FAIL_FABRIC} on mypod with a FortiGate, a FortiManager and a FortiAnalyzer. Use version 8.0.0 for the FortiManager and 7.6 for the other two.`);
+      // The model may ask first instead of calling: when the turn ends with no call, tell it to go ahead (up to 3 times).
+      const call = await approval().pendingOrNudge(S().session, expected, { timeoutMs: 420_000, nudge: 'Yes, build it.' });
+      await approval().answer(call, 'approve');
+      await approval().turnDone(300_000);
+      const exit = await waitForBuildRun(runsDir, { before, timeoutMs: 25 * 60_000, onEvent: log });
+      if (exit === '0') throw new Error('the build that was meant to fail succeeded');   // the 8.0.0 FortiManager installed: there is no failure to show
+      approval().setExpect(undefined);
+      const q = 'Did the build finish? Give me the result in a sentence or two.';
+      await S().session.send(q);
+      await approval().turnDone(420_000);
+      await capture.agent('fsm09-16-build-failed', real(), { terms: HIDE, startAt: fromQuestion(q), endAt: DONE });
     });
 
     await step('fsm09-17-diagnose', async () => {
       if (!FAIL) return skipStep('fsm09-17-diagnose', 'set FS_MCP_FAIL=1 to build a fabric that fails');
-      await session.send('Why did it fail? Check the pod and tell me the cause.');
-      await approval.turnDone(420_000);
-      const said = claude.plainScreen();
+      const q = 'Why did it fail?';
+      const from = eventCount();
+      await S().session.send(q);
+      await approval().turnDone(420_000);
+      assertPicked('why the build failed', from, /^(diagnose|build|pods|vm|fabric|tasks)$/);
+      const said = plain();
       if (!/254|log|login|FortiManager|image/i.test(said)) throw new Error(`no diagnosis on screen:\n${said}`);
-      await capture.screen('fsm09-17-diagnose', (await approval.settled()).clean, { title, replace: swap, cols: 110 });
+      await capture.agent('fsm09-17-diagnose', real(), { terms: HIDE, startAt: fromQuestion(q), endAt: DONE });
     });
-    claude.kill();
   } finally {
+    session?.session.kill();
     rmSync(root, { recursive: true, force: true });
   }
 });
