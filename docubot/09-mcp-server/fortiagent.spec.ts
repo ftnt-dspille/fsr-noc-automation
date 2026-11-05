@@ -44,9 +44,19 @@ function fa(args: string[]): string {
   if (r.status !== 0) throw new Error(`fortiagent ${args.join(' ')}: ${r.stderr || r.stdout}`);
   return r.stdout;
 }
-/** The MCP servers named Fabric Studio that the engine holds. */
-const ours = (): { id: string; label: string }[] =>
-  (JSON.parse(fa(['mcp', 'list', '--json'])) as { id: string; label: string }[]).filter((s) => s.label === NAME);
+/** The MCP servers named Fabric Studio that the engine holds. After a setup the engine can be slow to answer —
+ * the list CLI once hung past fa's 60 s and was killed mid-print (the JSON truncated) — so retry and keep the
+ * first list that parses. */
+const ours = (): { id: string; label: string }[] => {
+  let last: unknown;
+  for (let attempt = 0; attempt < 4; attempt++) {
+    if (attempt) Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, 10_000);
+    try {
+      return (JSON.parse(fa(['mcp', 'list', '--json'])) as { id: string; label: string }[]).filter((s) => s.label === NAME);
+    } catch (e) { last = e; }
+  }
+  throw last;
+};
 
 async function openMcpSettings(w: Page): Promise<void> {
   await w.getByRole('link', { name: 'Settings' }).click();
@@ -98,6 +108,10 @@ test('Connect FortiAgent to the fabric-studio MCP server', async ({ app, capture
     const skill = join(dl, 'fabric-studio', 'skills', 'fabric-studio', 'SKILL.md');
     const w = await app('fortiagent', { env, openFiles: [skill] });   // the page's file pick: the skill from the zip
     await watch(w);
+    // The app shows a splash (app-splash) until it has talked to the engine; a busy engine holds it past the
+    // click timeout. Wait it out instead of racing it.
+    await w.locator('app-splash').waitFor({ state: 'hidden', timeout: 120_000 });
+    log('splash cleared');
     // After FortiAgent updates itself it greets the next launch with "has been updated to <version>": not part of
     // the page, so it is dismissed whenever it shows up.
     await w.addLocatorHandler(w.getByRole('dialog', { name: /has been updated to/ }), async (d) => {
@@ -120,10 +134,10 @@ test('Connect FortiAgent to the fabric-studio MCP server', async ({ app, capture
       await w.getByRole('button', { name: 'Add an MCP server' }).click();
       await w.getByRole('button', { name: 'Local command' }).click();
       await w.getByPlaceholder('e.g. Jira').fill(NAME);
-      await w.getByPlaceholder('/path/to/server or npx').fill(command);
-      // The command is an input's value, which showAs (page text) does not reach: show the student's path in it.
-      await w.getByPlaceholder('/path/to/server or npx').evaluate((el, v) => { (el as HTMLInputElement).value = v; }, command.replace(homedir(), '/Users/student'));
-      await capture.shot(w, 'fsm09-21-fortiagent-add-server', { highlight: [w.getByRole('button', { name: 'Add server' })] });
+      // The command is an input's value, which showAs (page text) does not reach: fill the student's path for the
+      // picture (React holds the value, so it survives to the shutter), then the real path for the add.
+      await w.getByPlaceholder('/path/to/server or npx').fill(command.replace(homedir(), '/Users/student'));
+      await capture.shot(w, 'fsm09-21-fortiagent-add-server', { highlight: [w.getByRole('button', { name: 'Add server' })], ocrAllow: ['/Users/student'] });
       await w.getByPlaceholder('/path/to/server or npx').fill(command);   // the real path goes in
       await w.getByRole('button', { name: 'Add server' }).click();
     });
@@ -136,7 +150,8 @@ test('Connect FortiAgent to the fabric-studio MCP server', async ({ app, capture
       const ids = ours().map((s) => s.id);
       if (ids.join() !== 'fabric-studio') throw new Error(`the Fabric Studio servers are ${ids.join(', ') || 'none'}, not fabric-studio`);
       log('server listed under Configured, ID fabric-studio');
-      await capture.shot(w, 'fsm09-22-fortiagent-server-ready', { highlight: [row], showAs });
+      // The row's "Protocol 2026-07-28" is the MCP protocol revision, page content the scan reads as a date.
+      await capture.shot(w, 'fsm09-22-fortiagent-server-ready', { highlight: [row], showAs, scrubSkip: ['date-or-time'] });
     });
 
     await test.step('fsm09-25-fortiagent-import-skill', async () => {
