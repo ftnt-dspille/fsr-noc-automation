@@ -148,8 +148,8 @@ test('Connect Claude Code to the fabric-studio MCP server', async ({ local, capt
     });
 
     // --strict-mcp-config limits the session to the file step 1 wrote, so the shots show only this server. --no-chrome leaves the
-    // operator's claude-in-chrome out of the run (it is a built-in MCP server, listed by /mcp); computer-use has no flag, so step 3's
-    // published frame crops that row (cleanScreen).
+    // operator's claude-in-chrome out of the run (it is a built-in MCP server, listed by /mcp). computer-use has no flag or setting
+    // (a server-side feature gate), so /mcp still lists it.
     // The read and change tool lists come from the server itself (tools/list); a tool it adds later is denied until classified.
     // Captures use the operator's login and the Sonnet header; `--setting-sources ''` drops their rules and hooks (proven live with a
     // control). DOCUBOT_APPROVAL_ISOLATION=config-dir switches to the throwaway config + ANTHROPIC_API_KEY + Haiku (CI/canary).
@@ -194,9 +194,6 @@ test('Connect Claude Code to the fabric-studio MCP server', async ({ local, capt
       claude.type('/mcp'); await sleep(1500); claude.enter();
       await claude.waitFor(/fabric-studio\s+\d+ tools/, { timeoutMs: 60_000 });
       await sleep(1500);
-      // The cursor starts on the first built-in row; the page is about this server, so select it (the built-in rows are cropped from the picture).
-      for (let i = 0; i < 4 && !/❯\s*(?:[✔✓]\s*)?fabric-studio/.test(claude.plainScreen()); i++) { claude.write('\x1b[B'); await sleep(500); }
-      if (!/❯\s*(?:[✔✓]\s*)?fabric-studio/.test(claude.plainScreen())) throw new Error(`could not select fabric-studio in /mcp:\n${claude.plainScreen()}`);
       await capture.screen('fsm09-03-check-mcp', cleanScreen(tidy(claude.screen())), { title, replace: swap, cols: 110 });
       claude.write('\x1b'); await sleep(1000);
     });
