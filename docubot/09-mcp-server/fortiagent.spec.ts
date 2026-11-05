@@ -3,7 +3,7 @@ import { copyFileSync, existsSync, mkdirSync, mkdtempSync, renameSync, rmSync } 
 import { homedir } from 'node:os';
 import { join } from 'node:path';
 import type { Page } from '@playwright/test';
-import { assertPodAllowed, test } from 'docubot';
+import { assertPodAllowed, getGuiDevice, test } from 'docubot';
 
 // The Connect FortiAgent page, followed as a new student would: install from the zip the Install page offers
 // (uv tool install, so the command lands in ~/.local/bin as the page says), add the pod with
@@ -13,8 +13,6 @@ import { assertPodAllowed, test } from 'docubot';
 // FS_MCP_LIVE_SHOT, so a stall is visible while it happens.
 const ZIP = process.env.FS_MCP_ZIP ?? join(__dirname, '..', '..', 'content', '09-mcp-server', '01-install', 'fabric-studio.zip');
 const POD = process.env.FS_MCP_POD ?? '';
-const POD_USER = process.env.DOCUBOT_POD_USER ?? 'admin';
-const POD_PASS = process.env.DOCUBOT_POD_PASS ?? '';
 const LIVE = process.env.FS_MCP_LIVE_SHOT ?? '';
 const NAME = 'Fabric Studio';
 const QUESTION = 'Using the Fabric Studio tools, what is running on my pod?';
@@ -56,7 +54,11 @@ async function openMcpSettings(w: Page): Promise<void> {
   await w.getByRole('heading', { name: 'MCP servers', level: 1 }).waitFor();
 }
 
-test('Connect FortiAgent to the fabric-studio MCP server', async ({ app, capture, local }) => {
+test('Connect FortiAgent to the fabric-studio MCP server', async ({ app, capture, local, lab }) => {
+  // The pod login comes from the `pod` device, as for the chapter spec (environment, then labconfig.local.yaml); a placeholder is no login.
+  const podDev = getGuiDevice(lab, 'pod');
+  const POD_USER = podDev.user || 'admin';
+  const POD_PASS = /^set-/.test(podDev.pass ?? '') ? '' : podDev.pass ?? '';
   assertPodAllowed(POD);   // named for this run, not locked, not on the deny list
   test.setTimeout(20 * 60_000);
   if (!POD || !POD_PASS) throw new Error('set FS_MCP_POD and DOCUBOT_POD_PASS: the page adds the pod with fabric-studio-mcp setup');

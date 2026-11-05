@@ -1,7 +1,7 @@
 import { existsSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, watch } from 'node:fs';
 import { homedir } from 'node:os';
 import { join } from 'node:path';
-import { assertPodAllowed, TuiSession, fortiagentStage, skipStep, test, waitForFortiagentIdle, withFortiagentRule } from 'docubot';
+import { assertPodAllowed, blankFortiagentAlways, TuiSession, fortiagentStage, skipStep, test, waitForFortiagentIdle, withFortiagentRule } from 'docubot';
 import type { AgentDevice, FortiagentCallExpect } from 'docubot';
 
 // FortiAgent's terminal chat (`fortiagent chat`) in a pseudo-terminal, for what a one-shot `chat -m` cannot do:
@@ -117,7 +117,7 @@ test('Approve a change in the FortiAgent terminal chat', async ({ capture }) => 
             throw new Error(`an approval sheet for something other than the build was denied:\n${other}`);
           }
           const shot = fa.region({ start: /Allow once|Fabric Studio|build/i, end: /enter confirm/ });
-          await capture.screen('fsm09-32-fortiagent-tui-approve', shot, { title, replace: swap, cols: 110, keepIps: TOPO_IPS });
+          await capture.screen('fsm09-32-fortiagent-tui-approve', blankFortiagentAlways(shot), { title, replace: swap, cols: 110, keepIps: TOPO_IPS });
           if (!ACCEPT_BUILD) {
             // Decline, and the decisions log must show that exact call declined (approval.denied, not a review verdict).
             await fa.answer('decline', BUILD_EXPECT);   // nothing is built
