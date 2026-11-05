@@ -231,9 +231,13 @@ nothing to read (for example, no running fabric) is not a failure of the plan.
 
 ### Approve the build
 
-Say `Yes, build it.` FortiAgent shows its own approval sheet for the tool that changes the pod: **1. Allow once**,
-**2. Deny**. Enter confirms the highlighted choice and Esc denies. This is FortiAgent's own prompt, not something
-the Fabric Studio server adds.
+Say `Yes, build it.` FortiAgent shows its own approval sheet for the tool that changes the pod. It lists
+**1. Allow once**, **2. Allow for this thread**, two **Always** rows (one for all of this server's changes, one
+for this tool) and **5. Deny**. Enter confirms the highlighted choice (Allow once) and Esc denies. This is
+FortiAgent's own prompt, not something the Fabric Studio server adds.
+
+Use only **Allow once** or **Deny**. Allow for this thread and the Always rows approve later changes without
+asking you, so a later build or destroy would run without a sheet.
 
 <!-- step: fsm09-32-fortiagent-tui-approve -->
 

@@ -1,13 +1,14 @@
 import { mkdirSync, mkdtempSync, rmSync } from 'node:fs';
 import { homedir } from 'node:os';
 import { join } from 'node:path';
-import { assertPodAllowed, blankFortiagentAlways, defaultRunsDir, guardedTurn, TuiSession, fortiagentStage, skipStep, test, waitForBuildRun, waitForFortiagentIdle, watchFortiagentGate, withFortiagentRule } from 'docubot';
-import type { AgentDevice, FortiagentCallExpect } from 'docubot';
+import { answerFortiagentApproval, assertPodAllowed, defaultRunsDir, fortiagentStage, fortiagentTurn, guardedTurn, RealTerminal, skipStep, test, waitForBuildRun, waitForFortiagentIdle, watchFortiagentGate, withFortiagentRule } from 'docubot';
+import type { FortiagentCallExpect } from 'docubot';
 
-// FortiAgent's terminal chat (`fortiagent chat`) in a pseudo-terminal, for what a one-shot `chat -m` cannot do:
-// answer the approval sheet for a tool that changes a pod. How the TUI is launched, when a turn is over and how an
-// approval is answered lives in docubot's fortiagentAdapter (src/devices/agent.ts), the same seam Claude Code,
-// Codex and opencode use. It assumes the Fabric Studio server is already added to FortiAgent (fortiagent.spec.ts
+// FortiAgent's terminal chat (`fortiagent chat`) in a REAL terminal (ttyd + xterm.js), for what a one-shot `chat -m` cannot do:
+// answer the approval sheet for a tool that changes a pod. When a turn is over and how an approval is answered lives in
+// docubot (fortiagentTurn / answerFortiagentApproval in src/agents/tui.ts); every picture is a real screenshot
+// (capture.agent), never a re-rendered or edited frame. The sheet is photographed with all of its rows: the page tells the
+// reader to use only Allow once or Deny, and the run itself only ever declines (Esc) or, with FS_MCP_ACCEPT, allows once. It assumes the Fabric Studio server is already added to FortiAgent (fortiagent.spec.ts
 // does that) and a pod saved with `fabric-studio-mcp setup`.
 //
 // FS_MCP_PROBE=0 FS_MCP_BUILD=1 builds FS_MCP_TOPOLOGY on FS_MCP_POD; by default it plans only and approves nothing. Use a
@@ -24,8 +25,6 @@ const PROBE = process.env.FS_MCP_PROBE !== '0';
 const BUILD = process.env.FS_MCP_BUILD === '1';
 const TURN_TIMEOUT_MS = 8 * 60_000;
 const ROWS = Number(process.env.FS_MCP_ROWS ?? 50);
-// The bundled topology's own subnets are page content, not lab addresses: keep them through IP masking.
-const TOPO_IPS = ['10.254.254.0'];
 
 // The Fabric Studio server's changing tools are set to Ask for the run AND FortiAI review ("Auto mode", the account setting
 // permissions.autoMode) is switched off for it (withFortiagentRule: the operator's own rule and review setting are saved
@@ -45,24 +44,31 @@ const RUNS = defaultRunsDir();
 /** The last `n` lines of a screen that carry text. */
 const tail = (screen: string, n = 14): string => screen.split('\n').filter((l) => l.trim()).slice(-n).join('\n');
 
-test('Approve a change in the FortiAgent terminal chat', async ({ capture }) => {
+const FORTIAGENT_BIN = process.env.FORTIAGENT_BIN || '/Applications/FortiAgent.app/Contents/Resources/bin/fortiagent';
+const READY = /Write a message|Type \/ to use a skill/;
+
+test('Approve a change in the FortiAgent terminal chat', async ({ page, capture }) => {
   assertPodAllowed(POD);   // named for this run, not locked, not on the deny list
   test.setTimeout(30 * 60_000);
   if (!POD) throw new Error('set FS_MCP_POD: the pod the change is made on (a scratch fabric, never a pod in use)');
   const work = mkdtempSync(join(homedir(), '.docubot-fsagent-tui-'));
   const folder = join(work, 'demo');
   mkdirSync(folder);
-  const swap: Array<[string | RegExp, string]> = [
-    [folder, '~/fabric-studio-demo'], [homedir(), '~'], [POD, 'fabric-studio.example.com'],
-    ...(POD_NAME === 'mypod' ? [] : [[POD_NAME, 'mypod'] as [string, string]]),   // the page names the pod the way setup does in its example
-  ];
-  const title = 'student@laptop: ~/fabric-studio-demo';
+  // Boxed in every picture: the working folder (under the operator's home) and the pod's real host and saved name.
+  const HIDE = [folder, work, homedir(), POD, ...(POD_NAME === 'mypod' ? [] : [POD_NAME])];
   // An empty folder: FortiAgent's own file and shell tools run where the chat starts, and the eval saw it read and
   // edit its working folder, so the page tells a reader to start from a folder they do not mind it touching.
-  const device: AgentDevice = { type: 'agent', tool: 'fortiagent', cwd: folder };
   try {
     await withFortiagentRule(SERVER, 'prompt', async (proof) => {
-      const fa = await TuiSession.start('fortiagent', device, { cols: 110, rows: ROWS });
+      const real = await RealTerminal.start(page, { file: FORTIAGENT_BIN, args: ['chat'], cwd: folder, cols: 110, rows: ROWS, env: { ...(process.env as Record<string, string>), TERM: 'xterm-256color', COLORTERM: 'truecolor' }, envKeys: [/^FORTIAGENT_/] });
+      await real.readyWith({ pattern: READY });
+      const fa = {
+        term: real.term,
+        plainScreen: (): string => real.term.plainScreen(),
+        turn: (prompt: string, o: Parameters<typeof fortiagentTurn>[2] = {}): Promise<string> => fortiagentTurn(real.term, prompt, o),
+        answer: (d: 'approve' | 'decline', e?: FortiagentCallExpect) => answerFortiagentApproval(real.term, d, e),
+        kill: (): void => real.kill(),
+      };
 
       // Log every change of the screen as it happens, so a stall is visible while it runs.
       let seen = '';
@@ -73,8 +79,8 @@ test('Approve a change in the FortiAgent terminal chat', async ({ capture }) => 
       try {
         await test.step('fsm09-30-fortiagent-tui-open', async () => {
           // From the logo down: the header above it carries the operator's own notification counts.
-          const shot = fa.region({ start: /____ ____/, end: /Write a message|Type \/ to use a skill/ });
-          await capture.screen('fsm09-30-fortiagent-tui-open', shot, { title, replace: swap, cols: 110 });
+          // From the logo down: the header above it carries the operator's own notification counts.
+          await capture.agent('fsm09-30-fortiagent-tui-open', real, { terms: HIDE, startAt: /____ ____/, endAt: READY });
         });
 
         await test.step('fsm09-31-fortiagent-tui-plan', async () => {
@@ -86,8 +92,7 @@ test('Approve a change in the FortiAgent terminal chat', async ({ capture }) => 
           if (!/\bstop/i.test(fa.plainScreen()) || !/fgt/i.test(fa.plainScreen())) throw new Error(`no plan on screen:\n${tail(fa.plainScreen(), 25)}`);
           // A plan for a fabric that already exists on the pod says it is a no-op, and the next step then builds it: refuse that picture.
           if (/no-?op|nothing to (build|do|change)|already (exists|running|built)/i.test(fa.plainScreen().split(plan.slice(0, 30))[1] ?? '')) throw new Error(`the plan is a no-op: ${TOPOLOGY} is already on the pod; pick a topology that is not (FS_MCP_TOPOLOGY):\n${tail(fa.plainScreen(), 25)}`);
-          const shot = fa.region({ start: /^[┃│|\s]*I want a fabric on \S+ with a FortiGate/, end: /Worked for/ });
-          await capture.screen('fsm09-31-fortiagent-tui-plan', shot, { title, replace: swap, cols: 110, keepIps: TOPO_IPS });
+          await capture.agent('fsm09-31-fortiagent-tui-plan', real, { terms: HIDE, startAt: /I want a fabric on \S+ with a FortiGate/, endAt: /Worked for/ });
         });
 
         await test.step('fsm09-32-fortiagent-tui-approve', async () => {
@@ -112,8 +117,9 @@ test('Approve a change in the FortiAgent terminal chat', async ({ capture }) => 
               throw new Error(`an approval sheet for something other than the build was denied:\n${other}`);
             }
             await watch.check();
-            const shot = fa.region({ start: /Allow once|Fabric Studio|build/i, end: /enter confirm/ });
-            await capture.screen('fsm09-32-fortiagent-tui-approve', blankFortiagentAlways(shot), { title, replace: swap, cols: 110, keepIps: TOPO_IPS });
+            // The real sheet, every row as FortiAgent draws it (Allow once, Allow for this thread, the two Always rows, Deny).
+            // Nothing is blanked; the run never presses an Always row: decline is Esc, approve is Enter on the highlighted Allow once.
+            await capture.agent('fsm09-32-fortiagent-tui-approve', real, { terms: HIDE, startAt: /Fabric Studio|build/i, endAt: /enter confirm/, volatile: /\b\d+s\b/g });
             if (!ACCEPT_BUILD) {
               // Decline, and the decisions log must show that exact call declined by the person (approval.denied with a sheet's requestID),
               // not a review verdict. Nothing is built: the watch fails the run if a build run appears.
@@ -134,8 +140,7 @@ test('Approve a change in the FortiAgent terminal chat', async ({ capture }) => 
           } finally { watch.stop(); }
           await test.step('fsm09-34-fortiagent-tui-built', async () => {
             await fa.turn('Is the fabric I just built up?', { timeoutMs: TURN_TIMEOUT_MS, decision: 'decline' });
-            const shot = fa.region({ start: /^[┃│|\s]*Is the fabric I just built up/, end: /Worked for/ });
-            await capture.screen('fsm09-34-fortiagent-tui-built', shot, { title, replace: swap, cols: 110, keepIps: TOPO_IPS });
+            await capture.agent('fsm09-34-fortiagent-tui-built', real, { terms: HIDE, startAt: /Is the fabric I just built up/, endAt: /Worked for/ });
           });
         });
       } finally {
