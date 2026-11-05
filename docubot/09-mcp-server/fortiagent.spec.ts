@@ -3,19 +3,19 @@ import { copyFileSync, existsSync, mkdirSync, mkdtempSync, renameSync, rmSync } 
 import { homedir } from 'node:os';
 import { join } from 'node:path';
 import type { Page } from '@playwright/test';
-import { test } from 'docubot';
+import { assertPodAllowed, test } from 'docubot';
 
 // The Connect FortiAgent page, followed as a new student would: install from the zip the Install page offers
 // (uv tool install, so the command lands in ~/.local/bin as the page says), add the pod with
 // `fabric-studio-mcp setup`, then add the server in FortiAgent's own Settings and ask about the pod.
 // FortiAgent is the real desktop app, launched through Playwright's Electron support: quit it before a run.
 // Every wait is on something on screen (never a fixed sleep), and each screen change is logged and written to
-// FSM_LIVE_SHOT, so a stall is visible while it happens.
-const ZIP = process.env.FSM_ZIP ?? join(__dirname, '..', '..', 'content', '09-mcp-server', '01-install', 'fabric-studio.zip');
-const POD = process.env.FSM_POD ?? '';
+// FS_MCP_LIVE_SHOT, so a stall is visible while it happens.
+const ZIP = process.env.FS_MCP_ZIP ?? join(__dirname, '..', '..', 'content', '09-mcp-server', '01-install', 'fabric-studio.zip');
+const POD = process.env.FS_MCP_POD ?? '';
 const POD_USER = process.env.DOCUBOT_POD_USER ?? 'admin';
 const POD_PASS = process.env.DOCUBOT_POD_PASS ?? '';
-const LIVE = process.env.FSM_LIVE_SHOT ?? '';
+const LIVE = process.env.FS_MCP_LIVE_SHOT ?? '';
 const NAME = 'Fabric Studio';
 const QUESTION = 'Using the Fabric Studio tools, what is running on my pod?';
 const log = (m: string) => console.log(`[fortiagent ${new Date().toISOString().slice(11, 19)}] ${m}`);
@@ -57,8 +57,9 @@ async function openMcpSettings(w: Page): Promise<void> {
 }
 
 test('Connect FortiAgent to the fabric-studio MCP server', async ({ app, capture, local }) => {
+  assertPodAllowed(POD);   // named for this run, not locked, not on the deny list
   test.setTimeout(20 * 60_000);
-  if (!POD || !POD_PASS) throw new Error('set FSM_POD and DOCUBOT_POD_PASS: the page adds the pod with fabric-studio-mcp setup');
+  if (!POD || !POD_PASS) throw new Error('set FS_MCP_POD and DOCUBOT_POD_PASS: the page adds the pod with fabric-studio-mcp setup');
   const root = mkdtempSync(join(homedir(), '.docubot-fsagent-'));
   // A student's registry starts empty, at the default place the page relies on. FortiAgent starts MCP servers from
   // its background engine, which outlives the window and never sees an environment handed to the app, so the run
@@ -91,7 +92,7 @@ test('Connect FortiAgent to the fabric-studio MCP server', async ({ app, capture
     await s.waitFor(/Username \[admin\]/, { where: 'transcript', timeoutMs: 30_000 }); s.send(POD_USER === 'admin' ? '' : POD_USER);
     await s.waitFor(/Name for this pod/, { where: 'transcript', timeoutMs: 30_000 }); s.send('mypod');
     await s.waitFor(/Password for/, { where: 'transcript', timeoutMs: 30_000 }); s.send(POD_PASS);
-    await s.waitFor(/Next: connect Claude|Not registered/, { where: 'transcript', timeoutMs: 120_000 });
+    await s.waitFor(/Next: run\s+fabric-studio-mcp connect|Not registered/, { where: 'transcript', timeoutMs: 120_000 });
     if (s.transcript().includes(POD_PASS)) throw new Error('the password reached the terminal output');
     if (/Not registered/.test(s.transcript())) throw new Error(`setup failed: ${s.transcript().split('Not registered')[1]?.trim()}`);
     s.kill();

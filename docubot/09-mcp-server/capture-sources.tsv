@@ -1,0 +1,36 @@
+# One row per screenshot in this chapter: capture id, the date it was last CHECKED against current behaviour (or -),
+# and the fabric_studio_core paths its content depends on (space separated; - = nothing in core).
+# scripts/captures-fresh.py flags a screenshot when core changed those paths after the picture was taken or checked.
+# "Checked" means someone compared what the picture shows with what the code does now, and wrote the date here.
+# mcp-tools = the server's tool code (src/fabric_studio/mcp without the CLI-only files cli.py, connect.py, entry.py, skill.py).
+# checked is YYYY-MM-DDTHH:MM.
+# id	checked	core paths
+fsm09-01-register	-	-
+fsm09-02-trust-folder	-	-
+fsm09-03-check-mcp	-	mcp-tools
+fsm09-04-ask-pods	-	mcp-tools skills/fabric-studio/SKILL.md
+fsm09-05-approve-change	-	mcp-tools skills/fabric-studio/SKILL.md
+fsm09-06-approved	-	mcp-tools skills/fabric-studio/SKILL.md
+fsm09-07-build-plan	-	mcp-tools skills/fabric-studio/SKILL.md
+fsm09-08-build-approve	2026-11-04T09:37	mcp-tools skills/fabric-studio/SKILL.md
+fsm09-09-build-done	-	mcp-tools skills/fabric-studio/SKILL.md
+fsm09-09-build-done-recovery	-	mcp-tools skills/fabric-studio/SKILL.md
+fsm09-10-fs-events	-	-
+fsm09-11-fs-topology	-	-
+fsm09-12-install	2026-11-04T10:04	pyproject.toml
+fsm09-13-setup	-	src/fabric_studio/mcp/cli.py src/fabric_studio/mcp/instances.py
+fsm09-14-pods	2026-11-04T10:04	src/fabric_studio/mcp/cli.py src/fabric_studio/mcp/instances.py
+fsm09-15-mcp-list	2026-11-04T10:04	pyproject.toml
+fsm09-16-build-failed	-	mcp-tools skills/fabric-studio/SKILL.md
+fsm09-17-diagnose	-	mcp-tools skills/fabric-studio/SKILL.md
+fsm09-18-connect	-	src/fabric_studio/mcp/connect.py src/fabric_studio/mcp/cli.py src/fabric_studio/mcp/skill.py
+fsm09-20-fortiagent-mcp-settings	-	-
+fsm09-21-fortiagent-add-server	-	-
+fsm09-22-fortiagent-server-ready	2026-11-04T10:04	pyproject.toml
+fsm09-24-fortiagent-answer	2026-11-04T12:00	mcp-tools skills/fabric-studio/SKILL.md
+fsm09-25-fortiagent-import-skill	2026-11-04T12:00	skills/fabric-studio/SKILL.md
+fsm09-26-fortiagent-skill-listed	2026-11-04T09:37	skills/fabric-studio/SKILL.md
+fsm09-30-fortiagent-tui-open	-	-
+fsm09-31-fortiagent-tui-plan	-	mcp-tools skills/fabric-studio/SKILL.md
+fsm09-32-fortiagent-tui-approve	-	mcp-tools skills/fabric-studio/SKILL.md
+fsm09-34-fortiagent-tui-built	2026-11-04T09:44	mcp-tools skills/fabric-studio/SKILL.md
