@@ -1,7 +1,7 @@
 import { existsSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, watch } from 'node:fs';
 import { homedir } from 'node:os';
 import { join } from 'node:path';
-import { assertPodAllowed, blankFortiagentAlways, TuiSession, fortiagentStage, skipStep, test, waitForFortiagentIdle, withFortiagentRule } from 'docubot';
+import { assertPodAllowed, blankFortiagentAlways, guardedTurn, TuiSession, fortiagentStage, skipStep, test, waitForFortiagentIdle, watchFortiagentGate, withFortiagentRule } from 'docubot';
 import type { AgentDevice, FortiagentCallExpect } from 'docubot';
 
 // FortiAgent's terminal chat (`fortiagent chat`) in a pseudo-terminal, for what a one-shot `chat -m` cannot do:
@@ -25,8 +25,11 @@ const ROWS = Number(process.env.FS_MCP_ROWS ?? 50);
 // The bundled topology's own subnets are page content, not lab addresses: keep them through IP masking.
 const TOPO_IPS = ['10.254.254.0'];
 
-// The Fabric Studio server's changing tools are set to Ask for the run (withFortiagentRule: the operator's own rule is
-// saved first and put back in a finally, and the run refuses to start if the rule cannot be read back as set).
+// The Fabric Studio server's changing tools are set to Ask for the run AND FortiAI review ("Auto mode", the account setting
+// permissions.autoMode) is switched off for it (withFortiagentRule: the operator's own rule and review setting are saved
+// first and put back in a finally, and the run refuses to start if either cannot be read back as set). A rule of `prompt`
+// alone is not a gate: with Auto mode on, FortiAI's reviewer answers the prompt and a real build ran with no sheet.
+// Step 32 also watches the turn (watchFortiagentGate) and fails the run, killing the turn, the moment anything but the person answers.
 const SERVER = 'fabric-studio';
 // The one call the build step means. The host is left out on purpose: the model writes the pod as a name or an address,
 // and the decisions log records whichever it wrote. The action and the topology identify the call.
@@ -76,7 +79,7 @@ test('Approve a change in the FortiAgent terminal chat', async ({ capture }) => 
   // edit its working folder, so the page tells a reader to start from a folder they do not mind it touching.
   const device: AgentDevice = { type: 'agent', tool: 'fortiagent', cwd: folder };
   try {
-    await withFortiagentRule(SERVER, 'prompt', async () => {
+    await withFortiagentRule(SERVER, 'prompt', async (proof) => {
       const fa = await TuiSession.start('fortiagent', device, { cols: 110, rows: ROWS });
 
       // Log every change of the screen as it happens, so a stall is visible while it runs.
@@ -106,32 +109,45 @@ test('Approve a change in the FortiAgent terminal chat', async ({ capture }) => 
         await test.step('fsm09-32-fortiagent-tui-approve', async () => {
           if (PROBE || !BUILD) return skipStep('fsm09-32-fortiagent-tui-approve', 'set FS_MCP_PROBE=0 and FS_MCP_BUILD=1 to build on the pod');
           log('asked: Yes, build it.');
-          // The server asks nothing itself: the approval is FortiAgent's own sheet for the changing tool (the server's
-          // changes are set to Ask for this run). The turn stops there.
-          await fa.turn('Yes, build it.', { timeoutMs: TURN_TIMEOUT_MS });
-          if (fortiagentStage(fa.plainScreen()) !== 'sheet') throw new Error(`no approval sheet for the build:\n${tail(fa.plainScreen(), 25)}`);
-          // Approve only the sheet for the Fabric Studio build. Any other (a file write, a shell command) is denied.
-          if (!/fabric.studio|\bbuild\b/i.test(fa.plainScreen())) {
-            const other = tail(fa.plainScreen(), 20);
-            await fa.answer('decline');
-            throw new Error(`an approval sheet for something other than the build was denied:\n${other}`);
-          }
-          const shot = fa.region({ start: /Allow once|Fabric Studio|build/i, end: /enter confirm/ });
-          await capture.screen('fsm09-32-fortiagent-tui-approve', blankFortiagentAlways(shot), { title, replace: swap, cols: 110, keepIps: TOPO_IPS });
-          if (!ACCEPT_BUILD) {
-            // Decline, and the decisions log must show that exact call declined (approval.denied, not a review verdict).
-            await fa.answer('decline', BUILD_EXPECT);   // nothing is built
-            await waitForFortiagentIdle(fa.term, TURN_TIMEOUT_MS);
-            return;
-          }
-          // Allow once: the build runs for minutes, detached. The log must show the same call approved before it runs.
-          const before = exitFiles();
-          await fa.answer('approve', BUILD_EXPECT);
-          await waitForFortiagentIdle(fa.term, TURN_TIMEOUT_MS);
-          log('build started; waiting for its run to record an exit code');
-          const exit = await waitForNewRun(before, 25 * 60_000);
-          if (exit !== '0') throw new Error(`the build run exited with ${exit}, not 0`);
-          log('build run exited 0');
+          // Fail closed. Re-prove the gate now (review off, rule still prompt), then watch the turn: an answer with no sheet
+          // (FortiAI review, a grant, a rule), "Auto-approved" on screen, or a build run starting with no sheet kills the turn
+          // and fails the run. The watch stays on until the sheet has been answered and the turn is over.
+          await proof.assertManual();
+          const watch = watchFortiagentGate({
+            server: SERVER, tool: 'build', args: BUILD_EXPECT.args, since: Date.now() - 2000, screen: () => fa.plainScreen(), write: (k) => fa.term.write(k), kill: () => fa.kill(),
+            expectNoRun: !ACCEPT_BUILD, log,
+          });
+          try {
+            // The server asks nothing itself: the approval is FortiAgent's own sheet for the changing tool. The turn stops there.
+            await guardedTurn(fa.turn('Yes, build it.', { timeoutMs: TURN_TIMEOUT_MS }), watch, false);
+            if (fortiagentStage(fa.plainScreen()) !== 'sheet') throw new Error(`no approval sheet for the build:\n${tail(fa.plainScreen(), 25)}`);
+            // Approve only the sheet for the Fabric Studio build. Any other (a file write, a shell command) is denied.
+            if (!/fabric.studio|\bbuild\b/i.test(fa.plainScreen())) {
+              const other = tail(fa.plainScreen(), 20);
+              await fa.answer('decline');
+              throw new Error(`an approval sheet for something other than the build was denied:\n${other}`);
+            }
+            await watch.check();
+            const shot = fa.region({ start: /Allow once|Fabric Studio|build/i, end: /enter confirm/ });
+            await capture.screen('fsm09-32-fortiagent-tui-approve', blankFortiagentAlways(shot), { title, replace: swap, cols: 110, keepIps: TOPO_IPS });
+            if (!ACCEPT_BUILD) {
+              // Decline, and the decisions log must show that exact call declined by the person (approval.denied with a sheet's requestID),
+              // not a review verdict. Nothing is built: the watch fails the run if a build run appears.
+              await fa.answer('decline', BUILD_EXPECT);
+              await guardedTurn(waitForFortiagentIdle(fa.term, TURN_TIMEOUT_MS), watch, false);
+              await watch.check();
+              log('declined at the sheet; nothing was built');
+              return;
+            }
+            // Allow once: the build runs for minutes, detached. The log must show the same call approved before it runs.
+            const before = exitFiles();
+            await fa.answer('approve', BUILD_EXPECT);
+            await guardedTurn(waitForFortiagentIdle(fa.term, TURN_TIMEOUT_MS), watch, false);
+            log('build started; waiting for its run to record an exit code');
+            const exit = await waitForNewRun(before, 25 * 60_000);
+            if (exit !== '0') throw new Error(`the build run exited with ${exit}, not 0`);
+            log('build run exited 0');
+          } finally { watch.stop(); }
           await test.step('fsm09-34-fortiagent-tui-built', async () => {
             await fa.turn('Is the fabric I just built up? Answer in a few short lines about its device only.', { timeoutMs: TURN_TIMEOUT_MS, decision: 'decline' });
             const shot = fa.region({ start: /^[┃│|\s]*Is the fabric I just built up/, end: /Worked for/ });
