@@ -31,8 +31,9 @@ const step = async (name: string, body: () => Promise<void>): Promise<void> =>
 // only for that call. The pod is addressed by the name step 13 registers it under.
 const POD_NAME = 'mypod';
 const BUILD = process.env.FS_MCP_BUILD === '1';
-// Steps 16-17 build a fabric that fails on purpose (FortiManager 8.0.0 does not install on the lab pod) so the
-// failed-install page can show Claude finding the cause. They are independent of FS_MCP_BUILD.
+// Steps 16-17 ask about a build that already failed on the kept pod (the FS_MCP_FAIL_FABRIC fabric, docs-fail: its
+// FortiManager 8.0.0 does not install there) so the failed-install page can show Claude finding the cause. They start no
+// build and are independent of FS_MCP_BUILD.
 const DECLINE_BUILD = process.env.FS_MCP_DECLINE_BUILD === '1';
 const FAIL = process.env.FS_MCP_FAIL === '1';
 const FAIL_FABRIC = process.env.FS_MCP_FAIL_FABRIC ?? 'docs-fail';
@@ -297,27 +298,26 @@ test('Connect Claude Code to the fabric-studio MCP server', async ({ page, local
       await capture.shot(p, 'fsm09-11-fs-topology', fsShot(p));
     });
 
-    // A build that fails on purpose, for the failed-install page: FortiManager 8.0.0 does not install on the lab pod.
+    // The failed-install page asks about a build that already failed, it never starts one: the kept pod holds the
+    // FAIL_FABRIC fabric (docs-fail: a FortiManager 8.0.0 that does not install there) whose last build failed. A read: no
+    // change is expected, so any change call is denied.
     await step('fsm09-16-build-failed', async () => {
-      if (!FAIL) return skipStep('fsm09-16-build-failed', 'set FS_MCP_FAIL=1 to build a fabric that fails');
-      const before = waitForBuildRun.snapshot(runsDir);
-      const expected = expectChange({ tool: 'build', args: { action: 'apply', host: POD_NAME, confirm: true } });
-      await S().session.send(`Build a fabric called ${FAIL_FABRIC} on mypod with a FortiGate, a FortiManager and a FortiAnalyzer. Use version 8.0.0 for the FortiManager and 7.6 for the other two.`);
-      // The model may ask first instead of calling: when the turn ends with no call, tell it to go ahead (up to 3 times).
-      const call = await approval().pendingOrNudge(S().session, expected, { timeoutMs: 420_000, nudge: 'Yes, build it.' });
-      await approval().answer(call, 'approve');
-      await approval().turnDone(300_000);
-      const exit = await waitForBuildRun(runsDir, { before, timeoutMs: 25 * 60_000, onEvent: log });
-      if (exit === '0') throw new Error('the build that was meant to fail succeeded');   // the 8.0.0 FortiManager installed: there is no failure to show
+      if (!FAIL) return skipStep('fsm09-16-build-failed', `set FS_MCP_FAIL=1 to ask about the failed ${FAIL_FABRIC} build on the pod`);
       approval().setExpect(undefined);
-      const q = 'Did the build finish? Give me the result in a sentence or two.';
+      const q = `Did my ${FAIL_FABRIC} build on mypod finish? Give me the result in a sentence or two.`;
+      const from = eventCount();
       await S().session.send(q);
       await approval().turnDone(420_000);
+      assertPicked('how the build went', from, /^(build|pods|fabric|tasks|diagnose|vm)$/);
+      // Check first that the failure the page shows is there: an answer that the build succeeded means the fabric was
+      // fixed or rebuilt, and there is nothing to diagnose.
+      const said = plain().split(q.slice(0, 20)).pop() ?? '';
+      if (!/fail|did not finish|didn.t finish|not finish|254|error/i.test(said)) throw new Error(`the ${FAIL_FABRIC} build on the pod did not read as failed; the page needs a failed build there:\n${said}`);
       await capture.agent('fsm09-16-build-failed', real(), { terms: HIDE, startAt: fromQuestion(q), endAt: DONE });
     });
 
     await step('fsm09-17-diagnose', async () => {
-      if (!FAIL) return skipStep('fsm09-17-diagnose', 'set FS_MCP_FAIL=1 to build a fabric that fails');
+      if (!FAIL) return skipStep('fsm09-17-diagnose', `set FS_MCP_FAIL=1 to diagnose the failed ${FAIL_FABRIC} build on the pod`);
       const q = 'Why did it fail?';
       const from = eventCount();
       await S().session.send(q);

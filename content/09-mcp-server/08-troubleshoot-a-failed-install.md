@@ -13,15 +13,16 @@ finds most causes.
 
 <!-- step: fsm09-16-build-failed -->
 
-A failed build ends with Claude reporting that the run did not finish cleanly. Here a build of three devices
-failed on the FortiManager:
+Start by asking how the build went. Here the pod has a fabric called `docs-fail` whose last build, of three
+devices, failed on the FortiManager. Ask Claude: *"Did my docs-fail build on mypod finish? Give me the result in a
+sentence or two."* It reads the build's result and tells you it did not finish cleanly:
 
 <!-- capture: fsm09-16-build-failed -->
 ![fsm09-16-build-failed](fsm09-16-build-failed.png)
 
 <!-- step: fsm09-17-diagnose -->
 
-Ask Claude: *"Why did it fail?"* It starts with **diagnose**, one call that
+Then ask: *"Why did it fail?"* Claude diagnoses that same build. It starts with **diagnose**, one call that
 checks every device, reads the failed task's log and ranks what it finds.
 
 <!-- capture: fsm09-17-diagnose -->
