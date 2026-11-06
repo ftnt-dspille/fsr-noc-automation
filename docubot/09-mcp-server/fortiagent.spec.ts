@@ -147,13 +147,15 @@ test('Connect FortiAgent to the fabric-studio MCP server', async ({ app, capture
     await test.step('fsm09-22-fortiagent-server-ready', async () => {
       // Listed under Configured with its name and command: FortiAgent shows no status until a chat starts it.
       const row = servers.first();
-      await row.waitFor({ timeout: 30_000 });
+      // A busy engine (bundled connectors still provisioning) can hold the add for minutes: one run saw the row land
+      // a second inside a 120 s wait, another saw it need the better part of three.
+      await row.waitFor({ timeout: 240_000 });
       // The name gives the ID the skill requires: a second "Fabric Studio" would be fabric-studio-2.
       const ids = ours().map((s) => s.id);
       if (ids.join() !== 'fabric-studio') throw new Error(`the Fabric Studio servers are ${ids.join(', ') || 'none'}, not fabric-studio`);
       log('server listed under Configured, ID fabric-studio');
       // The row's "Protocol 2026-07-28" is the MCP protocol revision, page content the scan reads as a date.
-      await capture.shot(w, 'fsm09-22-fortiagent-server-ready', { highlight: [row], showAs, scrubSkip: ['date-or-time'] });
+      await capture.shot(w, 'fsm09-22-fortiagent-server-ready', { highlight: [row], showAs, scrubSkip: ['date-or-time'], ocrAllow: ['/Users/student'] });
     });
 
     await test.step('fsm09-25-fortiagent-import-skill', async () => {

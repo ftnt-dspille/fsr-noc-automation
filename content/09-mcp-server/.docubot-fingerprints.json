@@ -16,6 +16,8 @@
     "fsm09-13-setup.png": "a550c3115be081fbc20e68f6dc839314",
     "fsm09-14-pods.png": "dc0c4df2752b648b3ca7f5f6ad105ec8",
     "fsm09-15-mcp-list.png": "6e93949160fe9a682a4b776fad6dd42c",
+    "fsm09-20-fortiagent-mcp-settings.png": "f334624de881d3e8855aeae70680035c",
+    "fsm09-21-fortiagent-add-server.png": "c9954a99e3a27d58383ac112d1d32272",
     "fsm09-30-fortiagent-tui-open.png": "ca6de842163a849ea37829a69e060c45",
     "fsm09-31-fortiagent-tui-plan.png": "b066ddc1cad461a549ff7f9078c057b0",
     "fsm09-32-fortiagent-tui-approve.png": "0d1222b3b95e431273f6ac1e487a0fea"
@@ -65,6 +67,12 @@
     ],
     "fsm09-15-mcp-list": [
       "fsm09-15-mcp-list.png"
+    ],
+    "fsm09-20-fortiagent-mcp-settings": [
+      "fsm09-20-fortiagent-mcp-settings.png"
+    ],
+    "fsm09-21-fortiagent-add-server": [
+      "fsm09-21-fortiagent-add-server.png"
     ],
     "fsm09-30-fortiagent-tui-open": [
       "fsm09-30-fortiagent-tui-open.png"
