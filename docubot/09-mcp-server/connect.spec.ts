@@ -1,7 +1,8 @@
 import { existsSync, mkdirSync, mkdtempSync, rmSync } from 'node:fs';
 import { homedir } from 'node:os';
 import { join } from 'node:path';
-import { installFabricStudioMcp, test } from 'docubot';
+import { test } from 'docubot';
+import { installFabricStudioMcp } from 'docubot/products/fabricstudio';
 
 // The Install page's `fabric-studio-mcp connect`: install from the published zip into a throwaway tool folder, then run
 // the real command. It needs no pod. Claude Code and Codex are pointed at throwaway config folders, so this machine's

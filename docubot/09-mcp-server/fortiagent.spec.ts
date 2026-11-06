@@ -3,7 +3,9 @@ import { existsSync, mkdtempSync, renameSync, rmSync } from 'node:fs';
 import { homedir } from 'node:os';
 import { join } from 'node:path';
 import type { Page } from '@playwright/test';
-import { assertPodAllowed, getGuiDevice, installFabricStudioMcp, setupPod, test } from 'docubot';
+import { getGuiDevice, test } from 'docubot';
+import { assertPodAllowed } from 'docubot/agents';
+import { installFabricStudioMcp, setupPod } from 'docubot/products/fabricstudio';
 
 // The Connect FortiAgent page, followed as a new student would: install from the zip the Install page offers
 // (uv tool install, so the command lands in ~/.local/bin as the page says), add the pod with

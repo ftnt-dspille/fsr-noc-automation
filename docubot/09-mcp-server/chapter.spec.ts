@@ -2,7 +2,9 @@ import { spawnSync } from 'node:child_process';
 import { mkdirSync, mkdtempSync, rmSync } from 'node:fs';
 import { homedir } from 'node:os';
 import { basename, join } from 'node:path';
-import { assertPodAllowed, buildExpect, createAgentLab, defaultRunsDir, fsGoto, fsOpenFabric, fsShot, getGuiDevice, installFabricStudioMcp, listRuns, operatorClaudeTitles, pollUntil, setupPod, skipStep, slashCommand, waitForBuildRun, waitForRunStart, type LabConfig, test, type Expect, type PendingCall } from 'docubot';
+import { getGuiDevice, pollUntil, skipStep, type LabConfig, test } from 'docubot';
+import { assertPodAllowed, buildExpect, createAgentLab, operatorClaudeTitles, slashCommand, type Expect, type PendingCall } from 'docubot/agents';
+import { defaultRunsDir, fsGoto, fsOpenFabric, fsShot, installFabricStudioMcp, listRuns, setupPod, waitForBuildRun, waitForRunStart } from 'docubot/products/fabricstudio';
 
 // Captures run on the operator's own Claude login (Sonnet): `--setting-sources ''` + `--strict-mcp-config` keep the operator's rules and hooks out of the gate.
 // DOCUBOT_APPROVAL_ISOLATION=config-dir (CI, canary) uses a throwaway config and needs ANTHROPIC_API_KEY.

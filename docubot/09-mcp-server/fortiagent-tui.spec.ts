@@ -1,8 +1,10 @@
 import { mkdirSync, mkdtempSync, rmSync } from 'node:fs';
 import { homedir } from 'node:os';
 import { join } from 'node:path';
-import { answerFortiagentApproval, assertPodAllowed, defaultRunsDir, fortiagentStage, fortiagentTurn, guardedTurn, RealTerminal, skipStep, test, waitForBuildRun, waitForFortiagentIdle, watchFortiagentGate, withFortiagentRule } from 'docubot';
-import type { FortiagentCallExpect } from 'docubot';
+import { RealTerminal, skipStep, test } from 'docubot';
+import { answerFortiagentApproval, assertPodAllowed, fortiagentStage, fortiagentTurn, guardedTurn, waitForFortiagentIdle, watchFortiagentGate, withFortiagentRule } from 'docubot/agents';
+import { defaultRunsDir, waitForBuildRun } from 'docubot/products/fabricstudio';
+import type { FortiagentCallExpect } from 'docubot/agents';
 
 // FortiAgent's terminal chat (`fortiagent chat`) in a REAL terminal (ttyd + xterm.js), for what a one-shot `chat -m` cannot do:
 // answer the approval sheet for a tool that changes a pod. When a turn is over and how an approval is answered lives in
