@@ -311,8 +311,8 @@ test('Connect Claude Code to the fabric-studio MCP server', async ({ page, local
       assertPicked('how the build went', from, /^(build|pods|fabric|tasks|diagnose|vm)$/);
       // Check first that the failure the page shows is there: an answer that the build succeeded means the fabric was
       // fixed or rebuilt, and there is nothing to diagnose.
-      const said = plain().split(q.slice(0, 20)).pop() ?? '';
-      if (!/fail|did not finish|didn.t finish|not finish|254|error/i.test(said)) throw new Error(`the ${FAIL_FABRIC} build on the pod did not read as failed; the page needs a failed build there:\n${said}`);
+      const said = (plain().split(q.slice(0, 20)).pop() ?? '').split(FAIL_FABRIC).join('');   // the fabric's own name says "fail"
+      if (/can.t find|couldn.t find|no .{0,20}build/i.test(said) || !/fail|did not finish|didn.t finish|not finish|254|error/i.test(said)) throw new Error(`the ${FAIL_FABRIC} build on the pod did not read as failed; the page needs a failed build there:\n${said}`);
       await capture.agent('fsm09-16-build-failed', real(), { terms: HIDE, startAt: fromQuestion(q), endAt: DONE });
     });
 
